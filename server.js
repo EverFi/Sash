@@ -3,8 +3,10 @@
  * Module dependencies.
  */
 
+require('coffee-script')
+
 var express = require('express')
-  , routes = require('./routes');
+  , pg = require('pg');
 
 var app = module.exports = express.createServer();
 
@@ -28,8 +30,8 @@ app.configure('production', function(){
 });
 
 // Routes
+require('./apps/authentication/routes')(app);
 
-app.get('/', routes.index);
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
