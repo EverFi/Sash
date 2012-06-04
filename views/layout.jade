@@ -7,4 +7,9 @@ html
     #header
       h1= title
 
+    each flashType in ['info', 'error']
+      if flash[flashType]
+        p.flash(class=flashType)
+          = flash[flashType]
+
     != body
