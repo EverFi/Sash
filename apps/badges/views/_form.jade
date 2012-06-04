@@ -1,0 +1,11 @@
+form(action=urlFor(badge), method='post', enctype="multipart/form-data")
+  label
+    | Name
+    input(type='text', name='badge[name]')
+  label
+    | Description
+    input(type='text', name='badge[description]')
+  label
+    | Image
+    input(type='file', name='badge[image]')
+  input(type='submit', value='Save!')

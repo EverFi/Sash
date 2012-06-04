@@ -1,12 +1,11 @@
-assert = require 'assert'
-Badge    = require '../../models/badge'
+assert  = require 'assert'
+Badge   = require '../../models/badge'
 
 describe 'Badge', ->
   describe 'create', ->
     badge = null
     before ->
-      badge = new Badge {name: 'Key Lime'}
+      badge = new Badge {name: 'Financial Literacy'}
+
     it 'sets name', ->
-      assert.equal badge.name, 'Key Lime'
-
-
+      assert.equal badge.name, 'Financial Literacy'

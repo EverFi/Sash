@@ -11,6 +11,9 @@ BadgeSchema = new Schema
   criteria: String
   issuer: Schema.ObjectId
 
+# Define additional methods for the Badge class below like so:
+# BadgeSchema.methods.awesome = -> "awesome"
+
 Badge = db.model("Badge", BadgeSchema)
 
 module.exports = Badge

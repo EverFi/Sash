@@ -6,10 +6,16 @@ helpers = (app) ->
 
   # static helpers take any parametes and usually format data
   app.helpers
+    # Object is a mongoose model object
     urlFor: (object) ->
-      if object.id
-        "/admin/pies/#{object.id}"
+      if object.collection
+        prefix = object.collection.name + '/'
       else
-        "/admin/pies"
+        prefix = ''
+
+      unless object.isNew
+        "/#{prefix}#{object.id}"
+      else
+        "/#{prefix}"
 
 module.exports = helpers

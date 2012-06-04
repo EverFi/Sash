@@ -19,6 +19,7 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.set('port', 3000);
+  app.set('upload_dir', __dirname + '/public/uploads/');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
@@ -47,7 +48,7 @@ require('./apps/helpers')(app);
 
 // Routes
 require('./apps/badges/routes')(app);
-// require('./apps/authentication/routes')(app);
+require('./apps/authentication/routes')(app);
 // require('./apps/admin/routes')(app);
 
 
