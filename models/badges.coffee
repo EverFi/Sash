@@ -1,4 +1,0 @@
-class Badge
-  constructor: (attributes)->
-
-
