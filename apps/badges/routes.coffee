@@ -4,6 +4,7 @@ fs = require 'fs'
 
 routes = (app) ->
   app.namespace '/badges', ->
+    #INDEX
     app.get '/', (req, res) ->
       badges = Badge.find().limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
@@ -12,11 +13,14 @@ routes = (app) ->
           badge: new Badge
           badges: badges
 
+    #NEW
     app.get '/new', (req, res) ->
       res.render "#{__dirname}/views/new",
         stylesheet: 'admin'
-        title: "New Badge!"
+        title: "new badge!"
+        badge: new badge
 
+    #CREATE
     app.post '/', (req, res, next) ->
       ins = fs.createReadStream req.files.badge.image.path
       ous = fs.createWriteStream app.settings.upload_dir + req.files.badge.image.filename
@@ -29,9 +33,22 @@ routes = (app) ->
           req.flash 'info', 'Badge saved successfully!'
           res.redirect '/badges'
 
-    # app.get '/:id', (req, res) ->
+    #SHOW
+    app.get '/:id', (req, res) ->
+      Badge.findById req.params.id, (err, badge) ->
+        res.render "#{__dirname}/views/show",
+          stylesheet: 'admin'
+          title: "new badge!"
+          badge: badge
 
-    app.del '/:id', (req, res) ->
+    #UPDATE
+    app.put '/:id', (req, res, next) ->
+      Badge.update id: req.params.id, (err, doc) ->
+        next(err) if err
+
+
+    #DELETE
+    app.del '/:id', (req, res, next) ->
       Badge.findById req.params.id, (err, doc) ->
         doc.remove (err) ->
           if req.xhr

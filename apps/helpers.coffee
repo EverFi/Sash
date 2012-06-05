@@ -6,6 +6,9 @@ helpers = (app) ->
 
   # static helpers take any parametes and usually format data
   app.helpers
+    uploadedImageUrl: (filename) ->
+      "/uploads/" + filename
+
     # Object is a mongoose model object
     urlFor: (object) ->
       if object.collection

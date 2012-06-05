@@ -5,7 +5,8 @@ h1 Badges!
 ul
   - each badge in badges
     li
-      = badge.name
+      a(href=urlFor(badge)) 
+        =badge.name
       form(action="/badges/#{badge.id}", method='post', class="delete", data-remote="true")
         input(type="hidden", value="delete", name="_method")
         input(type="submit", value="Delete", class="delete")
