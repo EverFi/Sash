@@ -29,5 +29,16 @@ routes = (app) ->
           req.flash 'info', 'Badge saved successfully!'
           res.redirect '/badges'
 
+    # app.get '/:id', (req, res) ->
+
+    app.del '/:id', (req, res) ->
+      Badge.findById req.params.id, (err, doc) ->
+        doc.remove (err) ->
+          if req.xhr
+            res.send JSON.stringify(success: true), "Content-Type": "application/json"
+          else
+            req.flash 'info', 'Badge Destroyed!'
+            res.redirect '/badges'
+
 module.exports = routes
 

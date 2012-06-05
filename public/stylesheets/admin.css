@@ -382,3 +382,14 @@ body ul#listing li .status .ready {
 body ul#listing li .status .inactive {
   background: url("/images/stage-inactive.png") top center no-repeat;
 }
+
+body form.delete {
+  display: inline;
+  margin: 0;
+}
+body form input[type="submit"].delete {
+  display: inline;
+  font-size: 12px;
+  float: none;
+  margin-left: 5px;
+}
