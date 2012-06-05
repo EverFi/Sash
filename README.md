@@ -1,3 +1,8 @@
+honey-badger
+============
+
+Open platform for issuing badges.
+
 # Badging @ EverFi
 
 Badging issuing/hosting service that follows the metadata format for 
@@ -12,17 +17,16 @@ mozilla OpenBadges
 
 ## Issuing Badges
 
-Homeroom user fufills criteria for earning badge. Makes javascript call to badger
-with user login or email to issue badge. 
+  Homeroom user fufills criteria for earning badge. Makes javascript call to badger
+  with user login or email to issue badge. User is automatically initialized in 
+  the system if they don't exist (unique by username)
 
 ## Displaying Badges
 
 Retrieve Badges for user
 
-## Authenticating Users
-
 
 # Badging Analytics
 
-
+Who knows what this will be yet.
 
