@@ -1,4 +1,6 @@
 $(document).ready(function(){
+
+  // Remote form hadler
   $('form[data-remote=true]').on('submit', function(e){
     var method, form, action, methodOveride, params;
     form = $(this);
@@ -13,10 +15,15 @@ $(document).ready(function(){
       url: action,
       data: params,
       type: method
-    }).done(function(response, xhr){
-      form.parents("li").remove();
+    }).done(function(response, stat, xhr){
+      form.trigger('ajax:success', [response, stat, xhr]);
     });
 
     e.preventDefault();
   })
+
+  // On the delete form, remove the parent LI on success
+  $('form.delete').on('ajax:success', function(e, response, stat, xhr){
+    $(this).parents("li").remove();
+  });
 })
