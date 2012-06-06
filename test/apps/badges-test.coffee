@@ -48,3 +48,16 @@ describe "badges", ->
 
     it 'displays the uploaded image', ->
       assert.hasTag body, '//body/div[@class="badge"]/img/@src', '/uploads/mario_badge.png'
+
+  describe "POST /badges", ->
+    body = null
+
+    before (done) ->
+      options =
+        uri: "http://localhost:#{app.settings.port}/badges"
+        method: 'post'
+      request options, (err, response, _body) ->
+        body = _body
+        done()
+    it "creates new badges with name and description", ->
+
