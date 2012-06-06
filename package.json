@@ -11,7 +11,8 @@
     "connect-redis": "~1.3.0",
     "hiredis": "~0.1.14",
     "express-namespace": "~0.1.0",
-    "mongoose": "~2.6.5"
+    "mongoose": "~2.6.5",
+    "mongoose-timestamps": "0.0.1"
   },
   "devDependencies": {
     "node-dev": "~0.2.3",

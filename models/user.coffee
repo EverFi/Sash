@@ -1,6 +1,7 @@
 mongoose = require 'mongoose'
+timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
-db = mongoose.createConnection 'mongodb://localhost:27017/badges'
+db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 EarnedBadge = require './earned_badge'
 
 UserSchema = new Schema
@@ -8,6 +9,8 @@ UserSchema = new Schema
   created_at: Date
   updated_at: Date
   earned_badges: [EarnedBadge]
+
+UserSchema.plugin(timestamps)
 
 User = db.model 'User', UserSchema
 
