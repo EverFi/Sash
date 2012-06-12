@@ -1,5 +1,7 @@
 assert  = require 'assert'
 User   = require '../../models/user'
+EarnedBadge = require '../../models/earned_badge'
+Badge = require '../../models/badge'
 
 describe 'Badge', ->
   describe 'create', ->
@@ -33,5 +35,34 @@ describe 'Badge', ->
         done()
 
     after (done) ->
+      User.where('username').in(['bob','alice']).remove ->
+        done()
+
+  describe 'earning badges', ->
+    user = null
+    badge = null
+    beforeEach (done)->
+      User.where('username').in(['bob','alice']).remove ->
+        badge = new Badge name: 'super badge'
+        badge.save ->
+          user = new User username: 'bob'
+          user.save ->
+              done()
+
+    it "adds the badge to the user's earned badges", (done)->
+      user.earn badge, (err, user)->
+        assert.equal user.earned_badges.length, 1
+        done()
+
+    it "doesn't add the badge if the user already has it", (done) ->
+      assert.equal user.earned_badges.length, 0
+      user.earn badge, (err, user)->
+        assert.equal user.earned_badges.length, 1
+        user.earn badge, (err, user)->
+          assert.equal user.earned_badges.length, 1
+          done()
+
+    afterEach (done) ->
+      badge.remove()
       User.where('username').in(['bob','alice']).remove ->
         done()

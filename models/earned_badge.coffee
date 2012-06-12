@@ -1,14 +1,13 @@
 mongoose = require 'mongoose'
 Schema = mongoose.Schema
-db = mongoose.createConnection 'mongodb://localhost:27017/badges'
+db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 
 EarnedBadgeSchema = new Schema
-  user_id: Schema.ObjectId
+  badge_id:
+    type: Schema.ObjectId
   issued_on: Date
   expires_on: Date
   created_at: Date
   updated_at: Date
 
-EarnedBadge = db.model 'EarnedBadge', EarnedBadgeSchema
-
-module.exports = EarnedBadge
+module.exports = EarnedBadgeSchema
