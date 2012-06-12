@@ -61,3 +61,9 @@ describe "badges", ->
         done()
     it "creates new badges with name and description", ->
 
+  describe "GET /badges/issue/", ->
+    it "initializes a user if they don't exist"
+    it "stores and earned badge on the user"
+    it "returns the badge info"
+
+

@@ -23,7 +23,8 @@ routes = (app) ->
     #CREATE
     app.post '/', (req, res, next) ->
       ins = fs.createReadStream req.files.badge.image.path
-      ous = fs.createWriteStream app.settings.upload_dir + req.files.badge.image.filename
+      ous = fs.createWriteStream app.settings.upload_dir +
+        req.files.badge.image.filename
       util.pump ins, ous, (err)->
         next(err) if err
         badge = new Badge req.body.badge
@@ -56,6 +57,22 @@ routes = (app) ->
           else
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
+
+    app.get '/issue/:id', (req, res, next) ->
+      username = req.params.username
+      Badge.findById req.params.id, (err, badge) ->
+        next(err) if err
+
+        User.findOrCreateByUsername username, (err, user) ->
+          user.earn badge, (err, user) ->
+            next(err) if err
+            formatIssueResponse(req, res, badge)
+
+formateIssueResponse = (req, res, badge) ->
+  res.send badge.toJSON(),
+    'Content-Type': 'application/javascript'
+
+
 
 module.exports = routes
 
