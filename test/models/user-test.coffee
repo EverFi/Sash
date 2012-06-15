@@ -50,16 +50,29 @@ describe 'Badge', ->
               done()
 
     it "adds the badge to the user's earned badges", (done)->
-      user.earn badge, (err, user)->
+      user.earn badge, (err, response)->
         assert.equal user.earned_badges.length, 1
+        assert.equal response.earned, true
+        done()
+
+        it "it returns the badge on the response obj when success", (done)->
+      user.earn badge, (err, response)->
+        assert.equal response.badge.id, badge.id
         done()
 
     it "doesn't add the badge if the user already has it", (done) ->
       assert.equal user.earned_badges.length, 0
-      user.earn badge, (err, user)->
+      user.earn badge, (err, response)->
         assert.equal user.earned_badges.length, 1
-        user.earn badge, (err, user)->
+        user.earn badge, (err, response)->
           assert.equal user.earned_badges.length, 1
+          done()
+
+    it "returns a message when the user already has the badge", (done) ->
+      user.earn badge, (err, r)->
+        user.earn badge, (err, response)->
+          assert.equal response.earned, false
+          assert.equal response.message, "User already has this badge"
           done()
 
     afterEach (done) ->

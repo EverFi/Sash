@@ -19,11 +19,18 @@ UserSchema.methods.earn = (badge, callback)->
   exists = _.any @earned_badges, (eb, i)->
     eb.badge_id.toString() == badge.id
   if exists
-    callback(null, @)
+    callback null, {
+      message: 'User already has this badge'
+      earned: false
+    }
   else
     @earned_badges.push {badge_id: badge.id}
     @save (err, user)->
-      callback(null, user)
+      callback null, {
+        message: 'successfully added badge'
+        earned: true
+        badge: badge
+      }
 
 
 User = db.model 'User', UserSchema

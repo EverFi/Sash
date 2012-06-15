@@ -1,4 +1,5 @@
 Badge = require '../../models/badge'
+User = require '../../models/user'
 util = require 'util'
 fs = require 'fs'
 
@@ -59,18 +60,27 @@ routes = (app) ->
             res.redirect '/badges'
 
     app.get '/issue/:id', (req, res, next) ->
-      username = req.params.username
+      username = req.query.username
       Badge.findById req.params.id, (err, badge) ->
         next(err) if err
 
         User.findOrCreateByUsername username, (err, user) ->
-          user.earn badge, (err, user) ->
+          user.earn badge, (err, response) ->
             next(err) if err
-            formatIssueResponse(req, res, badge)
+            if response.earned
+              formatIssueResponse req, res, response
+            else
+              formatIssueResponse req, res, response
 
-formateIssueResponse = (req, res, badge) ->
-  res.send badge.toJSON(),
-    'Content-Type': 'application/javascript'
+formatIssueResponse = (req, res, response) ->
+  cb = req.query.callback
+  if cb
+    res.send "#{cb}(#{JSON.stringify(response)})",
+      'content-type': 'application/javascript'
+  else
+    res.send response.toJSON(),
+      'content-type': 'application/json'
+
 
 
 
