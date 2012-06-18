@@ -33,7 +33,7 @@ UserSchema.methods.earn = (badge, callback)->
           # Using dot accessors here so the custom getters are invoked
           name: badge.name
           description: badge.description
-          image: badge.image  
+          image: badge.image
           criteria: badge.criteria
           id: badge.id
 
