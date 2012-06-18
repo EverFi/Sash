@@ -4,3 +4,7 @@ div.badge
     = badge.name
   p.description
     = badge.description
+  div.url
+    strong
+      | Issue URL: 
+    = 'http://'+process.env.HOST+'/badges/issue/'+badge.id
