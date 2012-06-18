@@ -81,7 +81,7 @@ formatIssueResponse = (req, res, response) ->
     res.send "#{cb}(#{JSON.stringify(response)})",
       'content-type': 'application/javascript'
   else
-    res.send response.toJSON(),
+    res.send JSON.stringify(response),
       'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
