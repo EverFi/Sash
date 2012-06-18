@@ -3,9 +3,12 @@ timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 
+fullImageUrl = (imageUrl)->
+  "http://#{process.env.HOST}/public/uploads/#{imageUrl}"
+
 BadgeSchema = new Schema
   name:         String
-  image:        String
+  image:        {type: String, get: fullImageUrl}
   description:  String
   criteria:     String
   issuer:       Schema.ObjectId

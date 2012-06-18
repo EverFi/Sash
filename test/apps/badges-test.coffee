@@ -41,13 +41,16 @@ describe "badges", ->
         done()
 
     it "displays the name of the badge", ->
-      assert.hasTag body, '//body/div[@class="badge"]/h1', 'Awesome Badge'
+      assert.hasTag body, '//body/div[@class="badge"]/h1',
+        'Awesome Badge'
 
     it 'displays the description', ->
-      assert.hasTag body, '//body/div[@class="badge"]/p', 'Interesting Description'
+      assert.hasTag body, '//body/div[@class="badge"]/p',
+        'Interesting Description'
 
     it 'displays the uploaded image', ->
-      assert.hasTag body, '//body/div[@class="badge"]/img/@src', '/uploads/mario_badge.png'
+      assert.hasTag body, '//body/div[@class="badge"]/img/@src',
+        '/uploads/mario_badge.png'
 
   describe "POST /badges", ->
     body = null
