@@ -5,6 +5,16 @@
 
 require('coffee-script');
 
+if(typeof process.env.NODE_ENV === 'undefined')
+  process.env.NODE_ENV = 'development'
+
+
+if (process.env.NODE_ENV === 'development')
+  process.env.HOST = 'localhost:3000'
+
+if (process.env.NODE_ENV === 'test')
+  process.env.HOST = 'localhost:3001'
+
 var express = require('express'),
     mongodb = require('mongoose'),
     RedisStore = require('connect-redis')(express);
