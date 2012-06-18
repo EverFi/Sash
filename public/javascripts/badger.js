@@ -15,21 +15,20 @@ window.Badger = (function(){
 
   return {
     earn: function(badge, username, callback){
-      response = {
-        earned: true,
-        badge: {
-          id: "1234",
-          name: "Super Badge",
-          image: "http://localhost:3000/images/logo-badge.png",
-          details: "Badge for being awesome"
-        },
-        message: "Badge was successfully Awarded!"
-      }
-
-      var modal = $(modalTemplate(response));
-
-      $('body').append(modal);
-      callback(response, badge, username);
+      var d = {username: username};
+      $.getJSON(badge, d, function(r){
+        if(r && r.earned){
+          r.username = username;
+          var modal = $(modalTemplate(r));
+          modal.on('click', '[data-dismiss]', function(){
+            $(modal).remove();
+          })
+          $('body').append(modal);
+          callback(r, badge, username);
+        }
+        // Don't bother doing anything, the user will
+        // never even know!
+      })
     }
   }
 
