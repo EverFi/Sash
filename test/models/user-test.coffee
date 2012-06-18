@@ -55,7 +55,7 @@ describe 'Badge', ->
         assert.equal response.earned, true
         done()
 
-        it "it returns the badge on the response obj when success", (done)->
+    it "it returns the badge on the response obj when success", (done)->
       user.earn badge, (err, response)->
         assert.equal response.badge.id, badge.id
         done()
