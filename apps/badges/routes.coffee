@@ -36,12 +36,15 @@ routes = (app) ->
           res.redirect '/badges'
 
     #SHOW
-    app.get '/:id', (req, res) ->
+    app.get '/:id.:format?', (req, res) ->
       Badge.findById req.params.id, (err, badge) ->
-        res.render "#{__dirname}/views/show",
-          stylesheet: 'admin'
-          title: "new badge!"
-          badge: badge
+        if req.params.format == 'json'
+          formatBadgeResponse(req, res, badge)
+        else
+          res.render "#{__dirname}/views/show",
+            stylesheet: 'admin'
+            title: "new badge!"
+            badge: badge
 
     #UPDATE
     app.put '/:id', (req, res, next) ->
@@ -79,6 +82,22 @@ formatIssueResponse = (req, res, response) ->
       'content-type': 'application/javascript'
   else
     res.send response.toJSON(),
+      'content-type': 'application/json'
+
+formatBadgeResponse = (req, res, badge) ->
+  cb = req.query.callback
+  badge =  {
+    image: badge.image,
+    description: badge.description,
+    criteria: badge.criteria,
+    name: badge.name
+    id: badge.id
+  }
+  if cb
+    res.send "#{cb}(#{JSON.stringify(badge)})",
+      'content-type': 'application/javascript'
+  else
+    res.send JSON.stringify(badge),
       'content-type': 'application/json'
 
 
