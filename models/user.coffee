@@ -29,7 +29,14 @@ UserSchema.methods.earn = (badge, callback)->
       callback null, {
         message: 'successfully added badge'
         earned: true
-        badge: badge
+        badge:
+          # Using dot accessors here so the custom getters are invoked
+          name: badge.name
+          description: badge.description
+          image: badge.image  
+          criteria: badge.criteria
+          id: badge.id
+
       }
 
 
