@@ -4,7 +4,7 @@ Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 
 fullImageUrl = (imageUrl)->
-  "http://#{process.env.HOST}/public/uploads/#{imageUrl}"
+  "http://#{process.env.HOST}/uploads/#{imageUrl}"
 
 BadgeSchema = new Schema
   name:         String

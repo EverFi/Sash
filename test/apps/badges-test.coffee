@@ -50,7 +50,7 @@ describe "badges", ->
 
     it 'displays the uploaded image', ->
       assert.hasTag body, '//body/div[@class="badge"]/img/@src',
-        '/uploads/mario_badge.png'
+        'http://localhost:3001/uploads/mario_badge.png'
 
   describe "POST /badges", ->
     body = null
