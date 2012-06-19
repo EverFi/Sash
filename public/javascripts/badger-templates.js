@@ -5,7 +5,7 @@ window.TMPL = {
     <div class='modal'>\
       <div class='modal-header'>\
         <button href='#' class='close' data-dismiss>x</button>\
-        <h3>Hey #{username}! You were just awarded \
+        <h3>Hey <em>{{username}}</em>! You were just awarded \
           this awesome badge!</h3>\
       </div>\
       <div class='modal-body'>\

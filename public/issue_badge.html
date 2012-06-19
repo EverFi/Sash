@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel='stylesheet' href='/stylesheets/admin.css' />
+    <link rel='stylesheet' href='/stylesheets/application.css' />
     <link rel='stylesheet' href='/stylesheets/issue.css' />
   </head>
   <body>
@@ -11,7 +11,11 @@
 
     <div>
 
-      <button id="issue" data-issueBadge data-badge="http://localhost:3000/badges/issue/4fdb457304ce1c65cb000004" data-username="unicorn-baller8">
+      <button
+        id="issue"
+        data-issueBadge
+        data-badge="http://localhost:3000/badges/issue/4fdb457304ce1c65cb000004"
+        data-username="unicorn-baller13">
         Issue a Badge
       </button>
 
@@ -21,6 +25,11 @@
     <script src="/javascripts/badger-templates.js"></script>
     <script src="/javascripts/badger.js"></script>
     <script src="/javascripts/issue_badges.js"></script>
+    <script>
+      $(document).ready(function(){
+        $('#issue').attr('data-username', "unicorn"+Math.floor(Math.random()*1001));
+      });
+    </script>
   </body>
 </html>
 

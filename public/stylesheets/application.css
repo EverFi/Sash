@@ -38,13 +38,19 @@ body {
   margin: 0;
   padding: 0;
 }
-body h1 {
+body #header h1 {
   margin: 0.4em 0 0 -2em;
   text-align: center;
 }
 body p {
   padding: 1em;
 }
+
+body ul, body li{
+  margin: 0;
+  padding: 0;
+}
+
 body #header {
   background: url("../images/logo-badge.png") 1.4375em 1.4375em no-repeat;
   height: 6.25em;
@@ -128,7 +134,7 @@ body h1 {
 body p span.title {
   font-weight: bold;
 }
-body h1 {
+body #header h1 {
   margin: 0.3em 0 0 -2em;
   text-align: center;
 }
