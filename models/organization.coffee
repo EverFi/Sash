@@ -1,5 +1,7 @@
 mongoose = require 'mongoose'
 timestamps = require 'mongoose-timestamps'
+Badge = require './badge'
+
 Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 
@@ -13,6 +15,11 @@ OrganizationSchema = new Schema
   updated_at: Date
 
 OrganizationSchema.plugin(timestamps)
+
+OrganizationSchema.methods.badges = (callback)->
+  Badge.find {issuer: @id}, (err, badges) ->
+    callback err, badges
+
 
 Organization = db.model 'Organization', OrganizationSchema
 
