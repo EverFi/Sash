@@ -7,6 +7,7 @@ OrganizationSchema = new Schema
   name: String
   origin: String
   org: String
+  api_key: String
   contact: String
   created_at: Date
   updated_at: Date
