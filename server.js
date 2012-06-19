@@ -58,8 +58,8 @@ require('./apps/helpers')(app);
 
 // Routes
 require('./apps/badges/routes')(app);
+require('./apps/organizations/routes')(app);
 require('./apps/authentication/routes')(app);
-// require('./apps/admin/routes')(app);
 
 
 app.listen(app.settings.port, function(){

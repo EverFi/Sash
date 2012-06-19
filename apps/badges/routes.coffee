@@ -9,7 +9,6 @@ routes = (app) ->
     app.get '/', (req, res) ->
       badges = Badge.find().limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
-          stylesheet: 'admin'
           title: "Badges!"
           badge: new Badge
           badges: badges
@@ -17,9 +16,8 @@ routes = (app) ->
     #NEW
     app.get '/new', (req, res) ->
       res.render "#{__dirname}/views/new",
-        stylesheet: 'admin'
         title: "new badge!"
-        badge: new badge
+        badge: new Badge
 
     #CREATE
     app.post '/', (req, res, next) ->
@@ -42,7 +40,6 @@ routes = (app) ->
           formatBadgeResponse(req, res, badge)
         else
           res.render "#{__dirname}/views/show",
-            stylesheet: 'admin'
             title: "new badge!"
             badge: badge
 
