@@ -1,0 +1,23 @@
+h1
+  |Awesome Badge Org BRO
+div
+  = "Signed in as " + org.name
+
+div
+  h2
+    | Quick Summary
+  ul
+    li
+      | You have #{org.contact} Users
+    li
+      | Your #{org.contact} users have #{org.contact} badges
+div
+  h2
+    | Actions
+  ul
+    li
+      a(href='/badges/new', class="new-badge")
+        Create a New Badge
+    li
+      a(href='/users', class="new-badge")
+        Manage Users

@@ -1,0 +1,18 @@
+form(action='/organizations', method='post')
+  label
+    | Organization Name
+    input(type='text', name='org[name]')
+
+  label
+    | Origin (URL)
+    input(type='text', name='org[origin]')
+
+  label
+    | Organization Full Name
+    input(type='text', name='org[org]')
+
+  label
+    | Contact email
+    input(type='text', name='org[contact]')
+
+  input(type='submit', value='Create')
