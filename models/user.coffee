@@ -11,6 +11,7 @@ UserSchema = new Schema
     lowercase: true
   created_at: Date
   updated_at: Date
+  organization: Schema.ObjectId
   earned_badges: [EarnedBadge]
 
 UserSchema.plugin(timestamps)
