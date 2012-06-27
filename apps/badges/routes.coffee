@@ -9,7 +9,7 @@ routes = (app) ->
     app.get '/', (req, res) ->
       if req.session.org
         orgId = req.session.org._id
-      badges = Badge.find().limit(20).run (err, badges)->
+      badges = Badge.find(issuer: orgId).limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
           title: "Badges!"
           badge: new Badge
