@@ -7,8 +7,8 @@ html
     script(src="/javascripts/application.js")
   body
     #header
-      h1= title
-
+      h1
+        a(href='/')=title
     each flashType in ['info', 'error']
       if flash[flashType]
         p.flash(class=flashType)
