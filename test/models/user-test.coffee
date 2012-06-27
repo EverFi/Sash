@@ -2,8 +2,15 @@ assert  = require 'assert'
 User   = require '../../models/user'
 EarnedBadge = require '../../models/earned_badge'
 Badge = require '../../models/badge'
+Organization = require '../../models/organization'
 
 describe 'Badge', ->
+  org = null
+  before (done) ->
+    org = new Organization name: 'Awesome Org'
+    org.save ->
+      done()
+
   describe 'create', ->
     user = null
     before (done)->
@@ -43,7 +50,7 @@ describe 'Badge', ->
     badge = null
     beforeEach (done)->
       User.where('username').in(['bob','alice']).remove ->
-        badge = new Badge name: 'super badge'
+        badge = new Badge name: 'super badge', issuer: org.id
         badge.save ->
           user = new User username: 'bob'
           user.save ->
