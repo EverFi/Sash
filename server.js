@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'test')
 
 var express = require('express'),
     mongodb = require('mongoose'),
+    expressMongoose = require('express-mongoose'),
     RedisStore = require('connect-redis')(express);
 
 require('express-namespace');
