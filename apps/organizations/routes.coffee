@@ -20,9 +20,10 @@ loadBadgeAndUserCounts = (req, callback)->
 
 routes = (app) ->
   app.get '/', (req, res, next) ->
-    res.render "index",
-      title: "Badges!"
-
+    if req.session.org_id
+      res.redirect '/dashboard'
+    else
+      res.redirect '/login'
 
   app.get '/dashboard', authenticateOrg, (req, res, next) ->
     loadBadgeAndUserCounts req, (badgesCount, usersCount) -> 
