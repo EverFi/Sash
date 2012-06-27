@@ -1,3 +1,9 @@
+Organization = require '../../models/organization'
+crypto = require 'crypto'
+hexDigest = (string)->
+  sha = crypto.createHash('sha256');
+  sha.update('awesome')
+  sha.digest('hex')
 
 routes = (app) ->
 
@@ -6,18 +12,21 @@ routes = (app) ->
       title: 'Login',
       stylesheet: 'login'
 
-  app.post '/sessions', (req, res) ->
-    if ('colin' is req.body.user) and ('12345' is req.body.password)
-      req.session.currentUser = req.body.user
-      req.flash 'info', "You are logged in as #{req.session.currentUser}"
-      if req.session.previousUrl?
-        url = req.session.previousUrl
-      url ?= '/admin/pies'
-      res.redirect url
-      return
-
-    req.flash 'error', "Username or password is invalid. Try again"
-    res.redirect '/login'
+  app.post '/sessions', (req, res, next) ->
+    errMsg = "Org Name or Password is invalid. Try again"
+    if req.body.name and req.body.password
+      Organization.findOne name: req.body.name, (err, org) ->
+        if org and org.hashed_password == hexDigest(req.body.password)
+          req.session.org_id = org.id
+          req.flash 'info',
+            "You are logged in as #{req.session.currentOrg}"
+          res.redirect '/dashboard'
+        else
+          req.flash 'error', errMsg
+          res.redirect '/login'
+    else
+      req.flash 'error', errMsg
+      res.redirect '/login'
 
   app.del '/sessions', (req, res) ->
     req.session.regenerate (err) ->

@@ -3,23 +3,34 @@ util = require 'util'
 fs = require 'fs'
 
 authenticateOrg = (req, res, next) ->
-  Organization.find {}, (err, orgs)->
-    if orgs[0]
-      req.org = orgs[0]
+  if req.session.org_id
+    Organization.findById req.session.org_id, (err, org)->
+      req.org = org
+      req.session.org_id = org.id
       next()
-    else
-      # Should do a redirect
-      next(new Error("Unauthorized"))
-  
+  else
+    # Should do a redirect
+    next(new Error("Unauthorized"))
+
+loadBadgeAndUserCounts = (req, callback)->
+  org = req.org
+  org.badgesCount (err, badgesCount)->
+    org.usersCount (err, usersCount) ->
+      callback badgesCount, usersCount
+
 routes = (app) ->
   app.get '/', (req, res, next) ->
     res.render "index",
       title: "Badges!"
 
+
   app.get '/dashboard', authenticateOrg, (req, res, next) ->
-    res.render "#{__dirname}/views/dashboard",
-      title: "Badges!"
-      org: req.org
+    loadBadgeAndUserCounts req, (badgesCount, usersCount) -> 
+      res.render "#{__dirname}/views/dashboard",
+        title: "Badges!"
+        org: req.org
+        badgesCount: badgesCount
+        usersCount: usersCount
 
   app.namespace '/organizations', ->
 
