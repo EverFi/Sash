@@ -17,6 +17,8 @@ UserSchema = new Schema
 UserSchema.plugin(timestamps)
 
 UserSchema.methods.earn = (badge, callback)->
+  unless badge.id && badge.issuer
+    callback new Error("must pass a valid badge object")
   exists = _.any @earned_badges, (eb, i)->
     eb.badge_id.toString() == badge.id
   if exists
