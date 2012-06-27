@@ -7,17 +7,23 @@ routes = (app) ->
   app.namespace '/badges', ->
     #INDEX
     app.get '/', (req, res) ->
+      if req.session.org
+        orgId = req.session.org._id
       badges = Badge.find().limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
           title: "Badges!"
           badge: new Badge
           badges: badges
+          orgId: orgId
 
     #NEW
     app.get '/new', (req, res) ->
+      if req.session.org
+        orgId = req.session.org._id
       res.render "#{__dirname}/views/new",
         title: "new badge!"
         badge: new Badge
+        orgId: orgId
 
     #CREATE
     app.post '/', (req, res, next) ->
@@ -40,7 +46,7 @@ routes = (app) ->
           formatBadgeResponse(req, res, badge)
         else
           res.render "#{__dirname}/views/show",
-            title: "new badge!"
+            title: "EverFi Badges Unlimited, LTD."
             badge: badge
 
     #UPDATE
