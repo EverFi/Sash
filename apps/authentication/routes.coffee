@@ -18,8 +18,7 @@ routes = (app) ->
       Organization.findOne name: req.body.name, (err, org) ->
         if org and org.hashed_password == hexDigest(req.body.password)
           req.session.org_id = org.id
-          req.flash 'info',
-            "You are logged in as #{req.session.currentOrg}"
+          req.flash 'info', "You are logged in as #{org.name}"
           res.redirect '/dashboard'
         else
           req.flash 'error', errMsg
