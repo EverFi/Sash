@@ -9,14 +9,8 @@ authenticateOrg = (req, res, next) ->
       req.session.org_id = org.id
       next()
   else
-    # Should do a redirect
-    next(new Error("Unauthorized"))
+    res.redirect('/login')
 
-loadBadgeAndUserCounts = (req, callback)->
-  org = req.org
-  org.badgesCount (err, badgesCount)->
-    org.usersCount (err, usersCount) ->
-      callback badgesCount, usersCount
 
 routes = (app) ->
   app.get '/', (req, res, next) ->
@@ -26,14 +20,13 @@ routes = (app) ->
       res.redirect '/login'
 
   app.get '/dashboard', authenticateOrg, (req, res, next) ->
-    loadBadgeAndUserCounts req, (badgesCount, usersCount) -> 
-      res.render "#{__dirname}/views/dashboard",
-        title: "Badges!"
-        org: req.org
-        badgesCount: badgesCount
-        usersCount: usersCount
+    res.render "#{__dirname}/views/dashboard",
+      title: "Badges!"
+      org: req.org
+      badges: req.org.badges()
+      users: req.org.users()
 
-  app.namespace '/organizations', ->
+  app.namespace '/organizations', authenticateOrg, ->
 
     #INDEX
     app.get '/', (req, res) ->
