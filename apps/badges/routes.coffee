@@ -1,15 +1,27 @@
 Badge = require '../../models/badge'
 User = require '../../models/user'
+Organization = require '../../models/organization'
+
 util = require 'util'
 fs = require 'fs'
 
+
+authenticateOrg = (req, res, next) ->
+  if req.session.org_id
+    Organization.findById req.session.org_id, (err, org)->
+      req.org = org
+      req.session.org_id = org.id
+      next()
+  else
+    res.redirect('/login')
+
 routes = (app) ->
-  app.namespace '/badges', ->
+  app.namespace '/badges', authenticateOrg, ->
     #INDEX
     app.get '/', (req, res) ->
-      if req.session.org
-        orgId = req.session.org._id
-      badges = Badge.find(issuer: orgId).limit(20).run (err, badges)->
+      if req.session.org_id
+        orgId = req.session.org_id
+      badges = Badge.find(issuer_id: orgId).limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
           title: "Badges!"
           badge: new Badge
@@ -18,8 +30,8 @@ routes = (app) ->
 
     #NEW
     app.get '/new', (req, res) ->
-      if req.session.org
-        orgId = req.session.org._id
+      if req.session.org_id
+        orgId = req.session.org_id
       res.render "#{__dirname}/views/new",
         title: "new badge!"
         badge: new Badge
@@ -94,6 +106,7 @@ formatBadgeResponse = (req, res, badge) ->
     description: badge.description,
     criteria: badge.criteria,
     name: badge.name
+    issuer: badge.issuer
     id: badge.id
   }
   if cb

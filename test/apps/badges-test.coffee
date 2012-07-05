@@ -3,7 +3,20 @@ assert  = require 'assert'
 app     = require '../../server.js'
 Badge   = require '../../models/badge'
 
+SessionTestHelper =
+  login: (done)->
+    options =
+      uri:"http://localhost:#{app.settings.port}/sessions"
+      form:
+        name: 'everfi'
+        password: 'awesome'
+      followAllRedirects: true
+    request.post options, (err, _response, _body) ->
+      done()
+
 describe "badges", ->
+  before (done) ->
+    SessionTestHelper.login done
 
   describe "GET /badges", ->
     body = null
