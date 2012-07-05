@@ -50,7 +50,7 @@ describe 'Badge', ->
     badge = null
     beforeEach (done)->
       User.where('username').in(['bob','alice']).remove ->
-        badge = new Badge name: 'super badge', issuer: org.id
+        badge = new Badge name: 'super badge', issuer_id: org.id
         badge.save ->
           user = new User username: 'bob'
           user.save ->
