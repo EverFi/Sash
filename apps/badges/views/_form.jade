@@ -8,5 +8,5 @@ form(action=urlFor(badge), method='post', enctype="multipart/form-data")
   label
     | Image
     input(type='file', name='badge[image]')
-  input(type='hidden', name='badge[issuer]', value=orgId)
+  input(type='hidden', name='badge[issuer_id]', value=orgId)
   input(type='submit', value='Save!')

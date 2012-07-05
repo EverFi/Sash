@@ -11,7 +11,7 @@ BadgeSchema = new Schema
   image:        {type: String, get: fullImageUrl}
   description:  String
   criteria:     String
-  issuer:       Schema.ObjectId
+  issuer_id:       Schema.ObjectId
 
 BadgeSchema.plugin(timestamps);
 
