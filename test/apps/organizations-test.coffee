@@ -3,28 +3,14 @@ assert  = require 'assert'
 app     = require '../../server.js'
 Organization   = require '../../models/organization'
 User   = require '../../models/user'
-
-SessionTestHelper =
-  login: (done)->
-    options =
-      uri:"http://localhost:#{app.settings.port}/sessions"
-      form:
-        name: 'everfi'
-        password: 'awesome'
-      followAllRedirects: true
-    request.post options, (err, _response, _body) ->
-      done()
+SessionHelper = require '../session-helper'
 
 describe "organization", ->
   org = null
   before (done) ->
-    # Remove existing everfi org, if any
-    Organization.where(name: 'everfi').remove (e, os) ->
-      # Create new everfi org
-      org = new Organization(name: 'everfi')
-      org.setValue('password', 'awesome')
-      org.save (err, o) ->
-        SessionTestHelper.login done
+    SessionHelper.setupOrg (organization)->
+      org = organization
+      done()
 
   describe "GET /dasboard", ->
     body = null
