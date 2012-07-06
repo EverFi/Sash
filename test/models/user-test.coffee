@@ -14,7 +14,7 @@ describe 'Badge', ->
   describe 'create', ->
     user = null
     before (done)->
-      user = new User username: 'Bob'
+      user = new User username: 'Bob', organization: org.id
       user.save()
       done()
 
@@ -27,18 +27,20 @@ describe 'Badge', ->
     # remove all the bobs and alices beforehand
     before (done)->
       User.where('username').in(['bob','alice']).remove ->
-        user = new User username: 'bob'
+        user = new User username: 'bob', organization: org.id
         user.save ->
           done()
 
     it 'it returns an existing user if exists', (done)->
-      User.findOrCreateByUsername 'bob', (err, bob)->
+      User.findOrCreate 'bob', org.id, (err, bob)->
         assert.equal bob.id, user.id
+        assert.equal bob.organization, org.id
         done()
 
-    it 'it returns an existing user if exists', (done)->
-      User.findOrCreateByUsername 'alice', (err, alice)->
+    it 'it returns a new user if none exists', (done)->
+      User.findOrCreate 'alice', org.id, (err, alice)->
         assert alice
+        assert.equal alice.organization, org.id
         done()
 
     after (done) ->
@@ -52,7 +54,7 @@ describe 'Badge', ->
       User.where('username').in(['bob','alice']).remove ->
         badge = new Badge name: 'super badge', issuer_id: org.id
         badge.save ->
-          user = new User username: 'bob'
+          user = new User username: 'bob', organization: org.id
           user.save ->
               done()
 

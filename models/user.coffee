@@ -40,7 +40,6 @@ UserSchema.methods.earn = (badge, callback)->
           image: badge.image
           criteria: badge.criteria
           id: badge.id
-
       }
 
 UserSchema.methods.assertion = (badgeId, callback) ->
@@ -59,12 +58,12 @@ UserSchema.methods.assertion = (badgeId, callback) ->
 
 User = db.model 'User', UserSchema
 
-User.findOrCreateByUsername =  (username, callback)->
-  User.find(username: username).limit(1).exec (err, user)->
+User.findOrCreate = (username, issuer_id, callback)->
+  User.find(username: username, organization: issuer_id).limit(1).exec (err, user)->
     if user.length > 0
       callback(null, user[0])
     else
-      user = new User username: username
+      user = new User username: username, organization: issuer_id
       user.save (err)->
         if err
           callback(err)

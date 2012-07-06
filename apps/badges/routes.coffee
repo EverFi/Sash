@@ -77,18 +77,18 @@ routes = (app) ->
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
 
-    app.get '/issue/:id', (req, res, next) ->
-      username = req.query.username
-      Badge.findById req.params.id, (err, badge) ->
-        next(err) if err
+  app.get '/badges/issue/:id', (req, res, next) ->
+    username = req.query.username
+    Badge.findById req.params.id, (err, badge) ->
+      next(err) if err
 
-        User.findOrCreateByUsername username, (err, user) ->
-          user.earn badge, (err, response) ->
-            next(err) if err
-            if response.earned
-              formatIssueResponse req, res, response
-            else
-              formatIssueResponse req, res, response
+      User.findOrCreate username, badge.issuer_id, (err, user) ->
+        user.earn badge, (err, response) ->
+          next(err) if err
+          if response.earned
+            formatIssueResponse req, res, response
+          else
+            formatIssueResponse req, res, response
 
 formatIssueResponse = (req, res, response) ->
   cb = req.query.callback
