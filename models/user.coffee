@@ -1,5 +1,6 @@
 _ = require 'underscore'
 mongoose = require 'mongoose'
+Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
@@ -42,6 +43,19 @@ UserSchema.methods.earn = (badge, callback)->
 
       }
 
+UserSchema.methods.assertion = (badgeId, callback) ->
+  assertion = {}
+  assertion.username = @username
+  promise = new Promise
+  promise.addBack(callback) if callback
+
+  @model('Badge').findById badgeId, (err, badge)->
+    console.log 'badge: %s', badge
+    badge.assertion (err, badgeAssertion)->
+      assertion.badge = badgeAssertion
+      promise.complete(null, assertion)
+
+  promise
 
 User = db.model 'User', UserSchema
 

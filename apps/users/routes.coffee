@@ -23,4 +23,13 @@ routes = (app) ->
     #DELETE
     app.del '/:id', (req, res, next) ->
 
+
+    #BADGE ASSERTION
+    app.get '/:id/badges/:badge_id', (req, res, next) ->
+      User.findById req.params.id, (err, user) ->
+        user.assertion req.params.badge_id, (assertion) ->
+
+          res.send assertion,
+            'content-type': 'appplication/json'
+
 module.exports = routes

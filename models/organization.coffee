@@ -19,8 +19,6 @@ OrganizationSchema = new Schema {
     api_key: String
     contact: String
     hashed_password: String
-    created_at: Date
-    updated_at: Date
   },
   strict: true
 
@@ -34,6 +32,13 @@ OrganizationSchema.pre 'save', (next)->
     @setValue('password', null)
   next()
 
+OrganizationSchema.methods.assertion = ->
+  {
+    name: @name,
+    origin: @origin,
+    contact: @contact,
+    org: @org
+  }
 
 OrganizationSchema.methods.users = (callback)->
   promise = new Promise
