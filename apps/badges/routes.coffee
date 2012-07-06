@@ -1,22 +1,14 @@
 Badge = require '../../models/badge'
 User = require '../../models/user'
 Organization = require '../../models/organization'
+authenticate = require '../middleware/authenticate'
 
 util = require 'util'
 fs = require 'fs'
 
 
-authenticateOrg = (req, res, next) ->
-  if req.session.org_id
-    Organization.findById req.session.org_id, (err, org)->
-      req.org = org
-      req.session.org_id = org.id
-      next()
-  else
-    res.redirect('/login')
-
 routes = (app) ->
-  app.namespace '/badges', authenticateOrg, ->
+  app.namespace '/badges', authenticate, ->
     #INDEX
     app.get '/', (req, res) ->
       if req.session.org_id

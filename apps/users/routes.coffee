@@ -1,9 +1,10 @@
 User = require '../../models/user'
 util = require 'util'
 fs = require 'fs'
+authenticate = require '../middleware/authenticate'
 
 routes = (app) ->
-  app.namespace '/users', ->
+  app.namespace '/users', authenticate, ->
 
     #INDEX
     app.get '/', (req, res) ->

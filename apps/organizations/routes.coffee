@@ -1,16 +1,7 @@
 Organization = require '../../models/organization'
 util = require 'util'
 fs = require 'fs'
-
-authenticateOrg = (req, res, next) ->
-  if req.session.org_id
-    Organization.findById req.session.org_id, (err, org)->
-      req.org = org
-      req.session.org_id = org.id
-      next()
-  else
-    res.redirect('/login')
-
+authenticate = require '../middleware/authenticate'
 
 routes = (app) ->
   app.get '/', (req, res, next) ->
@@ -19,14 +10,14 @@ routes = (app) ->
     else
       res.redirect '/login'
 
-  app.get '/dashboard', authenticateOrg, (req, res, next) ->
+  app.get '/dashboard', authenticate, (req, res, next) ->
     res.render "#{__dirname}/views/dashboard",
       title: "Badges!"
       org: req.org
       badges: req.org.badges()
       users: req.org.users()
 
-  app.namespace '/organizations', authenticateOrg, ->
+  app.namespace '/organizations', authenticate, ->
 
     #INDEX
     app.get '/', (req, res) ->
