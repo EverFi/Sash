@@ -1,4 +1,4 @@
-// This require this file to load all the models into the 
+// Require this file to load all the models into the 
 // interactive note console
 
 process.env.NODE_ENV = 'development'
