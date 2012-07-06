@@ -60,6 +60,7 @@ require('./apps/helpers')(app);
 // Routes
 require('./apps/badges/routes')(app);
 require('./apps/organizations/routes')(app);
+require('./apps/users/routes')(app);
 require('./apps/authentication/routes')(app);
 
 
