@@ -49,11 +49,9 @@ UserSchema.methods.assertion = (badgeId, callback) ->
   promise.addBack(callback) if callback
 
   @model('Badge').findById badgeId, (err, badge)->
-    console.log 'badge: %s', badge
     badge.assertion (err, badgeAssertion)->
       assertion.badge = badgeAssertion
-      promise.complete(null, assertion)
-
+      promise.resolve(err, assertion)
   promise
 
 User = db.model 'User', UserSchema

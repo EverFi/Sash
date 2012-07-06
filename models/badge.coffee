@@ -31,15 +31,13 @@ BadgeSchema.methods.assertion = (callback)->
   assertion = {}
   assertion.name = @name
   assertion.image = @image
-  assertion.description = @description
-  assertion.criteria = @criteria
-  assertion.version = @version
+  assertion.description = @description if @description?
+  assertion.criteria = @criteria if @criteria?
+  assertion.version = @version if @version?
 
   @issuer (err, issuer) ->
-    console.log 'issuer: %s', issuer
     assertion.issuer = issuer.assertion()
-    console.log("badge assertion", assertion)
-    promise.complete(null, assertion)
+    promise.resolve(err, assertion)
 
   return promise
 

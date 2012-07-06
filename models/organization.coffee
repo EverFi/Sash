@@ -33,12 +33,13 @@ OrganizationSchema.pre 'save', (next)->
   next()
 
 OrganizationSchema.methods.assertion = ->
-  {
-    name: @name,
-    origin: @origin,
-    contact: @contact,
-    org: @org
-  }
+  assertion = {}
+  assertion.name = @name
+  assertion.origin = @origin if @origin?
+  assertion.contact = @contact if @contact?
+  assertion.org = @org if @org?
+  return assertion
+  
 
 OrganizationSchema.methods.users = (callback)->
   promise = new Promise

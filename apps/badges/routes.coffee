@@ -64,12 +64,13 @@ routes = (app) ->
       Badge.findById req.params.id, (err, doc) ->
         doc.remove (err) ->
           if req.xhr
-            res.send JSON.stringify(success: true), "Content-Type": "application/json"
+            res.send JSON.stringify(success: true),
+              "Content-Type": "application/json"
           else
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
 
-  app.get '/badges/issue/:id', (req, res, next) ->
+  app.post '/badges/issue/:id', (req, res, next) ->
     username = req.query.username
     Badge.findById req.params.id, (err, badge) ->
       next(err) if err
@@ -77,38 +78,19 @@ routes = (app) ->
       User.findOrCreate username, badge.issuer_id, (err, user) ->
         user.earn badge, (err, response) ->
           next(err) if err
-          if response.earned
-            formatIssueResponse req, res, response
-          else
-            formatIssueResponse req, res, response
-
-formatIssueResponse = (req, res, response) ->
-  cb = req.query.callback
-  if cb
-    res.send "#{cb}(#{JSON.stringify(response)})",
-      'content-type': 'application/javascript'
-  else
-    res.send JSON.stringify(response),
-      'content-type': 'application/json'
+          res.send JSON.stringify(response),
+            'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
-  badge =  {
-    image: badge.image,
-    description: badge.description,
-    criteria: badge.criteria,
-    name: badge.name
-    issuer: badge.issuer
-    id: badge.id
-  }
+  assertionPromise = badge.assertion()
   if cb
-    res.send "#{cb}(#{JSON.stringify(badge)})",
-      'content-type': 'application/javascript'
+    assertionPromise.on 'complete', (assertion)->
+      res.send "#{cb}(#{JSON.stringify(assertion)})",
+        'content-type': 'application/javascript'
   else
-    res.send JSON.stringify(badge),
+    res.send assertionPromise,
       'content-type': 'application/json'
-
-
 
 
 module.exports = routes
