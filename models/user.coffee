@@ -8,6 +8,7 @@ Badge = require './badge'
 
 # Add Issued On to badge schema
 Badge.schema.add issued_on: Date
+Badge.schema.add seen: {type: Boolean, default: false}
 
 UserSchema = new Schema
   username:
