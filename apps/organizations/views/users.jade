@@ -1,0 +1,5 @@
+ul
+  - each user in users
+    li
+      a(href=urlFor(user))
+        =user.username

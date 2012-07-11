@@ -17,6 +17,12 @@ routes = (app) ->
       badges: req.org.badges()
       users: req.org.users()
 
+  app.get '/users', authenticate, (req, res, next) ->
+    res.render "#{__dirname}/views/users",
+      title: "Badges!"
+      org: req.org
+      users: req.org.users()
+
   app.namespace '/organizations', authenticate, ->
 
     #INDEX
