@@ -1,6 +1,5 @@
 assert  = require 'assert'
 User   = require '../../models/user'
-EarnedBadge = require '../../models/earned_badge'
 Badge = require '../../models/badge'
 Organization = require '../../models/organization'
 
@@ -60,7 +59,7 @@ describe 'Badge', ->
 
     it "adds the badge to the user's earned badges", (done)->
       user.earn badge, (err, response)->
-        assert.equal user.earned_badges.length, 1
+        assert.equal user.badges.length, 1
         assert.equal response.earned, true
         done()
 
@@ -70,12 +69,17 @@ describe 'Badge', ->
         done()
 
     it "doesn't add the badge if the user already has it", (done) ->
-      assert.equal user.earned_badges.length, 0
+      assert.equal user.badges.length, 0
       user.earn badge, (err, response)->
-        assert.equal user.earned_badges.length, 1
+        assert.equal user.badges.length, 1
         user.earn badge, (err, response)->
-          assert.equal user.earned_badges.length, 1
+          assert.equal user.badges.length, 1
           done()
+
+    it "it sets the badge's issued_on date", (done) ->
+      user.earn badge, (err, response)->
+        assert.equal user.badges[0].issued_on.getDay(), (new Date).getDay()
+        done()
 
     it "returns a message when the user already has the badge", (done) ->
       user.earn badge, (err, r)->

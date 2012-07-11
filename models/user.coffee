@@ -4,7 +4,10 @@ Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
-EarnedBadge = require './earned_badge'
+Badge = require './badge'
+
+# Add Issued On to badge schema
+Badge.schema.add issued_on: Date
 
 UserSchema = new Schema
   username:
@@ -13,22 +16,24 @@ UserSchema = new Schema
   created_at: Date
   updated_at: Date
   organization: Schema.ObjectId
-  earned_badges: [EarnedBadge]
+  badges: [Badge.schema]
 
 UserSchema.plugin(timestamps)
 
 UserSchema.methods.earn = (badge, callback)->
   unless badge.id && badge.issuer_id
     callback new Error("must pass a valid badge object")
-  exists = _.any @earned_badges, (eb, i)->
-    eb.badge_id.toString() == badge.id
+  exists = _.any @badges, (earned_badge, i)->
+    earned_badge.id.toString() == badge.id
   if exists
     callback null, {
       message: 'User already has this badge'
       earned: false
     }
   else
-    @earned_badges.push {badge_id: badge.id}
+    b = badge.toJSON()
+    b.issued_on = new Date()
+    @badges.push b
     @save (err, user)->
       callback null, {
         message: 'successfully added badge'
