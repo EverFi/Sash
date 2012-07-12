@@ -1,17 +1,30 @@
 !!!
 html
   head
-    title= title
+    - if (typeof title != 'undefined')
+      title=title
+    - else
+      title Honey Badger
+
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/application.css')
     script(src="/javascripts/jquery.js")
     script(src="/javascripts/application.js")
   body
     #header
       h1
-        a(href='/')=title
+        - if (typeof title != 'undefined')
+          a(href='/')=title
+        - else
+          a(href='/') Honey Badger
+
+      if logged_in
+        a#logout(href="/logout")="Log Out"
+
     each flashType in ['info', 'error']
       if flash[flashType]
         p.flash(class=flashType)
           = flash[flashType]
 
-    != body
+    .container
+      != body
