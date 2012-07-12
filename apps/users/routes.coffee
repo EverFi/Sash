@@ -58,7 +58,6 @@ routes = (app) ->
         else
           res.render "#{__dirname}/views/new_badges",
             badges: badges,
-            title: 'buttz',
             layout: false
 
     # Mark newly awarded badge as seen
