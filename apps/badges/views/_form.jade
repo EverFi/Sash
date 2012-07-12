@@ -1,10 +1,18 @@
 form(action=urlFor(badge), method='post', enctype="multipart/form-data")
   label
     | Name
-    input(type='text', name='badge[name]')
+    br
+    input(class='span6', type='text', name='badge[name]')
   label
     | Description
-    input(type='text', name='badge[description]')
+    textarea(class='span6', name='badge[description]')
+  label
+    | Criteria
+    textarea(class='span6', name='badge[criteria]')
+  label
+    | Version
+    br
+    input(class='span2', type='text', name='badge[version]')
   label
     | Image
     input(type='file', name='badge[image]')
