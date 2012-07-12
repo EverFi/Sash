@@ -15,7 +15,6 @@ routes = (app) ->
         orgId = req.session.org_id
       badges = Badge.find(issuer_id: orgId).limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
-          title: "Badges!"
           badge: new Badge
           badges: badges
           orgId: orgId
@@ -25,7 +24,6 @@ routes = (app) ->
       if req.session.org_id
         orgId = req.session.org_id
       res.render "#{__dirname}/views/new",
-        title: "new badge!"
         badge: new Badge
         orgId: orgId
 
@@ -51,8 +49,8 @@ routes = (app) ->
           formatBadgeResponse(req, res, badge)
         else
           res.render "#{__dirname}/views/show",
-            title: "EverFi Badges Unlimited, LTD."
             badge: badge
+            issuer: badge.issuer()
 
     #UPDATE
     app.put '/:id', (req, res, next) ->
