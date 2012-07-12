@@ -1,26 +1,42 @@
-h1
-  |Awesome Badge Org BRO
-div
-  = "Signed in as " + org.name
+div.row
+  div.span9
+    h1.org-name=org.name
+    h4.org-name
+      a(href=org.origin)
+        = org.origin
 
-div
-  h2
-    | Quick Summary
-  ul
-    li
-      | You have #{users.length} Users
-    li
-      | You have #{badges.length} badges
-div
-  h2
-    | Actions
-  ul
-    li
-      a(href='/badges/new', class="new-badge")
-        | Create a New Badge
-    li
-      a(href='/users', class="new-badge")
-        | Manage Users
-    li
-      a(href='/badges', class="new-badge")
-        | Badges
+  div.span3
+    ul.actions
+      li
+        a(href='/badges/new', class="new-badge")
+          | Create a New Badge
+      li
+        a(href='/users', class="new-badge")
+          | Manage Users
+
+      li
+        a(href='/badges', class="new-badge")
+          | Edit Organization Info
+
+
+div.row
+  div#badge-listing.span9
+    h2.list
+      | Badges
+    ul.badge-list
+      - each badge in badges
+        li
+          div.badge-image
+            img(src=badge.image)
+
+          div.badge-data
+            div.badge-name
+              h2
+                a(href=urlFor(badge)) #{badge.name}
+            div.badge-description
+              != badge.description
+            div.badge-counts
+              strong #{badge.issued_count} issued
+              br
+              | Created On
+              strong  #{badge.display_created_at()}
