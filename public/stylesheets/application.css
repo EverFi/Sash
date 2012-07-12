@@ -34,14 +34,17 @@
   font-weight: normal;
   font-style: italic;
 }
+
 body {
   margin: 0;
   padding: 0;
 }
+
 body #header h1 {
   margin: 0.4em 0 0 -2em;
   text-align: center;
 }
+
 body p {
   padding: 1em;
 }
@@ -56,37 +59,55 @@ body #header {
   height: 6.25em;
   padding: 1.4375em;
   padding-left: 7.6875em;
+  position: relative;
+}
+
+body #header #logout {
+  position: absolute;
+  color: #FFF;
+  top: 40px;
+  right: 20px;
+  font-size: 20px;
+}
+
+body h1 {
+  line-height: 1.2em;
 }
 body p.flash {
   margin: 0 auto;
   font-size: 1.5em;
   -webkit-transition: opacity 1s ease-out;
 }
+
 body p.flash.error {
   background-color: #ed5a02;
   border-top: 1px solid #f28b00;
   border-bottom: 1px solid #f28b00;
   color: #fff;
 }
+
 body p.flash.error:before {
   font-family: 'MuseoSlabItalic', 'Clarendon', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-style: italic;
   content: 'Whoops! ';
 }
+
 body p.flash.info {
   background-color: #fff;
   border-top: 1px solid #8d8d8d;
   border-bottom: 1px solid #8d8d8d;
   color: #010101;
 }
+
 body p.flash.info:before {
   font-family: 'MuseoSlabItalic', 'Clarendon', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-style: italic;
-  content: 'Hurray! ';
 }
+
 body p.thanks {
   line-height: 1.5em;
 }
+
 @font-face {
   font-family: 'MuseoSlab';
   src: url("../webfonts/Museo_Slab_500-webfont.eot");
@@ -96,6 +117,7 @@ body p.thanks {
   font-weight: normal;
   font-style: normal;
 }
+
 @font-face {
   font-family: 'MuseoSlabItalic';
   src: url("../webfonts/Museo_Slab_500italic-webfont.eot");
@@ -105,15 +127,14 @@ body p.thanks {
   font-weight: normal;
   font-style: italic;
 }
+
 body {
-  background-color: #bbb;
+  background-color: #FFF;
   color: #717171;
   font: 16px 'MuseoSlab', 'Clarendon', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  text-align: center;
 }
 body a {
   text-decoration: none;
-  border-bottom: 0.0625em dotted #024a7f;
 }
 body a:link {
   color: #024a7f;
@@ -131,6 +152,8 @@ body h1 {
   letter-spacing: 0.041666666666666664em;
   text-transform: uppercase;
 }
+
+
 body p span.title {
   font-weight: bold;
 }
@@ -366,7 +389,7 @@ body ul#listing li .status .inactive {
   cursor: pointer;
   font-size: 0.5em;
   text-transform: lowercase;
-  background-size: 2.7777777777777777em;
+k background-size: 2.7777777777777777em;
   border: 0.2777777777777778em solid #adadad;
   letter-spacing: 0;
   opacity: 0.2;
@@ -379,16 +402,6 @@ body ul#listing li .status .ready.on,
 body ul#listing li .status .inactive.on {
   opacity: 1;
 }
-body ul#listing li .status .making {
-  background: url("/images/stage-making.png") top center no-repeat;
-}
-body ul#listing li .status .ready {
-  background: url("/images/stage-ready.png") top center no-repeat;
-}
-body ul#listing li .status .inactive {
-  background: url("/images/stage-inactive.png") top center no-repeat;
-}
-
 body form.delete {
   display: inline;
   margin: 0;
@@ -399,3 +412,100 @@ body form input[type="submit"].delete {
   float: none;
   margin-left: 5px;
 }
+
+
+body.ul {
+  list-style-type: none;
+}
+
+h1.org-name {
+  font-size: 5.5em;
+}
+
+ul.actions  {
+  background: #FFF;
+  padding: 10px 10px 2px 10px;
+  margin-top: 10px;
+  border: 1px solid #02375F;
+  box-shadow: 1px 1px 1px #717171;
+}
+
+ul.actions li {
+  list-style-type: none;
+  border-left: 1px solid #888;
+  border-bottom: 2px solid #888;
+  margin-bottom: 10px;
+}
+
+ul.actions li:hover {
+  list-style-type: none;
+  border-bottom-width: 3px;
+  margin-bottom: 9px;
+}
+
+ul.actions li a {
+  padding: 8px;
+  text-decoration: none;
+  display: block;
+}
+
+
+#badge-listing {
+  background: #FFF;
+  margin-bottom: 20px;
+}
+
+h2.list {
+  padding: 10px 15px;
+  font-size: 32px;
+  text-shadow: 0 1px 0 #02375F;
+}
+
+ul.badge-list li {
+  padding: 10px;
+  position: relative;
+  min-height: 85px;
+  list-style-type: none;
+  border-bottom: 2px solid #717171;
+  border-left: 1px solid #717171;
+  margin: 10px 5px 5px;
+}
+
+ul.badge-list li p {
+  padding: 1px;
+  line-height: 1;
+}
+
+ul.badge-list li .badge-image {
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  width: 100px;
+}
+
+ul.badge-list li .badge-data {
+  margin-left: 120px;
+  padding-top: 5px;
+}
+
+ul.badge-list li .badge-counts {
+  right: 10px;
+  position: absolute;
+  top: 10px;
+  text-align: right;
+}
+
+#badge-show {
+  margin-top: 20px
+}
+
+#badge-show .row {
+  margin-top: 30px;
+}
+
+#badge-show .row p {
+  padding: 5px;
+  margin-bottom: 2px;
+}
+
+
