@@ -36,6 +36,8 @@ UserSchema.methods.earn = (badge, callback)->
     b.issued_on = new Date()
     @badges.push b
     @save (err, user)->
+      badge.issued_count.$inc()
+      badge.save()
       callback null, {
         message: 'successfully added badge'
         earned: true
