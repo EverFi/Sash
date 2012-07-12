@@ -1,10 +1,39 @@
-div.badge
-  img(src=badge.image)
-  h1
-    = badge.name
-  p.description
-    = badge.description
-  div.url
-    strong
-      | Issue URL: 
-    = 'http://'+process.env.HOST+'/badges/issue/'+badge.id
+div#badge-show
+  div.row
+    div.span2
+      img(src=badge.image)
+    div.span8
+      h1 #{badge.name}
+  div.row
+    div.offset2
+      div.description
+        strong
+          | Badge Description:
+        br
+        != badge.description
+  if badge.criteria
+    div.row
+      div.offset2.criteria
+        strong
+          | Badge Criteria:
+        br
+        != badge.criteria
+  if badge.version
+    div.row
+      div.offset2.version
+        strong
+          | Version:  
+        = badge.version
+  div.row
+    div.offset2.issuer 
+      strong
+        | Issuer:  
+      | #{issuer.name} 
+      - if(issuer.origin)
+        | (
+        a(href=issuer.origin, target='_blank')= issuer.origin
+        | )
+  div.row
+    div.url.offset2
+      strong Issue URL:  
+      | http://#{process.env.HOST}/badges/issue/#{badge.id}
