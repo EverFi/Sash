@@ -1,4 +1,6 @@
 mongoose = require 'mongoose'
+moment = require 'moment'
+markdown = require('discount')
 Promise = require('mongoose').Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
@@ -14,6 +16,12 @@ BadgeSchema = new Schema
   criteria:     String
   version:     String
   issuer_id:       Schema.ObjectId
+  issued_count: { type: Number, default: 0}
+
+BadgeSchema.pre 'save', (next)->
+  @criteria = markdown.parse(@criteria, markdown.flags.autolink)
+  @description = markdown.parse(@description, markdown.flags.autolink)
+  next()
 
 BadgeSchema.plugin(timestamps);
 
@@ -22,6 +30,9 @@ BadgeSchema.methods.issuer = (callback)->
   promise.addBack(callback) if callback
   @model('Organization').findById @issuer_id, promise.resolve.bind(promise)
   promise
+
+BadgeSchema.methods.display_created_at = ->
+  moment(@created_at).format("MM/DD/YY")
 
 
 BadgeSchema.methods.assertion = (callback)->
