@@ -12,14 +12,12 @@ routes = (app) ->
 
   app.get '/dashboard', authenticate, (req, res, next) ->
     res.render "#{__dirname}/views/dashboard",
-      title: "Badges!"
       org: req.org
       badges: req.org.badges()
       users: req.org.users()
 
   app.get '/users', authenticate, (req, res, next) ->
     res.render "#{__dirname}/views/users",
-      title: "Badges!"
       org: req.org
       users: req.org.users()
 
@@ -28,7 +26,6 @@ routes = (app) ->
     #INDEX
     app.get '/', (req, res) ->
       res.render "#{__dirname}/views/index",
-        title: "Badges!"
 
     #NEW
     app.get '/new', (req, res) ->
