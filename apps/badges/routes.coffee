@@ -30,6 +30,7 @@ routes = (app) ->
         orgId: orgId
 
     #CREATE
+    # TODO: NEED TO GENERATE SLUGS: 'everfi-super-awesome-badge-1'
     app.post '/', (req, res, next) ->
       ins = fs.createReadStream req.files.badge.image.path
       ous = fs.createWriteStream app.settings.upload_dir +

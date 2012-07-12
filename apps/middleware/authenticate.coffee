@@ -1,5 +1,7 @@
 Organization = require "../../models/organization"
 
+# Need to support authentication via Organization API key as well
+
 module.exports = (req, res, next) ->
   if req.session.org_id
     Organization.findById req.session.org_id, (err, org)->
