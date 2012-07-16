@@ -21,22 +21,10 @@ div.row
 
 div.row
   div#badge-listing.span9
-    h2.list
-      | Badges
+    h2.list Badges
     ul.badge-list
-      - each badge in badges
+      each badge in badges
         li
-          div.badge-image
-            img(src=badge.image)
-
-          div.badge-data
-            div.badge-name
-              h2
-                a(href=urlFor(badge)) #{badge.name}
-            div.badge-description
-              != badge.description
-            div.badge-counts
-              strong #{badge.issued_count} issued
-              br
-              | Created On
-              strong  #{badge.display_created_at()}
+          include ../../../views/shared/badge
+    div.badge-count Showing #{badges.length} of #{badgeCount} &#8211; 
+      a(href="/badges") View All
