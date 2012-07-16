@@ -34,6 +34,7 @@ UserSchema.methods.earn = (badge, callback)->
   else
     b = badge.toJSON()
     b.issued_on = new Date()
+    b.issued_count = undefined
     @badges.push b
     @save (err, user)->
       badge.issued_count.$inc()
