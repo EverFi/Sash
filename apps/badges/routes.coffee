@@ -11,18 +11,17 @@ routes = (app) ->
   app.namespace '/badges', authenticate, ->
     #INDEX
     app.get '/', (req, res) ->
-      if req.session.org_id
-        orgId = req.session.org_id
+      if req.org
+        orgId = req.org.id
       badges = Badge.find(issuer_id: orgId).limit(20).run (err, badges)->
         res.render "#{__dirname}/views/index",
-          badge: new Badge
           badges: badges
           orgId: orgId
 
     #NEW
     app.get '/new', (req, res) ->
-      if req.session.org_id
-        orgId = req.session.org_id
+      if req.org
+        orgId = req.org.id
       res.render "#{__dirname}/views/new",
         badge: new Badge
         orgId: orgId
@@ -69,16 +68,16 @@ routes = (app) ->
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
 
-  app.post '/badges/issue/:id', (req, res, next) ->
-    username = req.query.username
-    Badge.findById req.params.id, (err, badge) ->
-      next(err) if err
+    app.post '/issue/:id', (req, res, next) ->
+      username = req.query.username
+      Badge.findById req.params.id, (err, badge) ->
+        next(err) if err
 
-      User.findOrCreate username, badge.issuer_id, (err, user) ->
-        user.earn badge, (err, response) ->
-          next(err) if err
-          res.send JSON.stringify(response),
-            'content-type': 'application/json'
+        User.findOrCreate username, badge.issuer_id, (err, user) ->
+          user.earn badge, (err, response) ->
+            next(err) if err
+            res.send JSON.stringify(response),
+              'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
