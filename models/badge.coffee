@@ -56,9 +56,6 @@ BadgeSchema.methods.issuer = (callback)->
   @model('Organization').findById @issuer_id, promise.resolve.bind(promise)
   promise
 
-BadgeSchema.methods.display_created_at = ->
-  moment(@created_at).format("MM/DD/YY")
-
 
 BadgeSchema.methods.assertion = (callback)->
   promise = new Promise

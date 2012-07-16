@@ -1,3 +1,5 @@
+moment = require 'moment'
+
 helpers = (app) ->
 
   # dynamic helpers are given request and response as parameters
@@ -20,5 +22,8 @@ helpers = (app) ->
         "/#{prefix}#{object.id}"
       else
         "/#{prefix}"
+
+    formatDate : (dateObject) ->
+      moment(@created_at).format("MM/DD/YY")
 
 module.exports = helpers
