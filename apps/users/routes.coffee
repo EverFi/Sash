@@ -9,7 +9,7 @@ routes = (app) ->
   app.namespace '/users', authenticate, ->
 
     #INDEX
-    app.get '/', (req, res) ->
+    # app.get '/', (req, res) ->
 
     #NEW
     app.get '/new', (req, res) ->
@@ -21,8 +21,9 @@ routes = (app) ->
     app.get '/:id', (req, res, next) ->
       User.findById req.params.id, (err, user)->
         next(err) if err
-      res.render "#{__dirname}/views/show",
-        badges: user.badges()
+        res.render "#{__dirname}/views/show",
+          user: user
+          badges: user.badges
 
     #UPDATE
     app.put '/:id', (req, res, next) ->

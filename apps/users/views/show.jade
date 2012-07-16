@@ -1,0 +1,9 @@
+h1 = user.username
+div.user-badges
+div.row
+  div#badge-listing.span9
+    ul.badge-list
+      each badge in badges
+        li
+          include ../../../views/shared/badge
+
