@@ -19,8 +19,10 @@ BadgeSchema = new Schema
   issued_count: { type: Number, default: 0}
 
 BadgeSchema.pre 'save', (next)->
-  @criteria = markdown.parse(@criteria, markdown.flags.autolink)
-  @description = markdown.parse(@description, markdown.flags.autolink)
+  if @criteria?
+    @criteria = markdown.parse(@criteria, markdown.flags.autolink) 
+  if @description?
+    @description = markdown.parse(@description, markdown.flags.autolink) 
   next()
 
 BadgeSchema.plugin(timestamps);
