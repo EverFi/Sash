@@ -48,14 +48,30 @@ OrganizationSchema.methods.users = (callback)->
     promise.resolve.bind(promise)
   promise
 
-OrganizationSchema.methods.badges = (callback)->
+OrganizationSchema.methods.badges = (limit, callback)->
   promise = new Promise
 
   if callback
     promise.addBack callback
-  @model('Badge').find issuer_id: @id,
-    promise.resolve.bind(promise)
+  query = @model('Badge').where('issuer_id', @id)
+  if limit
+    query = query.limit(limit)
+  query.exec (err, result)->
+    promise.resolve(err, result)
+
   promise
+
+OrganizationSchema.methods.badgeCount = (callback)->
+  promise = new Promise
+
+  if callback
+    promise.addBack callback
+  query = @model('Badge').count('issuer_id', @id)
+  query.exec (err, result)->
+    promise.resolve(err, result)
+
+  promise
+
 
 
 Organization = db.model 'Organization', OrganizationSchema
