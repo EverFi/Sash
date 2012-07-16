@@ -3,12 +3,7 @@
 
 process.env.NODE_ENV = 'development'
 require('coffee-script')
-o = require('./models/organization')
-b = require('./models/badge')
-u = require('./models/user')
 
-module.exports = {
-  Badge: b,
-  Organization: o, 
-  User: u
-}
+global.Organization = require('./models/organization')
+global.Badge = require('./models/badge')
+global.User = require('./models/user')
