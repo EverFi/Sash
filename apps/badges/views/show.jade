@@ -39,6 +39,11 @@ div#badge-show
       | http://#{process.env.HOST}/badges/issue/#{badge.id}
 
   div.row
+    div.url.offset2
+      strong Slug:  
+      = badge.slug
+
+  div.row
     form(action="/badges/#{badge.id}", method='post', class="delete", data-remote="true")
       input(type="hidden", value="delete", name="_method")
       input(type="submit", value="Delete", class="delete")

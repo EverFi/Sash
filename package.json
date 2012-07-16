@@ -17,7 +17,8 @@
     "express-mongoose": "0.0.5",
     "moment": "~1.6.2",
     "markdown": "~0.4.0",
-    "discount": "~0.2.3"
+    "discount": "~0.2.3",
+    "underscore.string": "~2.2.0rc"
   },
   "devDependencies": {
     "node-dev": "~0.2.3",
