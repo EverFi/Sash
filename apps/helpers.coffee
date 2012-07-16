@@ -8,8 +8,10 @@ helpers = (app) ->
   # static helpers take any parametes and usually format data
   app.helpers
     # Object is a mongoose model object
-    urlFor: (object) ->
-      if object.collection
+    urlFor: (object, path) ->
+      if path
+        prefix = path + '/'
+      else if object.collection
         prefix = object.collection.name + '/'
       else
         prefix = ''
