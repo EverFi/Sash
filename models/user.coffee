@@ -4,11 +4,29 @@ Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
-Badge = require './badge'
 
-# Add Issued On to badge schema
-Badge.schema.add issued_on: Date
-Badge.schema.add seen: {type: Boolean, default: false}
+fullImageUrl = (imageUrl)->
+  "http://#{process.env.HOST}/uploads/#{imageUrl}"
+
+# This is a duplicate of the Bdge schema. Dirty I know.
+EarnedBadgeSchema = new Schema
+  name:          String
+  image:
+    type: String,
+    get: fullImageUrl
+  description:   String
+  criteria:      String
+  version:       String
+  issuer_id:     Schema.ObjectId
+  slug :
+    type: String,
+    unique: true
+  tags: [String]
+  issued_on: Date
+  seen: Boolean
+
+
+
 
 UserSchema = new Schema
   username:
