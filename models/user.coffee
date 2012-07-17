@@ -35,7 +35,8 @@ UserSchema = new Schema
   created_at: Date
   updated_at: Date
   organization: Schema.ObjectId
-  badges: [Badge.schema]
+  badges: [EarnedBadgeSchema]
+  tags: [String]
 
 UserSchema.plugin(timestamps)
 
@@ -83,12 +84,17 @@ UserSchema.methods.assertion = (badgeId, callback) ->
 
 User = db.model 'User', UserSchema
 
-User.findOrCreate = (username, issuer_id, callback)->
-  User.find(username: username, organization: issuer_id).limit(1).exec (err, user)->
-    if user.length > 0
-      callback(null, user[0])
+User.findOrCreate = (username, options, callback)->
+  issuer_id = options.issuer_id
+  tags = options.tags
+  User.findOne(username: username, organization: issuer_id).limit(1).exec (err, user)->
+    if user?
+      user.tags.merge tags
+      user.save()
+      callback(null, user)
     else
       user = new User username: username, organization: issuer_id
+      user.tags.merge tags if tags?
       user.save (err)->
         if err
           callback(err)
