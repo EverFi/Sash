@@ -16,19 +16,30 @@ fullImageUrl = (imageUrl)->
 
 BadgeSchema = new Schema
   name:          String
-  image:         {type: String, get: fullImageUrl}
+  image:
+    type: String,
+    get: fullImageUrl
   description:   String
   criteria:      String
   version:       String
   issuer_id:     Schema.ObjectId
-  issued_count:  { type: Number, default: 0}
-  slug :         String
+  issued_count:
+    type: Number,
+    default: 0
+  slug :
+    type: String,
+    unique: true
+  tags: [String]
+
+
+BadgeSchema.virtual('slugUrl').get ->
+  "http://#{process.env.HOST}/badges/issue/#{@slug}"
 
 BadgeSchema.pre 'save', (next)->
   if @criteria?
-    @criteria = markdown.parse(@criteria, markdown.flags.autolink) 
+    @criteria = markdown.parse(@criteria, markdown.flags.autolink)
   if @description?
-    @description = markdown.parse(@description, markdown.flags.autolink) 
+    @description = markdown.parse(@description, markdown.flags.autolink)
   next()
 
 findAvailableSlug = (slug, object, callback) ->
