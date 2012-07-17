@@ -12,15 +12,15 @@ hexDigest = (string)->
   sha.digest('hex')
 
 
-OrganizationSchema = new Schema {
-    name: String
+OrganizationSchema = new Schema({
+    name: { type: String, required: true}
     origin: String
     org: String
     api_key: String
     contact: String
     hashed_password: String
   },
-  strict: true
+  strict: true)
 
 OrganizationSchema.plugin(timestamps)
 
