@@ -5,9 +5,11 @@ form(action=urlFor(badge), method='post', enctype="multipart/form-data")
     input(class='span6', type='text', name='badge[name]')
   label
     | Description
+    br
     textarea(class='span6', name='badge[description]')
   label
     | Criteria
+    br
     textarea(class='span6', name='badge[criteria]')
   label
     | Version
