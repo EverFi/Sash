@@ -3,6 +3,7 @@
   <head>
     <link rel='stylesheet' href='/stylesheets/application.css' />
     <link rel='stylesheet' href='/stylesheets/issue.css' />
+    <link rel='stylesheet' href='/stylesheets/tipsy.css' />
   </head>
   <body>
     <style>
@@ -10,15 +11,26 @@
         width: 300px;
         border: 2px solid #888;
         margin: 10px auto;
-        position: relative;
       }
+
       #badge-target .badge {
         text-align: center;
+        position: relative;
+        margin-top: 10px;
+      }
+
+      #badge-target .badge-image {
+        margin-top: 10px;
       }
 
       #badge-target .not-seen {
-        background-image: url('/images/new-banner.png');
+        background-image: url('/images/new.png');
         position: absolute;
+        right: 90px;
+        top: 25px;
+        width: 40px;
+        height: 40px;
+        display: inline-block;
       }
     </style>
     <div id="header">
@@ -26,9 +38,18 @@
     </div>
 
     <div id="badge-target"> </div>
-    <script src="/javascripts/jquery.js"></script>
+    <script src="/javascripts/lib/jquery.js"></script>
+    <script src="/javascripts/lib/underscore.js"></script>
+    <script src="/javascripts/lib/underscore.string.js"></script>
+    <script> _.mixin(_.str.exports());</script>
+    <script src="/javascripts/lib/jquery.tipsy.js"></script>
     <script src="/javascripts/lib/handlebars.js"></script>
     <script src="/javascripts/display_badges.js"></script>
+    <script>
+      $(function() {
+        $('[rel=tipsy]').tipsy({fade: true, gravity: 'n'});
+      });
+    </script>
   </body>
 </html>
 
