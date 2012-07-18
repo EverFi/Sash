@@ -18,20 +18,35 @@ EarnedBadgeSchema = new Schema
   criteria:      String
   version:       String
   issuer_id:     Schema.ObjectId
-  slug :
+  slug:
     type: String,
     unique: true
   tags: [String]
   issued_on: Date
-  seen: Boolean
+  seen:
+    type: Boolean
+    default: false
 
-
+# Must write our own toJSON to get the benefit of the getters
+EarnedBadgeSchema.methods.toJSON = ->
+  {
+    name: @name,
+    image: @image,
+    description: @description,
+    criteria: @criteria,
+    version: @version,
+    slug: @slug,
+    tags: @tags,
+    issued_on: @issued_on,
+    seen: @seen
+  }
 
 
 UserSchema = new Schema
   username:
     type: String
     lowercase: true
+    unique: true
   created_at: Date
   updated_at: Date
   organization: Schema.ObjectId
@@ -82,6 +97,8 @@ UserSchema.methods.assertion = (badgeId, callback) ->
       promise.resolve(err, assertion)
   promise
 
+
+
 User = db.model 'User', UserSchema
 
 User.findOrCreate = (username, options, callback)->
@@ -89,7 +106,7 @@ User.findOrCreate = (username, options, callback)->
   tags = options.tags
   User.findOne(username: username, organization: issuer_id).limit(1).exec (err, user)->
     if user?
-      user.tags.merge tags
+      user.tags.merge tags if tags?
       user.save()
       callback(null, user)
     else

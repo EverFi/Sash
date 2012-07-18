@@ -17,6 +17,14 @@ routes = (app) ->
     #CREATE
     app.post '/', (req, res, next) ->
 
+
+    app.get '/badges.:format?', (req, res, next) ->
+      console.log 'awesome  sauces'
+      username = req.query.username
+      next() if !username?
+      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+        formatResponse req, res, user.badges
+
     #SHOW
     app.get '/:id', (req, res, next) ->
       User.findById req.params.id, (err, user)->
@@ -25,34 +33,20 @@ routes = (app) ->
           user: user
           badges: user.badges
 
-    #UPDATE
-    app.put '/:id', (req, res, next) ->
-
-    #DELETE
-    app.del '/:id', (req, res, next) ->
-
-    app.get '/:id/badges', (req, res, next) ->
-      User.findById req.params.id, (err, user) ->
-        user.assertion req.params.badge_id, (assertion) ->
-          res.send assertion,
-            'content-type': 'appplication/json'
-
-  # Not authenticated User routes
-  app.namespace '/users', ->
 
     # Show newly awarded badges
-    app.get '/:id/badges/has_new_badges.:format?', (req, res, next) ->
-      User.findById req.params.id, (err, user) ->
-        badges = _.select user.badges, (badge) ->
-          badge.seen == false
+    app.get '/badges/has_new_badges.:format?', (req, res, next) ->
+      username = req.query.username
+      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+        badges = _.select user.badges, (badge) -> !badge.seen
 
         formatResponse req, res, {has_new_badges: badges.length > 0}
 
     # Show newly awarded badges
-    app.get '/:id/badges/new.:format?', (req, res, next) ->
-      User.findById req.params.id, (err, user) ->
-        badges = _.select user.badges, (badge) ->
-          badge.seen == false
+    app.get '/badges/new.:format?', (req, res, next) ->
+      username = req.query.username
+      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+        badges = _.select user.badges, (badge) -> !badge.seen
 
         if req.xhr || req.params.format == 'json'
           formatResponse(req, res, badges)
@@ -62,20 +56,21 @@ routes = (app) ->
             layout: false
 
     # Mark newly awarded badge as seen
-    app.get '/:id/badges/:badge_id/seen', (req, res, next) ->
+    app.get '/badges/:badge_id/seen', (req, res, next) ->
       badgeId = req.params.badge_id
-      User.findById req.params.id, (err, user) ->
+      username = req.query.username
+      User.findOne {username: username, organization: req.org.id}, (err, user) ->
         badge = _.detect user.badges, (b) -> b._id.toString() == badgeId
         badge.seen = true
         user.save ->
           formatResponse(req, res, {success: true})
 
-    #BADGE ASSERTION
-    app.get '/:id/badges/:badge_id', (req, res, next) ->
-      User.findById req.params.id, (err, user) ->
-        user.assertion req.params.badge_id, (assertion) ->
-          res.send assertion,
-            'content-type': 'appplication/json'
+  #BADGE ASSERTION
+  app.get '/users/:username/badges/:badge_id', (req, res, next) ->
+    User.findOne {username: username, organization: req.org.id}, (err, user) ->
+      user.assertion req.params.badge_id, (assertion) ->
+        res.send assertion,
+          'content-type': 'appplication/json'
 
 
 formatResponse = (req, res, data) ->
