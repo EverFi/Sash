@@ -68,16 +68,31 @@ routes = (app) ->
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
 
-    app.post '/issue/:id', (req, res, next) ->
+    app.post '/issue/:slug', (req, res, next) ->
       username = req.query.username
-      Badge.findById req.params.id, (err, badge) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         next(err) if err
 
-        User.findOrCreate username, badge.issuer_id, (err, user) ->
-          user.earn badge, (err, response) ->
-            next(err) if err
-            res.send JSON.stringify(response),
-              'content-type': 'application/json'
+        User.findOrCreate username,
+          {issuer_id: badge.issuer_id, tags: req.query.tags},
+          (err, user) ->
+            user.earn badge, (err, response) ->
+              next(err) if err
+              res.send JSON.stringify(response),
+                'content-type': 'application/json'
+
+    app.get '/issue/:slug', (req, res, next) ->
+      username = req.query.username
+      Badge.findOne slug: req.params.slug, (err, badge) ->
+        next(err) if err
+
+        User.findOrCreate username,
+          {issuer_id: badge.issuer_id, tags: req.query.tags},
+          (err, user) ->
+            user.earn badge, (err, response) ->
+              next(err) if err
+              res.send JSON.stringify(response),
+                'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
