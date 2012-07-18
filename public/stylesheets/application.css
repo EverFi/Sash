@@ -432,15 +432,16 @@ ul.actions  {
 
 ul.actions li {
   list-style-type: none;
-  border-left: 1px solid #888;
-  border-bottom: 2px solid #888;
+  border-style: solid;
+  border-width: 1px 1px 8px 5px;
+  border-color: #888;
   margin-bottom: 10px;
 }
 
 ul.actions li:hover {
   list-style-type: none;
-  border-bottom-width: 3px;
-  margin-bottom: 9px;
+  border-left-color: #0072BC;
+  border-bottom-color: #0072BC;
 }
 
 ul.actions li a {
