@@ -17,17 +17,21 @@
 
   Badger.prototype = {
 
-    fetch: function (){
+    fetch: function (callback){
       var self, xhr;
       self = this
       xhr = $.getJSON(
         this.url,
         { username: this.user }
       );
-      xhr.done( function(badges){ self.render(badges) } );
+      xhr.done( function(badges){
+        self.render(badges)
+        self.target.trigger('badge_load:success', [badges]);
+      } );
       xhr.fail( function() {
-        $(self.target).trigger('badge_display:fail') 
+        $(self.target).trigger('badge_load:fail') 
       })
+      if(callback) xhr.complete(callback);
       return xhr;
     },
 
@@ -35,24 +39,15 @@
       var html = [];
       for(var i=0,l=badges.length;i< l;i++) {
         var b = badges[i];
-        b.description = _.str.stripTags(b.description);
+        b.description = _.stripTags(b.description);
         html.push(this.template(b));
       }
       html = html.join('');
       this.target.html(html);
-      $('[rel=tipsy]').tipsy({fade: true, gravity: 'n', html: true});
+      this.target.trigger('badge_render', [badges]);
     }
   }
 
   window.Badger = Badger;
-
-  $.fn.stripTags = function(){
-    return this.replaceWith(this.html().replace(/<\/?[^>]+>/gi, ''));
-  }
-
-  $(document).ready(function(){
-    var badger = new Badger({user: 'unicorn71'});
-    badger.fetch();
-  });
 
 })();

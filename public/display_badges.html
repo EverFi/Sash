@@ -45,11 +45,31 @@
     <script src="/javascripts/lib/jquery.tipsy.js"></script>
     <script src="/javascripts/lib/handlebars.js"></script>
     <script src="/javascripts/display_badges.js"></script>
+
     <script>
-      $(function() {
-        $('[rel=tipsy]').tipsy({fade: true, gravity: 'n'});
-      });
+      var BADGE_TEMPLATE =
+        "<div class='badge'>"+
+          "<div class='badge-name'>{{name}}</div>"+
+          "{{^seen}}<div class='not-seen'></div>{{/seen}}"+
+          "<div class='badge-image'><img src='{{image}}' "+
+          "title='{{description}}' rel=tipsy /></div>"+
+        "</div>";
+      $(document).ready(function(){
+        var badgeHolder = $('#badge-target');
+        var badger = new Badger({
+          user: 'unicorn71', 
+          target: badgeHolder, 
+          template: BADGE_TEMPLATE
+        });
+        badger.fetch(function(){
+          $('[rel=tipsy]').tipsy({fade: true, gravity: 'n', html: true});
+        });
+        badgeHolder.on('badge_display:success', function(e, badges){
+          console.log(badges);
+        });
+      })
     </script>
+
   </body>
 </html>
 
