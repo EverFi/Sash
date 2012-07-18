@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='/stylesheets/application.css' />
+    <link rel='stylesheet' href='/stylesheets/issue.css' />
+  </head>
+  <body>
+    <style>
+      #badge-target {
+        width: 300px;
+        border: 2px solid #888;
+        margin: 10px auto;
+        position: relative;
+      }
+      #badge-target .badge {
+        text-align: center;
+      }
+
+      #badge-target .not-seen {
+        background-image: url('/images/new-banner.png');
+        position: absolute;
+      }
+    </style>
+    <div id="header">
+      <h1>Welcome to BADGE CENTRAL</h1>
+    </div>
+
+    <div id="badge-target"> </div>
+    <script src="/javascripts/jquery.js"></script>
+    <script src="/javascripts/lib/handlebars.js"></script>
+    <script src="/javascripts/display_badges.js"></script>
+  </body>
+</html>
+
