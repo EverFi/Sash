@@ -62,6 +62,7 @@ require('./apps/badges/routes')(app);
 require('./apps/organizations/routes')(app);
 require('./apps/users/routes')(app);
 require('./apps/authentication/routes')(app);
+require('./apps/static/routes')(app);
 
 
 app.listen(app.settings.port, function(){
