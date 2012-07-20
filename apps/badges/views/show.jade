@@ -33,6 +33,14 @@ div#badge-show
         | (
         a(href=issuer.origin, target='_blank')= issuer.origin
         | )
+  if badge.tags.length > 0
+    div.row
+      div.tags.offset2
+        strong
+          | Tags: 
+        each tag in badge.tags
+          span.tag
+            = tag
   div.row
     div.url.offset2
       strong Issue URL:  

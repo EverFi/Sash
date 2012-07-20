@@ -43,7 +43,8 @@ badges = [
     criteria: "User has registered",
     version: '0.1.0',
     image: "mario-badge-4.png",
-    issuer_id: org.id
+    issuer_id: org.id,
+    tags: ['ignition']
   }
 ]
 

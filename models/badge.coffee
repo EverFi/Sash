@@ -40,6 +40,8 @@ BadgeSchema.pre 'save', (next)->
     @criteria = markdown.parse(@criteria, markdown.flags.autolink)
   if @description?
     @description = markdown.parse(@description, markdown.flags.autolink)
+  if @tags.length == 1 && @tags[0].match(/,/)
+    @tags = @tags[0].toLowerCase().split(',')
   next()
 
 findAvailableSlug = (slug, object, callback) ->

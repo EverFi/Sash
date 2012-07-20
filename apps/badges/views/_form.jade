@@ -16,7 +16,20 @@ form(action=urlFor(badge), method='post', enctype="multipart/form-data")
     br
     input(class='span2', type='text', name='badge[version]')
   label
-    | Image
-    input(type='file', name='badge[image]')
+    | Tags (comma seperated)
+    br
+    input(class='span4', type='text', name='badge[tags]', rel='tag')
+  div.clear
+    br
+    label
+      | Image
+      input(type='file', name='badge[image]')
   input(type='hidden', name='badge[issuer_id]', value=orgId)
   input(type='submit', value='Save!')
+
+  script(src="/javascripts/lib/select2.min.js")
+
+  script
+    $(document).ready(function(){
+      $('[rel=tag]').select2({tags: []})
+    });

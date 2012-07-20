@@ -11,12 +11,18 @@ routes = (app) ->
   app.namespace '/badges', authenticate, ->
     #INDEX
     app.get '/', (req, res) ->
-      if req.org
-        orgId = req.org.id
-      badges = Badge.find(issuer_id: orgId).limit(20).run (err, badges)->
-        res.render "#{__dirname}/views/index",
-          badges: badges
-          orgId: orgId
+      next() if !req.org
+      orgId = req.org.id
+      query = Badge.where('issuer_id', orgId)
+      if req.query.tags?
+        query.in('tags', req.query.tags)
+      query.exec (err, badges)->
+        if req.xhr || req.params.format == 'json'
+          formatResponse(req, res, badges)
+        else
+          res.render "#{__dirname}/views/index",
+            badges: badges
+            orgId: orgId
 
     #NEW
     app.get '/new', (req, res) ->
@@ -27,7 +33,6 @@ routes = (app) ->
         orgId: orgId
 
     #CREATE
-    # TODO: NEED TO GENERATE SLUGS: 'everfi-super-awesome-badge-1'
     app.post '/', (req, res, next) ->
       ins = fs.createReadStream req.files.badge.image.path
       ous = fs.createWriteStream app.settings.upload_dir +
@@ -89,6 +94,7 @@ routes = (app) ->
         User.findOrCreate username,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
+            next(err) if err
             user.earn badge, (err, response) ->
               next(err) if err
               res.send JSON.stringify(response),
