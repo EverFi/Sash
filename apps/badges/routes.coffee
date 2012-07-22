@@ -74,7 +74,7 @@ routes = (app) ->
             res.redirect '/badges'
 
     app.post '/issue/:slug', (req, res, next) ->
-      username = req.query.username
+      username = req.body.username
       Badge.findOne slug: req.params.slug, (err, badge) ->
         next(err) if err
 
@@ -86,19 +86,19 @@ routes = (app) ->
               res.send JSON.stringify(response),
                 'content-type': 'application/json'
 
-    app.get '/issue/:slug', (req, res, next) ->
-      username = req.query.username
-      Badge.findOne slug: req.params.slug, (err, badge) ->
-        next(err) if err
+    # app.get '/issue/:slug', (req, res, next) ->
+    #   username = req.query.username
+    #   Badge.findOne slug: req.params.slug, (err, badge) ->
+    #     next(err) if err
 
-        User.findOrCreate username,
-          {issuer_id: badge.issuer_id, tags: req.query.tags},
-          (err, user) ->
-            next(err) if err
-            user.earn badge, (err, response) ->
-              next(err) if err
-              res.send JSON.stringify(response),
-                'content-type': 'application/json'
+    #     User.findOrCreate username,
+    #       {issuer_id: badge.issuer_id, tags: req.query.tags},
+    #       (err, user) ->
+    #         next(err) if err
+    #         user.earn badge, (err, response) ->
+    #           next(err) if err
+    #           res.send JSON.stringify(response),
+    #             'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
