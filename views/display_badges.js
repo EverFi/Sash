@@ -17,10 +17,11 @@
     this.template = Handlebars.compile(options.template || BADGE_TEMPLATE);
     this.target = options.target || $('#badge-target');
     this.username = options.username;
+    this.api_key = options.api_key;
     this.url = HOSTNAME + '/users/badges.json?callback=?';
   }
 
-  var checkForNewBadges function(badges){
+  var checkForNewBadges = function(badges){
     var newBadges = [];
     for(var i=0,l=badges.length;i<l;i++){
       if(!badges[i].seen){
@@ -39,7 +40,10 @@
       self = this
       xhr = $.getJSON(
         this.url,
-        { username: this.username }
+        {
+          username: this.username,
+          api_key: this.api_key
+        }
       );
       xhr.done( function(badges){
         self.render(badges)

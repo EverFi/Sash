@@ -7,10 +7,14 @@
   </head>
   <body>
     <style>
-      #badge-target {
+      #badge-widget {
         width: 300px;
         border: 2px solid #888;
         margin: 10px auto;
+      }
+
+      #badge-widget h3 {
+        text-align: center;
       }
 
       #badge-target .badge {
@@ -37,7 +41,10 @@
       <h1>Welcome to BADGE CENTRAL</h1>
     </div>
 
-    <div id="badge-target"> </div>
+    <div id="badge-widget">
+      <h3>Badges for <span class="username"></span></h3>
+      <div id="badge-target"> </div>
+    </div>
     <script src="/javascripts/lib/jquery.js"></script>
     <script src="/javascripts/lib/underscore.js"></script>
     <script src="/javascripts/lib/underscore.string.js"></script>
@@ -55,10 +62,12 @@
           "title='{{description}}' rel=tipsy /></div>"+
         "</div>";
       $(document).ready(function(){
+        var username = 'unicorn71'
+        $('.username').html(username);
         var badgeHolder = $('#badge-target');
-        var badger = new Badger({
-          user: 'unicorn71', 
-          target: badgeHolder, 
+        var badger = new HoneyBadger.Display({
+          username: username,
+          target: badgeHolder,
           template: BADGE_TEMPLATE
         });
         badger.fetch(function(){

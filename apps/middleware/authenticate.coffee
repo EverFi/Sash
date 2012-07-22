@@ -8,8 +8,9 @@ module.exports = (req, res, next) ->
       res.send 403
     else
       res.redirect('/login')
-
-  if api_key = req.query.api_key
+  api_key = req.query.api_key
+  api_key = req.body.api_key if !api_key
+  if api_key?
     Organization.findOne {api_key: api_key}, (err, org)->
       if org?
         req.org = org
