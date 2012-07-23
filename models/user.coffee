@@ -38,7 +38,8 @@ EarnedBadgeSchema.methods.toJSON = ->
     slug: @slug,
     tags: @tags,
     issued_on: @issued_on,
-    seen: @seen
+    seen: @seen,
+    id: @id
   }
 
 
