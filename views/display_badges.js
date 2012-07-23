@@ -17,11 +17,10 @@
     this.template = Handlebars.compile(options.template || BADGE_TEMPLATE);
     this.target = options.target || $('#badge-target');
     this.username = options.username;
-    this.api_key = options.api_key;
     this.url = HOSTNAME + '/users/badges.json?callback=?';
   }
 
-  var checkForNewBadges = function(badges){
+  var checkForNewBadges = function(badges, target){
     var newBadges = [];
     for(var i=0,l=badges.length;i<l;i++){
       if(!badges[i].seen){
@@ -29,26 +28,26 @@
       }
     }
     if(newBadges.length > 0) {
-      $(document).trigger('new_badges', [newBadges]);
+      target.trigger('new_badges', [newBadges]);
     }
   }
 
   HoneyBadger.Display.prototype = {
 
     fetch: function (callback){
+      console.log(this);
       var self, xhr;
       self = this
       xhr = $.getJSON(
         this.url,
         {
-          username: this.username,
-          api_key: this.api_key
+          username: this.username
         }
       );
       xhr.done( function(badges){
         self.render(badges)
         self.target.trigger('badge_load:success', [badges]);
-        checkForNewBadges(badges);
+        checkForNewBadges(badges, self.target);
       } );
       xhr.fail( function() {
         $(self.target).trigger('badge_load:fail');
@@ -71,7 +70,7 @@
 
     markBadgeSeen: function(badge) {
       $.getJSON(
-        HOSTNAME + 'users/badges/'+ badge.id+'/seen',
+        HOSTNAME + '/users/badges/'+ badge.id+'/seen',
         {username: this.username},
         function(){
           //OK THANKS BYE!
