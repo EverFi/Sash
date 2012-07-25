@@ -20,7 +20,6 @@ EarnedBadgeSchema = new Schema
   issuer_id:     Schema.ObjectId
   slug:
     type: String,
-    unique: true
   tags: [String]
   issued_on: Date
   seen:
