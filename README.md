@@ -1,4 +1,4 @@
-honey-badger
+Sash
 ============
 
 Open platform for issuing badges.
