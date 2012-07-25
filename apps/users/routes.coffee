@@ -5,34 +5,18 @@ authenticate = require '../middleware/authenticate'
 _ = require 'underscore'
 
 routes = (app) ->
-  #authenticated User Routes
-  app.namespace '/users', authenticate, ->
+  app.namespace '/users', ->
 
-    #INDEX
-    # app.get '/', (req, res) ->
-
-    #NEW
-    app.get '/new', (req, res) ->
-
-    #CREATE
-    app.post '/', (req, res, next) ->
-
-
+    # User Badges
     app.get '/badges.:format?', (req, res, next) ->
-      console.log 'awesome  sauces'
       username = req.query.username
       next() if !username?
-      User.findOne {username: username, organization: req.org.id}, (err, user) ->
-        formatResponse req, res, user.badges
-
-    #SHOW
-    app.get '/:id', (req, res, next) ->
-      User.findById req.params.id, (err, user)->
-        next(err) if err
-        res.render "#{__dirname}/views/show",
-          user: user
-          badges: user.badges
-
+      User.findOne {username: username}, (err, user) ->
+        next(err) if err?
+        if user?
+          formatResponse req, res, user.badges
+        else
+          formatResponse req, res, []
 
     # Show newly awarded badges
     app.get '/badges/has_new_badges.:format?', (req, res, next) ->
@@ -59,18 +43,29 @@ routes = (app) ->
     app.get '/badges/:badge_id/seen', (req, res, next) ->
       badgeId = req.params.badge_id
       username = req.query.username
-      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+      User.findOne {username: username}, (err, user) ->
         badge = _.detect user.badges, (b) -> b._id.toString() == badgeId
         badge.seen = true
         user.save ->
           formatResponse(req, res, {success: true})
 
-  #BADGE ASSERTION
-  app.get '/users/:username/badges/:badge_id', (req, res, next) ->
-    User.findOne {username: username, organization: req.org.id}, (err, user) ->
-      user.assertion req.params.badge_id, (assertion) ->
-        res.send assertion,
-          'content-type': 'appplication/json'
+    #BADGE ASSERTION
+    app.get '/users/:username/badges/:badge_id', (req, res, next) ->
+      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+        user.assertion req.params.badge_id, (assertion) ->
+          res.send assertion,
+            'content-type': 'appplication/json'
+
+
+  # authenticated User Routes
+  app.namespace '/users', authenticate, -> 
+    #SHOW
+    app.get '/:id', (req, res, next) ->
+      User.findById req.params.id, (err, user)->
+        next(err) if err
+        res.render "#{__dirname}/views/show",
+          user: user
+          badges: user.badges
 
 
 formatResponse = (req, res, data) ->
