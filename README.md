@@ -31,3 +31,10 @@ own products.
 
 TBD
 
+
+## Status
+
+Sash is currently under development. If you want to get involved contact us @ engineering@everfi.com!
+
+## License
+Sash is released under the MIT License
