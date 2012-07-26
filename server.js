@@ -18,7 +18,8 @@ if (process.env.NODE_ENV === 'test')
 var express = require('express'),
     mongodb = require('mongoose'),
     expressMongoose = require('express-mongoose'),
-    RedisStore = require('connect-redis')(express);
+    RedisStore = require('connect-redis')(express),
+    configuration = require('./lib/configuration');
 
 require('express-namespace');
 
@@ -35,7 +36,7 @@ app.configure(function(){
   app.use(express.methodOverride());
   app.use(express.cookieParser());
   app.use(express.session({
-    secret: "345678safghjksdaftyusadfgjkhasdf7y3huuhw4uyiohafsdkjlfsdalkh",
+    secret: configuration.get('cookie_secret'),
     store: new RedisStore()
   }));
   app.use(app.router);
