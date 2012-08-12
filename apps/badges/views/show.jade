@@ -52,6 +52,7 @@ div#badge-show
       = badge.slug
 
   div.row
+    a(href="/badges/#{badge.id}/edit") Edit Me
     form(action="/badges/#{badge.id}", method='post', class="delete", data-remote="true")
       input(type="hidden", value="delete", name="_method")
       input(type="submit", value="Delete", class="delete")

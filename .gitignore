@@ -16,4 +16,5 @@ results
 node_modules
 npm-debug.log
 public/uploads/
+everfi_seeds.js
 __NOTES__

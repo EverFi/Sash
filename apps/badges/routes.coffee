@@ -55,11 +55,37 @@ routes = (app) ->
           res.render "#{__dirname}/views/show",
             badge: badge
             issuer: badge.issuer()
+            #
+    #SHOW
+    app.get '/:id/edit', (req, res) ->
+      Badge.findById req.params.id, (err, badge) ->
+        res.render "#{__dirname}/views/edit",
+          badge: badge
+          issuer: badge.issuer()
+          orgId: req.org.id
 
     #UPDATE
     app.put '/:id', (req, res, next) ->
-      Badge.update id: req.params.id, (err, doc) ->
-        next(err) if err
+      if req.files.badge.image.length > 0
+        ins = fs.createReadStream req.files.badge.image.path
+        ous = fs.createWriteStream app.settings.upload_dir +
+          req.files.badge.image.filename
+        util.pump ins, ous, (err)->
+          next(err) if err
+          Badge.findById req.params.id, (err, badge)->
+            badge.set(req.body.badge)
+            badge.image = req.files.badge.image.filename
+            badge.save (err, doc) ->
+              next(err) if err
+              req.flash 'info', 'Badge saved successfully!'
+              res.redirect '/badges'
+      else
+        Badge.findById req.params.id, (err, badge)->
+          badge.set(req.body.badge)
+          badge.save (err, doc) ->
+            next(err) if err
+            req.flash 'info', 'Badge saved successfully!'
+            res.redirect '/badges'
 
 
     #DELETE
