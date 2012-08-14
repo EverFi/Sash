@@ -2,11 +2,12 @@ mongoose = require 'mongoose'
 attachments = require 'mongoose-attachments'
 moment = require 'moment'
 markdown = require('discount')
+configuration = require '../lib/configuration'
+db = mongoose.createConnection configuration.get('mongodb')
 
 Promise = require('mongoose').Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
-db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
 
 _ =  require 'underscore'
 _.str = require('underscore.string');

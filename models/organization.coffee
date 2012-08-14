@@ -1,8 +1,9 @@
 mongoose = require 'mongoose'
 timestamps = require 'mongoose-timestamps'
+configuration = require '../lib/configuration'
 Promise = require('mongoose').Promise
 Schema = mongoose.Schema
-db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
+db = mongoose.createConnection configuration.get('mongodb')
 
 crypto = require 'crypto'
 

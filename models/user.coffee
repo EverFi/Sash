@@ -3,7 +3,8 @@ mongoose = require 'mongoose'
 Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
-db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
+configuration = require '../lib/configuration'
+db = mongoose.createConnection configuration.get('mongodb')
 
 fullImageUrl = (imageUrl)->
   "http://#{process.env.HOST}/uploads/#{imageUrl}"

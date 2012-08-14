@@ -1,6 +1,7 @@
 mongoose = require 'mongoose'
 Schema = mongoose.Schema
-db = mongoose.createConnection "mongodb://localhost:27017/badges-#{process.env.NODE_ENV}"
+configuration = require '../lib/configuration'
+db = mongoose.createConnection configuration.get('mongodb')
 
 EarnedBadgeSchema = new Schema
   badge_id:
