@@ -9,11 +9,14 @@ if(typeof process.env.NODE_ENV === 'undefined')
   process.env.NODE_ENV = 'development'
 
 
+
 if (process.env.NODE_ENV === 'development')
-  process.env.HOST = 'localhost:3000'
+  process.env.PORT = 3000
+  process.env.HOST = 'localhost'+process.env.PORT
 
 if (process.env.NODE_ENV === 'test')
-  process.env.HOST = 'localhost:3001'
+  process.env.PORT = 3001
+  process.env.HOST = 'localhost'+process.env.PORT
 
 var express = require('express'),
     mongodb = require('mongoose'),
@@ -30,7 +33,7 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.set('port', 3000);
+  app.set('port', process.env.PORT);
   app.set('upload_dir', __dirname + '/public/uploads/');
   app.use(express.bodyParser());
   app.use(express.methodOverride());
