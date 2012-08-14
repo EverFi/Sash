@@ -23,6 +23,7 @@ routes = (app) ->
           res.render "#{__dirname}/views/index",
             badges: badges
             orgId: orgId
+            org: req.org
 
     #NEW
     app.get '/new', (req, res) ->

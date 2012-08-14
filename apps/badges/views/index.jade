@@ -1,6 +1,22 @@
-h1 Badges!
+div.row
+  div.span9
+    h1.org-name=org.name
+    h4.org-name
+      a(href=org.origin)
+        = org.origin
 
-// != partial('form')
+  div.span3
+    ul.actions
+      li
+        a(href='/badges/new', class="new-badge")
+          | Create a New Badge
+      li
+        a(href='/users', class="new-badge")
+          | Manage Users
+
+      li
+        a(href='/badges', class="new-badge")
+          | Edit Organization Info
 
 div.row
   div#badge-listing.span9
