@@ -1,3 +1,7 @@
 #!/usr/bin/env sh
 
+# Put any environment configuration into .env
+if [ -f "/.env" ]; then
+  source .env
+fi
 ./node_modules/node-dev/node-dev server.js
