@@ -1,4 +1,5 @@
 mongoose = require 'mongoose'
+attachments = require 'mongoose-attachments'
 moment = require 'moment'
 markdown = require('discount')
 
@@ -16,9 +17,6 @@ fullImageUrl = (imageUrl)->
 
 BadgeSchema = new Schema
   name:          String
-  image:
-    type: String,
-    get: fullImageUrl
   description:   String
   criteria:      String
   version:       String
@@ -31,6 +29,19 @@ BadgeSchema = new Schema
     unique: true
   tags: [String]
 
+BadgeSchema.plugin attachments,
+  directory: 'badge-images'
+  storage:
+    providerName: 's3'
+    options:
+      key: process.env.S3_KEY
+      secret: process.env.S3_SECRET
+      bucket: process.env.S3_BUCKET
+  properties:
+    image:
+      styles:
+        original:
+          '$format': 'png'
 
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"

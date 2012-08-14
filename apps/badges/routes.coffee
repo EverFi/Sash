@@ -34,13 +34,9 @@ routes = (app) ->
 
     #CREATE
     app.post '/', (req, res, next) ->
-      ins = fs.createReadStream req.files.badge.image.path
-      ous = fs.createWriteStream app.settings.upload_dir +
-        req.files.badge.image.filename
-      util.pump ins, ous, (err)->
+      badge = new Badge req.body.badge
+      badge.attach 'image', req.files.badge.image, (err)->
         next(err) if err
-        badge = new Badge req.body.badge
-        badge.image = req.files.badge.image.filename
         badge.save (err, doc) ->
           next(err) if err
           req.flash 'info', 'Badge saved successfully!'
@@ -55,7 +51,7 @@ routes = (app) ->
           res.render "#{__dirname}/views/show",
             badge: badge
             issuer: badge.issuer()
-            #
+
     #SHOW
     app.get '/:id/edit', (req, res) ->
       Badge.findById req.params.id, (err, badge) ->
@@ -67,14 +63,12 @@ routes = (app) ->
     #UPDATE
     app.put '/:id', (req, res, next) ->
       if req.files.badge.image.length > 0
-        ins = fs.createReadStream req.files.badge.image.path
-        ous = fs.createWriteStream app.settings.upload_dir +
-          req.files.badge.image.filename
-        util.pump ins, ous, (err)->
-          next(err) if err
-          Badge.findById req.params.id, (err, badge)->
+        console.log 'req files: ', req.files.badge.image.length
+        Badge.findById req.params.id, (err, badge)->
+          console.log("found badge", badge)
+          badge.attach 'image', req.files.badge.image, (err)->
+            next(err) if err
             badge.set(req.body.badge)
-            badge.image = req.files.badge.image.filename
             badge.save (err, doc) ->
               next(err) if err
               req.flash 'info', 'Badge saved successfully!'
