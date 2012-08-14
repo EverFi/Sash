@@ -31,6 +31,7 @@ var app = module.exports = express.createServer();
 // Configuration
 
 redisConfig = configuration.get('redis');
+console.log(redisConfig);
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
