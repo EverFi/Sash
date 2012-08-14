@@ -30,6 +30,7 @@ var app = module.exports = express.createServer();
 
 // Configuration
 
+redisConfig = configuration.get('redis');
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -40,7 +41,7 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.session({
     secret: configuration.get('cookie_secret'),
-    store: new RedisStore()
+    store: new RedisStore(redisConfig)
   }));
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
