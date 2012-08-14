@@ -1,7 +1,9 @@
 // Require this file to load all the models into the 
 // interactive note console
 
-process.env.NODE_ENV = 'development'
+if(typeof process.env.NODE_ENV === 'undefined'){
+  process.env.NODE_ENV = 'development'
+}
 require('coffee-script')
 
 global.Organization = require('./models/organization')
