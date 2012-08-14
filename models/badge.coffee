@@ -10,8 +10,42 @@ timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 
 _ =  require 'underscore'
-_.str = require('underscore.string');
-_.mixin(_.str.exports());
+
+nativeTrim = String.prototype.trim;
+
+trim = (str, characters)->
+  if str == null
+    return ''
+  if !characters && nativeTrim
+    return nativeTrim.call(str)
+  characters = defaultToWhiteSpace(characters)
+  return String(str).replace(new RegExp('\^' + characters + '+|' + characters + '+$', 'g'), '')
+
+dasherize = (str) ->
+  return trim(str).replace(/([A-Z])/g, '-$1').replace(/[-_\s]+/g, '-').toLowerCase();
+
+escapeRegExp = (str) ->
+  if (str == null)
+    return ''
+  return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1')
+
+defaultToWhiteSpace = (characters)->
+  if characters != null
+    return '[' + escapeRegExp(characters) + ']';
+  return '\\s';
+
+slugify = (str)->
+  return '' unless str?
+
+  from  = "ąàáäâãćęèéëêìíïîłńòóöôõùúüûñçżź"
+  to    = "aaaaaaceeeeeiiiilnooooouuuunczz"
+  regex = new RegExp(defaultToWhiteSpace(from), 'g')
+
+  str = String(str).toLowerCase().replace regex, (c)->
+    index = from.indexOf(c);
+    return to.charAt(index) || '-';
+
+  return dasherize(str.replace(/[^\w\s-]/g, ''));
 
 fullImageUrl = (imageUrl)->
   "http://#{process.env.HOST}/uploads/#{imageUrl}"
@@ -68,7 +102,7 @@ findAvailableSlug = (slug, object, callback) ->
 BadgeSchema.pre 'save', (next) ->
   # generate slug if new and has name, or is has no slug and has name
   if (@isNew && @name?) || (!@slug? && @name?)
-    @slug = _.slugify(@name)
+    @slug = slugify(@name)
     findAvailableSlug @slug, @, next
   else
     next()
