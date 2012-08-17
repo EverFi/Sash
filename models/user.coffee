@@ -6,19 +6,16 @@ Schema = mongoose.Schema
 configuration = require '../lib/configuration'
 db = mongoose.createConnection configuration.get('mongodb')
 
-fullImageUrl = (imageUrl)->
-  "http://#{process.env.HOST}/uploads/#{imageUrl}"
-
 # This is a duplicate of the Bdge schema. Dirty I know.
 EarnedBadgeSchema = new Schema
   name:          String
   image:
     type: String,
-    get: fullImageUrl
   description:   String
   criteria:      String
   version:       String
   issuer_id:     Schema.ObjectId
+  badge_id:     Schema.ObjectId
   slug:
     type: String,
   tags: [String]
@@ -69,6 +66,8 @@ UserSchema.methods.earn = (badge, callback)->
   else
     b = badge.toJSON()
     b.issued_on = new Date()
+    b.badge_id = badge.id
+    b.image = badge.image.original
     b.issued_count = undefined
     @badges.push b
     @save (err, user)->

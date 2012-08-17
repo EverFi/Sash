@@ -64,9 +64,7 @@ routes = (app) ->
     #UPDATE
     app.put '/:id', (req, res, next) ->
       if req.files.badge.image.length > 0
-        console.log 'req files: ', req.files.badge.image.length
         Badge.findById req.params.id, (err, badge)->
-          console.log("found badge", badge)
           badge.attach 'image', req.files.badge.image, (err)->
             next(err) if err
             badge.set(req.body.badge)
