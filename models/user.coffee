@@ -67,7 +67,7 @@ UserSchema.methods.earn = (badge, callback)->
     b = badge.toJSON()
     b.issued_on = new Date()
     b.badge_id = badge.id
-    b.image = badge.image.original
+    b.image = badge.image.original.defaultUrl
     b.issued_count = undefined
     @badges.push b
     @save (err, user)->
@@ -80,7 +80,7 @@ UserSchema.methods.earn = (badge, callback)->
           # Using dot accessors here so the custom getters are invoked
           name: badge.name
           description: badge.description
-          image: badge.image
+          image: badge.image.original.defaultUrl
           criteria: badge.criteria
           id: badge.id
       }
