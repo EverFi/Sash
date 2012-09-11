@@ -31,7 +31,11 @@ OrganizationSchema.pre 'save', (next)->
   if @password
     @hashed_password = hexDigest(@password)
     @setValue('password', null)
+  @api_key = genApiKey() unless @api_key?
   next()
+
+genApiKey = ->
+ "xxxxxxxxxxxxxxxx".replace /x/g, -> (Math.random()*16|0).toString(16)
 
 OrganizationSchema.methods.assertion = ->
   assertion = {}
