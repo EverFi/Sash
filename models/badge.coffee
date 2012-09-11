@@ -81,6 +81,9 @@ BadgeSchema.plugin attachments,
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"
 
+BadgeSchema.virtual('imageUrl').get ->
+  @image.original.defaultUrl
+
 BadgeSchema.pre 'save', (next)->
   if @criteria?
     @criteria = markdown.parse(@criteria, markdown.flags.autolink)
