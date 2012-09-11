@@ -4,7 +4,7 @@ html
     - if (typeof title != 'undefined')
       title=title
     - else
-      title Honey Badger
+      title Sash
 
     link(rel='stylesheet', href='/stylesheets/bootstrap.css')
     link(rel='stylesheet', href='/stylesheets/application.css')
@@ -17,7 +17,7 @@ html
         - if (typeof title != 'undefined')
           a(href='/')=title
         - else
-          a(href='/') Honey Badger
+          a(href='/') Sash
 
       if logged_in
         a#logout(href="/logout")="Log Out"
