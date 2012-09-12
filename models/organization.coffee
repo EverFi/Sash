@@ -20,6 +20,7 @@ OrganizationSchema = new Schema({
     api_key: String
     contact: String
     hashed_password: String
+    salt: String
   },
   strict: true)
 
@@ -28,7 +29,7 @@ OrganizationSchema.plugin(timestamps)
 OrganizationSchema.virtual('password')
 
 OrganizationSchema.pre 'save', (next)->
-  if @password
+  if @password?
     @hashed_password = hexDigest(@password)
     @setValue('password', null)
   @api_key = genApiKey() unless @api_key?

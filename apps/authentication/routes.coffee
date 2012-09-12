@@ -5,9 +5,19 @@ hexDigest = (string)->
   sha.update('awesome')
   sha.digest('hex')
 
+checkOrgs = (req,res,next)->
+  Organization.find {}, (err, orgs) ->
+    if orgs.length > 0
+      next()
+    else
+      req.flash 'info', 'Looks like you need to setup an organization. Lets do that now!'
+      res.redirect('/organizations/new')
+
+  
+
 routes = (app) ->
 
-  app.get '/login', (req, res) ->
+  app.get '/login', checkOrgs, (req, res) ->
     res.render "#{__dirname}/views/login",
       title: 'Login',
       stylesheet: 'login'
