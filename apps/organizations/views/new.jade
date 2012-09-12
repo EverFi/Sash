@@ -19,4 +19,8 @@ form(action='/organizations', method='post')
     | Password
     input(type='password', name='org[password]')
 
+  label
+    | Salt (for use salting user's username/passwords)
+    input(type='text', name='org[salt]')
+
   input(type='submit', value='Create')

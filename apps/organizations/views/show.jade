@@ -1,0 +1,32 @@
+div#org-show
+  div.row
+    div.span12
+      h1 #{org.name}
+  div.row
+    div.offset2
+      div.description
+        strong
+          | Organization Name:
+        br
+        != org.name
+
+  if org.origin
+    div.row
+      div.offset2.criteria
+        strong
+          | Origin:
+        br
+        != org.criteria
+
+  if org.api_key
+    div.row
+      div.offset2.version
+        strong
+          | API Key:
+        = org.api_key
+  if org.contact
+    div.row
+      div.offset2.version
+        strong
+          | API Key:
+        = org.contact
