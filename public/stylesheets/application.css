@@ -137,14 +137,14 @@ body a {
   text-decoration: none;
 }
 body a:link {
-  color: #024a7f;
+  color: #4375A1;
 }
 body a:visited,
 body a:hover {
   color: #393939;
 }
 body a:hover {
-  color: #0072bc;
+  color: #777;
 }
 body h1 {
   font-size: 3em;
@@ -254,7 +254,7 @@ body h1 {
   text-shadow: 0 1px 0 #02375f;
 }
 body #header {
-  background-color: #024a7f;
+  background-color: #4375A1;
   border-top: 1px solid #0360a5;
   border-bottom: 3px solid #02375f;
   color: #fff;
@@ -279,7 +279,7 @@ body form input[type='file'] {
   padding-top: 0.5em;
 }
 body form input[type='submit'] {
-  background-color: #024a7f;
+  background-color: #4375A1;
   border-color: #404040;
   border-radius: 1em;
   color: #fff;
@@ -440,8 +440,8 @@ ul.actions li {
 
 ul.actions li:hover {
   list-style-type: none;
-  border-left-color: #0072BC;
-  border-bottom-color: #0072BC;
+  border-left-color: #4375A1;
+  border-bottom-color: #4375A1;
 }
 
 ul.actions li a {
