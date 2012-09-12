@@ -8,7 +8,10 @@ Sash
 
 # The Parts
 
-  In Sash everything is scoped to an Organization.
+  In Sash everything is scoped to an Organization. When you start Sash up
+  for the first time you will be asked to create an organization. The name and
+  and password you choose here will be the login information you use to manage
+  and track your badges.
 
 ## Creating Badges
 
