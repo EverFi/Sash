@@ -94,30 +94,23 @@ routes = (app) ->
 
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
+      email = req.body.email
       Badge.findOne slug: req.params.slug, (err, badge) ->
         next(err) if err
+        unless badge? & username?
+          console.log("Can't issue badge #{req.params.slug}, doesn't exist")
+          res.send JSON.stringify({issued: false}),
+            'content-type': 'application/json'
+          return
 
-        User.findOrCreate username,
+        User.findOrCreate username, email,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
             user.earn badge, (err, response) ->
               next(err) if err
+              console.log "Badge Issue Response: #{response}"
               res.send JSON.stringify(response),
                 'content-type': 'application/json'
-
-    # app.get '/issue/:slug', (req, res, next) ->
-    #   username = req.query.username
-    #   Badge.findOne slug: req.params.slug, (err, badge) ->
-    #     next(err) if err
-
-    #     User.findOrCreate username,
-    #       {issuer_id: badge.issuer_id, tags: req.query.tags},
-    #       (err, user) ->
-    #         next(err) if err
-    #         user.earn badge, (err, response) ->
-    #           next(err) if err
-    #           res.send JSON.stringify(response),
-    #             'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
@@ -125,7 +118,7 @@ formatBadgeResponse = (req, res, badge) ->
   if cb
     assertionPromise.on 'complete', (assertion)->
       res.send "#{cb}(#{JSON.stringify(assertion)})",
-        'content-type': 'application/javascript'
+        
   else
     res.send assertionPromise,
       'content-type': 'application/json'

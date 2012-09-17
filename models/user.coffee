@@ -15,8 +15,12 @@ EarnedBadgeSchema = new Schema
   description:   String
   criteria:      String
   version:       String
-  issuer_id:     Schema.ObjectId
-  badge_id:     Schema.ObjectId
+  issuer_id:
+    type: Schema.ObjectId,
+    ref: 'Organization'
+  badge_id:
+    type: Schema.ObjectId,
+    ref: 'Badge'
   slug:
     type: String,
   tags: [String]
@@ -46,9 +50,14 @@ UserSchema = new Schema
     type: String
     lowercase: true
     unique: true
+  email:
+    type: String
+    lowercase: true
   created_at: Date
   updated_at: Date
-  organization: Schema.ObjectId
+  organization:
+    type: Schema.ObjectId
+    ref: 'Organization'
   badges: [EarnedBadgeSchema]
   tags: [String]
 
@@ -108,16 +117,20 @@ UserSchema.methods.assertion = (badgeId, callback) ->
 
 User = db.model 'User', UserSchema
 
-User.findOrCreate = (username, options, callback)->
+User.findOrCreate = (username, email, options, callback)->
   issuer_id = options.issuer_id
   tags = options.tags
-  User.findOne(username: username, organization: issuer_id).limit(1).exec (err, user)->
+  User.where().or([{username: username}, {email: email}])
+      .where('organization').equals(issuer_id).limit(1)
+      .exec (err, users)->
+    user = users[0]
     if user?
+      user.email = email if !user.email? && email?
       user.tags.merge tags if tags?
       user.save()
       callback(null, user)
     else
-      user = new User username: username, organization: issuer_id
+      user = new User username: username, email: email, organization: issuer_id
       user.tags.merge tags if tags?
       user.save (err)->
         if err
