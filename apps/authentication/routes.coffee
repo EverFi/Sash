@@ -1,10 +1,6 @@
 Organization = require '../../models/organization'
 configuration = require '../../lib/configuration'
-crypto = require 'crypto'
-hexDigest = (string)->
-  sha = crypto.createHash('sha256');
-  sha.update(string + configuration.get('salt'))
-  sha.digest('hex')
+hexDigest = require('../../lib/hex_digest')
 
 checkOrgs = (req,res,next)->
   Organization.find {}, (err, orgs) ->
@@ -13,8 +9,6 @@ checkOrgs = (req,res,next)->
     else
       req.flash 'info', 'Looks like you need to setup an organization. Lets do that now!'
       res.redirect('/organizations/new')
-
-  
 
 routes = (app) ->
 
@@ -27,7 +21,7 @@ routes = (app) ->
     errMsg = "Org Name or Password is invalid. Try again"
     if req.body.name and req.body.password
       Organization.findOne name: req.body.name, (err, org) ->
-        if org? and org.hashed_password == hexDigest(req.body.password)
+        if org?.hashed_password == hexDigest(req.body.password)
           req.session.org_id = org.id
           req.flash 'info', "You are logged in as #{org.name}"
           res.redirect '/dashboard'

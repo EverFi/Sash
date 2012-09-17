@@ -4,6 +4,7 @@ Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
 configuration = require '../lib/configuration'
+hexDigest = require('../lib/hex_digest')
 db = mongoose.createConnection configuration.get('mongodb')
 
 # This is a duplicate of the Bdge schema. Dirty I know.
@@ -52,6 +53,12 @@ UserSchema = new Schema
   tags: [String]
 
 UserSchema.plugin(timestamps)
+
+UserSchema.virtual('recipient').get ->
+  salt = @organization.salt
+  pepper = @email
+  'sha256$'+hexDigest(pepper+salt)
+
 
 UserSchema.methods.earn = (badge, callback)->
   unless badge.id && badge.issuer_id

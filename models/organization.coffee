@@ -1,16 +1,11 @@
 mongoose = require 'mongoose'
 timestamps = require 'mongoose-timestamps'
 configuration = require '../lib/configuration'
+hexDigest = require('../lib/hex_digest')
 Promise = require('mongoose').Promise
 Schema = mongoose.Schema
 db = mongoose.createConnection configuration.get('mongodb')
 
-crypto = require 'crypto'
-
-hexDigest = (string)->
-  sha = crypto.createHash('sha256');
-  sha.update(string + configuration.get('salt'))
-  sha.digest('hex')
 
 
 OrganizationSchema = new Schema({
