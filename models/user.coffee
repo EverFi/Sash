@@ -3,6 +3,7 @@ mongoose = require 'mongoose'
 Promise = mongoose.Promise
 timestamps = require 'mongoose-timestamps'
 Schema = mongoose.Schema
+Organization = require './organization'
 configuration = require '../lib/configuration'
 hexDigest = require('../lib/hex_digest')
 db = mongoose.createConnection configuration.get('mongodb')
@@ -60,13 +61,25 @@ UserSchema = new Schema
     ref: 'Organization'
   badges: [EarnedBadgeSchema]
   tags: [String]
+  email_hash: String
 
 UserSchema.plugin(timestamps)
+
+UserSchema.pre 'save', (next)->
+  if @email? && !@email_hash?
+    if @organization instanceof Organization
+      @email_hash = hexDigest(@email, @organization.salt)
+      next()
+    else
+      @model("Organization").findById @organization, (err, org) =>
+        @email_hash = hexDigest(@email, org.salt)
+        next()
+
 
 UserSchema.virtual('recipient').get ->
   salt = @organization.salt
   pepper = @email
-  'sha256$'+hexDigest(pepper+salt)
+  'sha256$'+hexDigest(pepper, salt)
 
 
 UserSchema.methods.earn = (badge, callback)->
@@ -143,13 +156,32 @@ UserSchema.methods.assertion = (slug, callback) ->
 
 User = db.model 'User', UserSchema
 
-User.findOrCreate = (username, email, options, callback)->
-  issuer_id = options.issuer_id
-  tags = options.tags
+User.findByUsernameOrEmail = (username, email, issuer_id, callback)->
+  promise = new Promise
+  promise.addBack(callback) if callback
   User.where().or([{username: username}, {email: email}])
       .where('organization').equals(issuer_id).limit(1)
+      .populate('organization')
       .exec (err, users)->
-    user = users[0]
+        promise.resolve(err, users[0])
+  promise
+
+User.findByEmailHash = (email_hash, callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  User.where('email_hash').equals(email_hash)
+    .populate('organization')
+    .exec (err, users)->
+      promise.resolve(err, users[0])
+  promise
+
+
+User.findOrCreate = (username, email, options, callback)->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  issuer_id = options.issuer_id
+  tags = options.tags
+  User.findByUsernameOrEmail username, email, (e, user)->
     if user?
       user.email = email if !user.email? && email?
       user.tags.merge tags if tags?

@@ -1,7 +1,8 @@
 configuration = require '../lib/configuration'
 crypto = require 'crypto'
 
-module.exports = (string)->
+module.exports = (string, salt)->
   sha = crypto.createHash('sha256');
-  sha.update(string + configuration.get('salt'))
+  salt = configuration.get('salt') unless salt?
+  sha.update(string + salt)
   sha.digest('hex')

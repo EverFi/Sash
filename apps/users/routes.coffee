@@ -50,18 +50,15 @@ routes = (app) ->
           formatResponse(req, res, {success: true})
 
   #BADGE ASSERTION
-  app.get '/users/badges/:badge_slug.:format?', (req, res, next) ->
-    username = req.query.username
-    email = req.query.email
-    User.where().or([{username: username}, {email: email}])
-      .populate('organization')
-      .exec (err, users)->
-        user = users[0]
-        if user?
-          user.assertion req.params.badge_slug, (err, assertion) ->
-            formatResponse(req,res,assertion)
-        else
-            formatResponse(req,res,{})
+  app.get '/users/:email_hash/badges/:badge_slug.:format?', (req, res, next) ->
+    email_hash = req.params.email_hash
+    User.findByEmailHash email_hash, (err, user)->
+      next(err) if err?
+      if user?
+        user.assertion req.params.badge_slug, (err, assertion) ->
+          formatResponse(req,res,assertion)
+      else
+          formatResponse(req,res,{})
 
 
 
