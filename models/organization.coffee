@@ -9,7 +9,7 @@ crypto = require 'crypto'
 
 hexDigest = (string)->
   sha = crypto.createHash('sha256');
-  sha.update('awesome')
+  sha.update(string)
   sha.digest('hex')
 
 
