@@ -49,12 +49,20 @@ routes = (app) ->
         user.save ->
           formatResponse(req, res, {success: true})
 
-    #BADGE ASSERTION
-    app.get '/users/:username/badges/:badge_id', (req, res, next) ->
-      User.findOne {username: username, organization: req.org.id}, (err, user) ->
-        user.assertion req.params.badge_id, (assertion) ->
-          res.send assertion,
-            'content-type': 'appplication/json'
+  #BADGE ASSERTION
+  app.get '/users/badges/:badge_slug.:format?', (req, res, next) ->
+    username = req.query.username
+    email = req.query.email
+    User.where().or([{username: username}, {email: email}])
+      .populate('organization')
+      .exec (err, users)->
+        user = users[0]
+        if user?
+          user.assertion req.params.badge_slug, (err, assertion) ->
+            formatResponse(req,res,assertion)
+        else
+            formatResponse(req,res,{})
+
 
 
   # authenticated User Routes

@@ -47,15 +47,14 @@ slugify = (str)->
 
   return dasherize(str.replace(/[^\w\s-]/g, ''));
 
-fullImageUrl = (imageUrl)->
-  "http://#{process.env.HOST}/uploads/#{imageUrl}"
-
 BadgeSchema = new Schema
   name:          String
   description:   String
   criteria:      String
   version:       String
-  issuer_id:     Schema.ObjectId
+  issuer_id:
+    type: Schema.ObjectId,
+    ref: 'Organization'
   issued_count:
     type: Number,
     default: 0
@@ -125,7 +124,7 @@ BadgeSchema.methods.assertion = (callback)->
 
   assertion = {}
   assertion.name = @name
-  assertion.image = @image
+  assertion.image = @imageUrl
   assertion.description = @description if @description?
   assertion.criteria = @criteria if @criteria?
   assertion.version = @version if @version?

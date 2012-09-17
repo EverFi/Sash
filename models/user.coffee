@@ -101,16 +101,42 @@ UserSchema.methods.earn = (badge, callback)->
           id: badge.id
       }
 
-UserSchema.methods.assertion = (badgeId, callback) ->
-  assertion = {}
-  assertion.username = @username
+formatDate = (dateObj)->
+  "#{dateObj.getFullYear()}-#{dateObj.getMonth()+1}-#{dateObj.getDate()}"
+
+# Method for returning the OBI compliant assertion JSON
+UserSchema.methods.assertion = (slug, callback) ->
   promise = new Promise
   promise.addBack(callback) if callback
 
-  @model('Badge').findById badgeId, (err, badge)->
-    badge.assertion (err, badgeAssertion)->
-      assertion.badge = badgeAssertion
+  earned_badge = _.detect @badges, (earned_badge, i)->
+    earned_badge.slug == slug
+
+  assertion = {}
+  assertion.recipient = @recipient
+  assertion.issued_on = formatDate(earned_badge.issued_on)
+  assertion.salt = @organization.salt
+
+  @model('Badge').where('slug').equals(slug)
+                 .populate('issuer_id').exec (err, badges) =>
+    badge = badges[0]
+    if badge?
+      assertion.badge = {
+        image: badge.image.original.defaultUrl
+        version: badge.version
+        description: badge.description
+        criteria: badge.criteria
+        issuer:
+          origin: badge.issuer_id.origin
+          name: badge.issuer_id.name
+          org: badge.issuer_id.org
+          contact: badge.issuer_id.contact
+      }
+
       promise.resolve(err, assertion)
+    else
+      promise.resolve((err? ? err : new Error()), null)
+
   promise
 
 
