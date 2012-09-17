@@ -14,7 +14,6 @@ routes = (app) ->
   #CREATE
   app.post '/organizations', (req, res, next) ->
     org = new Organization req.body.org
-    org.setValue 'password', req.body.org
     org.save (err, doc) ->
       next(err) if err
       req.session.org = org

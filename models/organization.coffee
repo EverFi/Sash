@@ -9,7 +9,7 @@ crypto = require 'crypto'
 
 hexDigest = (string)->
   sha = crypto.createHash('sha256');
-  sha.update(string)
+  sha.update(string + configuration.get('salt'))
   sha.digest('hex')
 
 
@@ -26,12 +26,14 @@ OrganizationSchema = new Schema({
 
 OrganizationSchema.plugin(timestamps)
 
-OrganizationSchema.virtual('password')
+OrganizationSchema.virtual('password').get ->
+  @password
+
+OrganizationSchema.virtual('password').set (p)->
+  @temp_pw = p
+  @hashed_password = hexDigest(p)
 
 OrganizationSchema.pre 'save', (next)->
-  if @password?
-    @hashed_password = hexDigest(@password)
-    @setValue('password', null)
   @api_key = genApiKey() unless @api_key?
   next()
 

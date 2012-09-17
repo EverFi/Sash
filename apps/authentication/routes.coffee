@@ -1,8 +1,9 @@
 Organization = require '../../models/organization'
+configuration = require '../../lib/configuration'
 crypto = require 'crypto'
 hexDigest = (string)->
   sha = crypto.createHash('sha256');
-  sha.update(string)
+  sha.update(string + configuration.get('salt'))
   sha.digest('hex')
 
 checkOrgs = (req,res,next)->
