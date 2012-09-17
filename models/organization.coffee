@@ -10,7 +10,6 @@ db = mongoose.createConnection configuration.get('mongodb')
 
 OrganizationSchema = new Schema({
     name: { type: String, required: true}
-    origin: String
     org: String
     api_key: String
     contact: String
@@ -27,6 +26,9 @@ OrganizationSchema.virtual('password').get ->
 OrganizationSchema.virtual('password').set (p)->
   @temp_pw = p
   @hashed_password = hexDigest(p)
+
+OrganizationSchema.virtual('origin').get ->
+  "http://" + configuration.get('hostname')
 
 OrganizationSchema.pre 'save', (next)->
   @api_key = genApiKey() unless @api_key?
