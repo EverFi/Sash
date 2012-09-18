@@ -84,7 +84,7 @@ BadgeSchema.virtual('imageUrl').get ->
   @image.original.defaultUrl
 
 BadgeSchema.virtual('criteriaUrl').get ->
-  "http://#{configuration.get('host')}/badges/#{@slug}/criteria"
+  "http://#{configuration.get('hostname')}/badges/#{@slug}/criteria"
 
 BadgeSchema.pre 'save', (next)->
   if @criteria?
