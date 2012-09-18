@@ -74,6 +74,8 @@ UserSchema.pre 'save', (next)->
       @model("Organization").findById @organization, (err, org) =>
         @email_hash = hexDigest(@email, org.salt)
         next()
+  else
+    next()
 
 
 UserSchema.virtual('recipient').get ->
@@ -96,7 +98,7 @@ UserSchema.methods.earn = (badge, callback)->
     b = badge.toJSON()
     b.issued_on = new Date()
     b.badge_id = badge.id
-    b.image = badge.image.original.defaultUrl
+    b.image = badge.imageUrl
     b.issued_count = undefined
     @badges.push b
     @save (err, user)->
@@ -109,7 +111,7 @@ UserSchema.methods.earn = (badge, callback)->
           # Using dot accessors here so the custom getters are invoked
           name: badge.name
           description: badge.description
-          image: badge.image.original.defaultUrl
+          image: badge.imageUrl
           criteria: badge.criteria
           id: badge.id
       }
