@@ -37,7 +37,9 @@ app.configure(function(){
   app.set('view engine', 'jade');
   app.set('port', process.env.PORT);
   app.set('upload_dir', __dirname + '/public/uploads/');
-  app.use(express.logger());
+  if (process.env.NODE_ENV == 'development'){
+    app.use(express.logger());
+  }
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
