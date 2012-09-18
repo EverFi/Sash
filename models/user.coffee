@@ -180,8 +180,6 @@ User.findByEmailHash = (email_hash, callback) ->
 
 
 User.findOrCreate = (username, email, options, callback)->
-  promise = new Promise
-  promise.addBack(callback) if callback
   issuer_id = options.issuer_id
   tags = options.tags
   User.findByUsernameOrEmail username, email, (e, user)->
@@ -200,4 +198,5 @@ User.findOrCreate = (username, email, options, callback)->
           callback(null, user)
 
 module.exports = User
+
 
