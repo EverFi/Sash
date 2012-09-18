@@ -156,14 +156,13 @@ UserSchema.methods.assertion = (slug, callback) ->
 
 User = db.model 'User', UserSchema
 
-User.findByUsernameOrEmail = (username, email, issuer_id, callback)->
+User.findByUsernameOrEmail = (username, email, callback)->
   promise = new Promise
   promise.addBack(callback) if callback
   User.where().or([{username: username}, {email: email}])
-      .where('organization').equals(issuer_id).limit(1)
-      .populate('organization')
-      .exec (err, users)->
-        promise.resolve(err, users[0])
+    .populate('organization')
+    .exec (err, users)->
+      promise.resolve(err, users[0])
   promise
 
 User.findByEmailHash = (email_hash, callback) ->
