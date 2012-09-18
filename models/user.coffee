@@ -6,6 +6,7 @@ Schema = mongoose.Schema
 Organization = require './organization'
 configuration = require '../lib/configuration'
 hexDigest = require('../lib/hex_digest')
+moment = require 'moment'
 db = mongoose.createConnection configuration.get('mongodb')
 
 # This is a duplicate of the Bdge schema. Dirty I know.
@@ -117,7 +118,7 @@ UserSchema.methods.earn = (badge, callback)->
       }
 
 formatDate = (dateObj)->
-  "#{dateObj.getFullYear()}-#{dateObj.getMonth()+1}-#{dateObj.getDate()}"
+  moment(dateObj).format("YYYY-MM-DD")
 
 # Method for returning the OBI compliant assertion JSON
 UserSchema.methods.assertion = (slug, callback) ->
