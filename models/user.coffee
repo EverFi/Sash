@@ -137,10 +137,11 @@ UserSchema.methods.assertion = (slug, callback) ->
     badge = badges[0]
     if badge?
       assertion.badge = {
+        name: badge.name
         image: badge.image.original.defaultUrl
         version: badge.version
         description: badge.description
-        criteria: badge.criteria
+        criteria: badge.criteriaUrl
         issuer:
           origin: badge.issuer_id.origin
           name: badge.issuer_id.name

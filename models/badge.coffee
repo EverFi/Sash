@@ -83,6 +83,9 @@ BadgeSchema.virtual('slugUrl').get ->
 BadgeSchema.virtual('imageUrl').get ->
   @image.original.defaultUrl
 
+BadgeSchema.virtual('criteriaUrl').get ->
+  "http://#{configuration.get('host')}/badges/#{@slug}/criteria"
+
 BadgeSchema.pre 'save', (next)->
   if @criteria?
     @criteria = markdown.parse(@criteria, markdown.flags.autolink)
