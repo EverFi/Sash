@@ -106,6 +106,7 @@ routes = (app) ->
         User.findOrCreate username, email,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
+            next(err) if err
             user.earn badge, (err, response) ->
               next(err) if err
               console.log "Badge Issue Response: #{response}"

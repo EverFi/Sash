@@ -64,6 +64,8 @@ UserSchema = new Schema
   tags: [String]
   email_hash: String
 
+UserSchema.index({ email: 1, username: 1 })
+UserSchema.index({ email_hash: 1})
 UserSchema.plugin(timestamps)
 
 UserSchema.pre 'save', (next)->
@@ -164,10 +166,25 @@ User = db.model 'User', UserSchema
 User.findByUsernameOrEmail = (username, email, callback)->
   promise = new Promise
   promise.addBack(callback) if callback
-  User.where().or([{username: username}, {email: email}])
-    .populate('organization')
-    .exec (err, users)->
-      promise.resolve(err, users[0])
+  if username? && email?
+    User.where().or([{username: username}, {email: email}])
+      .populate('organization')
+      .exec (err, users)->
+        promise.resolve(err, users[0])
+  else if !username? && email?
+    User.where('email').equals(email)
+      .populate('organization')
+      .exec (err, users)->
+        promise.resolve(err, users[0])
+  else if username? && !email?
+    User.where('username').equals(username)
+      .populate('organization')
+      .exec (err, users)->
+        promise.resolve(err, users[0])
+  else
+    e = new Error("Need either username or email!")
+    promise.resolve(e, null)
+
   promise
 
 User.findByEmailHash = (email_hash, callback) ->
@@ -184,6 +201,9 @@ User.findOrCreate = (username, email, options, callback)->
   issuer_id = options.issuer_id
   tags = options.tags
   User.findByUsernameOrEmail username, email, (e, user)->
+    if e?
+      callback(e, null)
+      return
     if user?
       user.email = email if !user.email? && email?
       user.tags.merge tags if tags?
@@ -193,11 +213,9 @@ User.findOrCreate = (username, email, options, callback)->
       user = new User username: username, email: email, organization: issuer_id
       user.tags.merge tags if tags?
       user.save (err)->
-        if err
-          callback(err)
-        else
-          callback(null, user)
+        callback(err, user)
 
 module.exports = User
+
 
 
