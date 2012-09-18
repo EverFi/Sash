@@ -22,7 +22,7 @@ BadgeSchema = new Schema
     type: Schema.ObjectId,
     ref: 'Organization'
   issued_count:
-    type: Number,
+    type: String,
     default: 0
   slug :
     type: String,
