@@ -11,9 +11,14 @@ routes = (app) ->
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
       username = req.query.username
-      next() if !username?
+      unless username?
+        res.status(404).send("Not Found")
+        return
+
       User.findOne {username: username}, (err, user) ->
-        next(err) if err?
+        if err?
+          next(err)
+          return
         if user?
           badges = user.badges.map (badge)->
             badge = badge.toJSON()
