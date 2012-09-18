@@ -15,8 +15,8 @@ routes = (app) ->
       User.findOne {username: username}, (err, user) ->
         next(err) if err?
         if user?
-          badges = user.badges.map ->
-            badge = @toJSON();
+          badges = user.badges.map (badge)->
+            badge = badge.toJSON()
             badge.assertion = "http://#{configuration.get('hostname')}/users/#{user.email_hash}/badges/#{badge.slug}"
             badge
           formatResponse req, res, badges
