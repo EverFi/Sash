@@ -2,6 +2,7 @@ User = require '../../models/user'
 util = require 'util'
 fs = require 'fs'
 authenticate = require '../middleware/authenticate'
+configuration = require '../../lib/configuration'
 _ = require 'underscore'
 
 routes = (app) ->
@@ -14,7 +15,11 @@ routes = (app) ->
       User.findOne {username: username}, (err, user) ->
         next(err) if err?
         if user?
-          formatResponse req, res, user.badges
+          badges = user.badges.map ->
+            badge = @toJSON();
+            badge.assertion = "http://#{configuration.get('hostname')}/users/#{user.email_hash}/badges/#{badge.slug}"
+            badge
+          formatResponse req, res, badges
         else
           formatResponse req, res, []
 
