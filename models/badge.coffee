@@ -3,6 +3,8 @@ attachments = require 'mongoose-attachments'
 moment = require 'moment'
 markdown = require('discount')
 configuration = require '../lib/configuration'
+util = require 'util'
+fs = require 'fs'
 db = mongoose.createConnection configuration.get('mongodb')
 
 Promise = require('mongoose').Promise
@@ -29,19 +31,38 @@ BadgeSchema = new Schema
     unique: true
   tags: [String]
 
-BadgeSchema.plugin attachments,
-  directory: 'badge-images'
-  storage:
-    providerName: 's3'
-    options:
-      key: process.env.S3_KEY
-      secret: process.env.S3_SECRET
-      bucket: process.env.S3_BUCKET
-  properties:
-    image:
-      styles:
-        original:
-          '$format': 'png'
+usingAWS = ->
+  process.env.S3_KEY? && process.env.S3_SECRET? &&  process.env.S3_BUCKET?
+
+if usingAWS()
+  BadgeSchema.plugin attachments,
+    directory: 'badge-images'
+    storage:
+      providerName: 's3'
+      options:
+        key: process.env.S3_KEY
+        secret: process.env.S3_SECRET
+        bucket: process.env.S3_BUCKET
+    properties:
+      image:
+        styles:
+          original:
+            '$format': 'png' # OBI wants PNGs
+
+else
+  BadgeSchema.add image: Schema.Types.Mixed
+  BadgeSchema.methods.attach = (name, image, next)->
+    ins = fs.createReadStream image.path
+    writeTo = __dirname + ".." + configuration.get('upload_dir') + image.filename 
+    ous = fs.createWriteStream writeTo
+    util.pump ins, ous, (err)=>
+      next(err) if err
+      p = configuration.get('protocol')
+      host = configuration.get('hostname')
+      dir = configuration.get('upload_dir').replace(/public\//, '')
+      fullFileName = "#{p}://#{host}#{dir}#{image.filename}"
+      @image =  {original: {defaultUrl: fullFileName}}
+      next(null, @)
 
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"
