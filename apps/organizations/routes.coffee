@@ -30,7 +30,6 @@ routes = (app) ->
     res.render "#{__dirname}/views/dashboard",
       org: req.org
       badges: req.org.badges(10)
-      users: req.org.users()
       badgeCount: req.org.badgeCount()
 
   app.get '/users', authenticate, (req, res, next) ->
