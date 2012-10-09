@@ -59,6 +59,19 @@ routes = (app) ->
         user.save ->
           formatResponse(req, res, {success: true})
 
+    # Delete an Earned Badge
+    app.get '/badges/:badge_slug/destroy', (req, res, next) ->
+      badgeSlug = req.params.badge_slug
+      username = req.query.username
+      User.findOne {username: username}, (err, user) ->
+        badge = _.detect user.badges, (b) -> b.slug == badgeSlug
+        if badge? && user?
+          badge.remove()
+          user.save ->
+            formatResponse(req, res, {success: true})
+        else
+          formatResponse(req, res, {success: false})
+
   #BADGE ASSERTION
   app.get '/users/:email_hash/badges/:badge_slug.:format?', (req, res, next) ->
     email_hash = req.params.email_hash
