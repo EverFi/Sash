@@ -99,24 +99,36 @@ routes = (app) ->
       console.log("Trying to issue badge: #{req.params.slug}")
       console.log("params: {username: #{username}, email: #{email}, slug: #{req.params.slug}")
       Badge.findOne slug: req.params.slug, (err, badge) ->
-        next(err) if err
-        unless badge? & username?
-          console.log("Can't issue badge #{req.params.slug}, doesn't exist")
+        if err?
+          console.log("Error Finding Badge: #{JSON.stringify(err)}")
           res.send JSON.stringify({issued: false}),
             'content-type': 'application/json'
           return
 
-
+        unless badge? & username?
+          console.error("Can't issue badge #{req.params.slug}, doesn't exist")
+          res.send JSON.stringify({issued: false}),
+            'content-type': 'application/json'
+          return
         User.findOrCreate username, email,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
-            console.log("user: #{JSON.stringify(user)}")
-            next(err) if err
-            user.earn badge, (err, response) ->
-              next(err) if err
-              console.log "Badge Issue Response: #{JSON.stringify(response)}"
-              res.send JSON.stringify(response),
+            if err?
+              console.error("Can't issue badge #{req.params.slug}, #{JSON.stringify(err)}")
+              res.send json.stringify({message: "error issuing badge", error: err}),
                 'content-type': 'application/json'
+              return
+            console.log("user: #{user.username}/#{user.email}, id: #{user.id}")
+            user.earn badge, (err, response) ->
+              if err?
+                response = {message: "Failed to issue Badge", error: err}
+                console.error "Badge Issue Response: #{JSON.stringify(response)}"
+                return
+              else
+                console.log "Badge Issue Response: #{JSON.stringify(response)}"
+                res.send json.stringify(response),
+                  'content-type': 'application/json'
+                return
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
