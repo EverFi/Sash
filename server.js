@@ -3,6 +3,8 @@
  * Module dependencies.
  */
 
+// require('nodetime').profile()
+
 require('coffee-script');
 
 if(typeof process.env.NODE_ENV === 'undefined')
@@ -37,7 +39,7 @@ app.configure(function(){
   app.set('view engine', 'jade');
   app.set('port', process.env.PORT);
   app.set('upload_dir', __dirname + '/public/uploads/');
-  if (process.env.NODE_ENV == 'development'){
+  if (process.env.NODE_ENV === 'development'){
     app.use(express.logger());
   }
   app.use(express.bodyParser());

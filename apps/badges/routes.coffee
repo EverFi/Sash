@@ -95,6 +95,9 @@ routes = (app) ->
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
       email = req.body.email
+      email = undefined if(email == '')
+      console.log("Trying to issue badge: #{req.params.slug}")
+      console.log("params: {username: #{username}, email: #{email}, slug: #{req.params.slug}")
       Badge.findOne slug: req.params.slug, (err, badge) ->
         next(err) if err
         unless badge? & username?
@@ -103,13 +106,15 @@ routes = (app) ->
             'content-type': 'application/json'
           return
 
+
         User.findOrCreate username, email,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
+            console.log("user: #{JSON.stringify(user)}")
             next(err) if err
             user.earn badge, (err, response) ->
               next(err) if err
-              console.log "Badge Issue Response: #{response}"
+              console.log "Badge Issue Response: #{JSON.stringify(response)}"
               res.send JSON.stringify(response),
                 'content-type': 'application/json'
 

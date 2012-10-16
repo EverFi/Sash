@@ -42,6 +42,10 @@ Sash
   Sash is builting using Node.js & CoffeeScript, on top of the delightful Express.js framework. 
   Sash uses MongoDB for the database.
 
+## Ok COOL. How do I get started??
+  Install node.js 0.8.X
+  Install MongoDB & Redis
+
 ## Status
 
   Sash is currently under active development. If you want to get involved contact us @ engineering@everfi.com!

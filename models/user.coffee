@@ -105,20 +105,20 @@ UserSchema.methods.earn = (badge, callback)->
     b.issued_count = undefined
     @badges.push b
     @save (err, user)=>
+      if err
+        callback(err, null)
       @model("Badge").findByIdAndUpdate badge.id, {$inc:{issued_count: 1}},->
-      # badge.issued_count.$inc()
-      badge.save()
-      callback null, {
-        message: 'successfully added badge'
-        earned: true
-        badge:
-          # Using dot accessors here so the custom getters are invoked
-          name: badge.name
-          description: badge.description
-          image: badge.imageUrl
-          criteria: badge.criteria
-          id: badge.id
-      }
+        callback null, {
+          message: 'successfully added badge'
+          earned: true
+          badge:
+            # Using dot accessors here so the custom getters are invoked
+            name: badge.name
+            description: badge.description
+            image: badge.imageUrl
+            criteria: badge.criteria
+            id: badge.id
+        }
 
 formatDate = (dateObj)->
   moment(dateObj).format("YYYY-MM-DD")
