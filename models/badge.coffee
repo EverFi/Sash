@@ -1,20 +1,21 @@
-mongoose = require 'mongoose'
-attachments = require 'mongoose-attachments'
-moment = require 'moment'
-markdown = require('discount')
+mongoose      = require 'mongoose'
+timestamps    = require 'mongoose-timestamps'
+attachments   = require 'mongoose-attachments'
+moment        = require 'moment'
 configuration = require '../lib/configuration'
-util = require 'util'
-fs = require 'fs'
-db = mongoose.createConnection configuration.get('mongodb')
+util          = require 'util'
+fs            = require 'fs'
+path          = require 'path'
+_             = require 'underscore'
+_.str         = require 'underscore.string'
+_.mixin(_.str.exports())
+require 'mongoose-attachments/lib/providers/localfs'
 
-Promise = require('mongoose').Promise
-timestamps = require 'mongoose-timestamps'
-Schema = mongoose.Schema
+Promise = mongoose.Promise
+Schema  = mongoose.Schema
+db      = mongoose.createConnection configuration.get('mongodb')
 
-_ =  require 'underscore'
-_.str = require('underscore.string');
-_.mixin(_.str.exports());
-
+# Setup the Schema
 BadgeSchema = new Schema
   name:          String
   description:   String
@@ -31,53 +32,63 @@ BadgeSchema = new Schema
     unique: true
   tags: [String]
 
-usingAWS = ->
-  process.env.S3_KEY? && process.env.S3_SECRET? &&  process.env.S3_BUCKET?
+# Setup any plugins
+BadgeSchema.plugin(timestamps);
 
-if usingAWS()
-  BadgeSchema.plugin attachments,
-    directory: 'badge-images'
-    storage:
-      providerName: 's3'
-      options:
-        key: process.env.S3_KEY
-        secret: process.env.S3_SECRET
-        bucket: process.env.S3_BUCKET
-    properties:
-      image:
-        styles:
-          original:
-            '$format': 'png' # OBI wants PNGs
+attachmentsConfig = {
+  storage: {}
+  properties:
+    image:
+      styles:
+        original:
+          '$format': 'png' # OBI wants PNGs
+        fullRetina:
+          resize: '250x250>'
+          '$format': 'png' # OBI wants PNGs
+        full:
+          resize: '125x125>'
+          '$format': 'png' # OBI wants PNGs
+        mini:
+          resize: '27x27>'
+          '$format': 'png' # OBI wants PNGs
+        miniRetina:
+          resize: '52x52>'
+          '$format': 'png' # OBI wants PNGs
+}
 
+if configuration.usingS3()
+  attachmentsConfig.storage = {
+    providerName: 's3'
+    options:
+      key: process.env.S3_KEY
+      secret: process.env.S3_SECRET
+      bucket: process.env.S3_BUCKET
+  }
+  attachmentsConfig.directory = 'badge-images'
 else
-  BadgeSchema.add image: Schema.Types.Mixed
-  BadgeSchema.methods.attach = (name, image, next)->
-    ins = fs.createReadStream image.path
-    writeTo = __dirname + ".." + configuration.get('upload_dir') + image.filename 
-    ous = fs.createWriteStream writeTo
-    util.pump ins, ous, (err)=>
-      next(err) if err
-      p = configuration.get('protocol')
-      host = configuration.get('hostname')
-      dir = configuration.get('upload_dir').replace(/public\//, '')
-      fullFileName = "#{p}://#{host}#{dir}#{image.filename}"
-      @image =  {original: {defaultUrl: fullFileName}}
-      next(null, @)
+  attachmentsConfig.storage = {
+    providerName: 'fs'
+    options: '/Users/jobin2/codez/Sash/public/uploads1'
+  }
+  attachmentsConfig.directory = configuration.get('upload_dir');
+
+
+BadgeSchema.plugin attachments, attachmentsConfig
 
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"
 
 BadgeSchema.virtual('imageUrl').get ->
-  @image.original.defaultUrl
+  if configuration.usingS3()
+    @image.full.defaultUrl
+  else
+    dir = path.resolve('./') + '/public'
+    @image.full.defaultUrl.replace dir, ''
 
 BadgeSchema.virtual('criteriaUrl').get ->
   "http://#{configuration.get('hostname')}/badges/#{@slug}/criteria"
 
 BadgeSchema.pre 'save', (next)->
-  if @criteria?
-    @criteria = markdown.parse(@criteria, markdown.flags.autolink)
-  if @description?
-    @description = markdown.parse(@description, markdown.flags.autolink)
   if @tags.length == 1 && @tags[0].match(/,/)
     @tags = @tags[0].toLowerCase().split(',')
   next()
@@ -99,7 +110,6 @@ BadgeSchema.pre 'save', (next) ->
   else
     next()
 
-BadgeSchema.plugin(timestamps);
 
 BadgeSchema.methods.issuer = (callback)->
   promise = new Promise

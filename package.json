@@ -16,10 +16,8 @@
     "underscore": "~1.3.3",
     "express-mongoose": "0.0.5",
     "moment": "~1.6.2",
-    "markdown": "~0.4.0",
-    "discount": "~0.2.3",
     "underscore.string": "2.3.0",
-    "mongoose-attachments": "0.0.2",
+    "mongoose-attachments": "git://github.com/firebaseco/mongoose-attachments.git#master",
     "libxmljs": "~0.6.0"
   },
   "devDependencies": {

@@ -46,6 +46,9 @@ Sash
   Install node.js 0.8.X
   Install MongoDB & Redis
 
+  `npm install` to install package dependencies
+   run the server with `bin/devserver`
+
 ## Status
 
   Sash is currently under active development. If you want to get involved contact us @ engineering@everfi.com!
