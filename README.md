@@ -29,6 +29,38 @@ Sash
   The User is automatically initialized in the system if they don't exist (unique by 
   username and organization), and the badge is issued to them.
 
+### Issue API
+
+ENDPOINT: `/issue/:badge-slug`
+METHOD: `POST`
+PARAMS:
+  `api\_key`
+  `username`
+  `email`: you may provide username, email or both
+  `tags` (optional): Any metadata 'tags' that you want to associate to the uses, ie grouping
+info
+
+Example Response:
+```json
+{
+  "earned": true,
+  "badge": {
+    "name":"Trailblazer",
+    "image":"http://sash-badges.s3.amazonaws.com/badge-images/5035307c2508920200000008-original.png",
+    "description":"Thanks for registering. Now get in there and learn something!",
+    "criteria":"Register for the course",
+    "version":"1.0.0",
+    "slug":"trailblazer",
+    "tags":["register","generic"],
+    "issued_on":"2012-11-16T18:53:46.356Z",
+    "seen":true,
+    "id":"5035307c2508920200000008",
+    "assertion":"http://badges.everfi.net/users/aa7e37bba4f93e5a09554d4f3c0d0ae9424dda4027061b87cbb2c1bbf5b0f660/badges/trailblazer"
+  }
+}
+```
+
+
 ## Displaying Badges
 
   Sash provides a display API allows you to query out the badges for an individual
@@ -37,6 +69,46 @@ Sash
   the user of a new badge. Sash also provides an API call for marking
   individual badges as seen.
 
+### Display API
+
+Retreve a user's badges in JSON
+ENDPOINT: `/badges.json'
+METHOD: `GET`
+PARAMS:
+  `username` and or `email`
+  `callback` (optional)
+
+Example Response:
+```json
+{
+  "name":"Trailblazer",
+  "image":"http://sash-badges.s3.amazonaws.com/badge-images/5035307c2508920200000008-original.png",
+  "description":"Thanks for registering. Now get in there and learn something!",
+  "criteria":"Register for the course",
+  "version":"1.0.0",
+  "slug":"trailblazer",
+  "tags":["register","generic"],
+  "issued_on":"2012-11-16T18:53:46.356Z",
+  "seen":true,
+  "id":"5035307c2508920200000008",
+  "assertion":"http://badges.everfi.net/users/aa7e37bba4f93e5a09554d4f3c0d0ae9424dda4027061b87cbb2c1bbf5b0f660/badges/trailblazer"
+}
+```
+
+Mark a badge as seen by the user
+ENDPOINT: `/badges/:badge\_id/seen`
+METHOD: `GET`
+PARAMS:
+  `username` and or `email`
+  `callback` (optional)
+
+RESPONSE:
+```json
+  { "success": true }
+```
+
+... More documentation to come
+
 ## Technology behind Sash
 
   Sash is builting using Node.js & CoffeeScript, on top of the delightful Express.js framework. 
@@ -44,9 +116,11 @@ Sash
 
 ## Ok COOL. How do I get started??
   Install node.js 0.8.X
+
   Install MongoDB & Redis
 
   `npm install` to install package dependencies
+
    run the server with `bin/devserver`
 
 ## Status
