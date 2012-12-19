@@ -44,19 +44,20 @@ attachmentsConfig = {
           '$format': 'png' # OBI wants PNGs
         fullRetina:
           resize: '250x250>'
-          '$format': 'png' # OBI wants PNGs
+          '$format': 'png'
         full:
           resize: '125x125>'
-          '$format': 'png' # OBI wants PNGs
+          '$format': 'png'
         mini:
           resize: '27x27>'
-          '$format': 'png' # OBI wants PNGs
+          '$format': 'png'
         miniRetina:
           resize: '52x52>'
-          '$format': 'png' # OBI wants PNGs
+          '$format': 'png'
 }
 
 if configuration.usingS3()
+  console.log "Using S3 for Badge images"
   attachmentsConfig.storage = {
     providerName: 's3'
     options:
@@ -66,6 +67,7 @@ if configuration.usingS3()
   }
   attachmentsConfig.directory = 'badge-images'
 else
+  console.log "Using local filesystem for Badge images"
   attachmentsConfig.storage = {
     providerName: 'fs'
     options: '/Users/jobin2/codez/Sash/public/uploads1'
