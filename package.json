@@ -18,7 +18,8 @@
     "moment": "~1.6.2",
     "underscore.string": "2.3.0",
     "mongoose-attachments": "git://github.com/firebaseco/mongoose-attachments.git#master",
-    "libxmljs": "~0.6.0"
+    "libxmljs": "~0.6.0",
+    "async": "~0.1.22"
   },
   "devDependencies": {
     "node-dev": "~0.2.3",

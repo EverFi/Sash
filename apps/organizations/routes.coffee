@@ -1,6 +1,7 @@
 Organization = require '../../models/organization'
 util = require 'util'
 fs = require 'fs'
+async = require 'async'
 authenticate = require '../middleware/authenticate'
 
 routes = (app) ->
@@ -33,9 +34,10 @@ routes = (app) ->
       badgeCount: req.org.badgeCount()
 
   app.get '/users', authenticate, (req, res, next) ->
-    res.render "#{__dirname}/views/users",
-      org: req.org
-      users: req.org.users()
+    async.map req.org.users(), filterUsername, (err, results) ->
+      res.render "#{__dirname}/views/users",
+        org: req.org
+        users: results
 
 
   app.namespace '/organizations', authenticate, ->
@@ -61,3 +63,6 @@ routes = (app) ->
     app.del '/:id', (req, res, next) ->
 
 module.exports = routes
+
+filterUsername = (user, callback) ->
+  return callback(null, user.username)

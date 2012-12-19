@@ -86,7 +86,11 @@ routes = (app) ->
 
 
   # authenticated User Routes
-  app.namespace '/users', authenticate, -> 
+  app.namespace '/users', authenticate, ->
+
+    app.get '/', (req, res, next) ->
+      res.render "#{__dirname}/views/users"
+
     #SHOW
     app.get '/:id', (req, res, next) ->
       User.findById req.params.id, (err, user)->
