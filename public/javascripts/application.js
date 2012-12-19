@@ -1,3 +1,19 @@
+
+window.Utils = {
+  form: {
+    basicValidation: function (form) {
+      var inputs = $( 'input:required', form );
+      var stat = true;
+      $.each(inputs, function (index, input){
+        if ( !$(this).val() || $(this).val() === '' ) {
+          stat = false;
+        }
+      });
+      return stat;
+    }
+  }
+}
+
 $(document).ready(function(){
 
   // Remote form hadler
@@ -26,4 +42,11 @@ $(document).ready(function(){
   $('form.delete').on('ajax:success', function(e, response, stat, xhr){
     $(this).parents("li").remove();
   });
-})
+
+  // Validate create form
+  $('form.new-badge input, textarea').on('change', function(e) {
+    if ( Utils.form.basicValidation( $('form.new-badge') ) ) {
+      $('input:submit').removeAttr('disabled')
+    }
+  });
+});

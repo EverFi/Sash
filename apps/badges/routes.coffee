@@ -40,6 +40,7 @@ routes = (app) ->
         next(err) if err
         badge.save (err, doc) ->
           next(err) if err
+          console.log(doc)
           req.flash 'info', 'Badge saved successfully!'
           res.redirect '/badges'
 
