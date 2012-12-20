@@ -11,11 +11,12 @@ routes = (app) ->
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
       username = req.query.username
-      unless username?
+      email = req.query.email
+      unless username? || email?
         res.status(404).send("Not Found")
         return
 
-      User.findOne {username: username}, (err, user) ->
+      User.findByUsernameOrEmail username, email, (err, user) ->
         if err?
           next(err)
           return
@@ -31,7 +32,12 @@ routes = (app) ->
     # Show newly awarded badges
     app.get '/badges/has_new_badges.:format?', (req, res, next) ->
       username = req.query.username
-      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+      email = req.query.email
+      unless username? || email?
+        res.status(404).send("Not Found")
+        return
+
+      User.findByUsernameOrEmail username, email, (err, user) ->
         badges = _.select user.badges, (badge) -> !badge.seen
 
         formatResponse req, res, {has_new_badges: badges.length > 0}
@@ -39,7 +45,12 @@ routes = (app) ->
     # Show newly awarded badges
     app.get '/badges/new.:format?', (req, res, next) ->
       username = req.query.username
-      User.findOne {username: username, organization: req.org.id}, (err, user) ->
+      email = req.query.email
+      unless username? || email?
+        res.status(404).send("Not Found")
+        return
+
+      User.findByUsernameOrEmail username, email, (err, user) ->
         badges = _.select user.badges, (badge) -> !badge.seen
 
         if req.xhr || req.params.format == 'json'
@@ -53,7 +64,12 @@ routes = (app) ->
     app.get '/badges/:badge_id/seen', (req, res, next) ->
       badgeId = req.params.badge_id
       username = req.query.username
-      User.findOne {username: username}, (err, user) ->
+      email = req.query.email
+      unless username? || email?
+        res.status(404).send("Not Found")
+        return
+
+      User.findByUsernameOrEmail username, email, (err, user) ->
         badge = _.detect user.badges, (b) -> b._id.toString() == badgeId
         badge.seen = true
         user.save ->
@@ -63,7 +79,12 @@ routes = (app) ->
     app.get '/badges/:badge_slug/destroy', (req, res, next) ->
       badgeSlug = req.params.badge_slug
       username = req.query.username
-      User.findOne {username: username}, (err, user) ->
+      email = req.query.email
+      unless username? || email?
+        res.status(404).send("Not Found")
+        return
+
+      User.findByUsernameOrEmail username, email, (err, user) ->
         badge = _.detect user.badges, (b) -> b.slug == badgeSlug
         if badge? && user?
           badge.remove()

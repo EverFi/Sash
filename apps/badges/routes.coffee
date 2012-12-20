@@ -116,7 +116,7 @@ routes = (app) ->
           (err, user) ->
             if err?
               console.error("Can't issue badge #{req.params.slug}, #{JSON.stringify(err)}")
-              res.send json.stringify({message: "error issuing badge", error: err}),
+              res.send JSON.stringify({message: "error issuing badge", error: err}),
                 'content-type': 'application/json'
               return
             console.log("user: #{user.username}/#{user.email}, id: #{user.id}")
@@ -127,7 +127,7 @@ routes = (app) ->
                 return
               else
                 console.log "Badge Issue Response: #{JSON.stringify(response)}"
-                res.send json.stringify(response),
+                res.send JSON.stringify(response),
                   'content-type': 'application/json'
                 return
 
