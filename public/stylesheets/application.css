@@ -523,15 +523,11 @@ ul.badge-list li .badge-counts {
   clear: both;
 }
 
-.all-users-btn {
-  margin-left:180px !important;
-  width:300px;
-  padding: 4px 10px 4px !important;
-}
 /* User search */
 
 .search-content {
   margin-top:50px;
+  height:100px;
 }
 
 .user-search-form {
@@ -556,7 +552,7 @@ ul.badge-list li .badge-counts {
 }
 
 .user-result-item .user-image {
-  width:96px; height:96px; background:url(/images/sups.png)
+  width:96px; height:96px; background:url(/images/user.png)
 }
 
 .user-result-item .user-info {
@@ -564,7 +560,7 @@ ul.badge-list li .badge-counts {
 }
 
 .user-info span {
-  padding:5px;
+  padding:10px;
 }
 
 .user-result-item {

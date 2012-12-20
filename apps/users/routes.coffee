@@ -8,6 +8,19 @@ _ = require 'underscore'
 routes = (app) ->
   app.namespace '/users', ->
 
+    app.get '/username/:username', (req, res, next) ->
+      username = req.params.username
+      unless username?
+        res.status(404).send('Not Found')
+        return
+
+      User.find {username: username}, (err, user) ->
+        if err?
+          next(err)
+          return
+        if user?
+          formatResponse req, res, user
+
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
       username = req.query.username

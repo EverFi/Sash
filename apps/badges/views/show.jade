@@ -51,8 +51,40 @@ div#badge-show
       strong Slug:  
       = badge.slug
 
+  button.issue Issue
+
   div.row
     a(href="/badges/#{badge.id}/edit") Edit Me
     form(action="/badges/#{badge.id}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
       input(type="hidden", value="delete", name="_method")
       input(type="submit", value="Delete", class="delete")
+
+  script
+    $('.issue').click(function(){
+      $.post('/badges/issue/the-man', {username:'dyno-might'}, function(data){
+          console.log(data)
+        });
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

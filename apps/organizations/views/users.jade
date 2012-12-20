@@ -2,21 +2,42 @@
 div.search-content
 	form.user-search-form.form-search
 		input.input-large.search-query.user-search-typeahead(type="text", placeholder="Username Or User Email")
-		button.btn(type="btn") Search
-		br
-		p Or
-		button.btn.btn-large.btn-block.btn-primary.all-users-btn(type="button") Show all users
-//- div.user-search-results
-//- 	div.user-result-item
-//- 		div.pull-left.user-image
-//- 		div.user-info
-//- 			span.name john doe
-//- 			br
-//- 			span.org johnny
-//- 			br
-//- 			span.username johnnray
+		button#user-search-go.btn(type="button") Search
+div.user-search-results
 
 script
-	$('.user-search-typeahead').typeahead({
-		source: "#{users}".split(',')
+	var usersObj = !{JSON.stringify(users)}
+	var usernames = $.map(usersObj, function (obj, index){
+		return obj.username;
 	});
+	
+	$('.user-search-typeahead').typeahead({
+		source: usernames
+	});
+
+	$('#user-search-go').on('click', function(e){
+		var query = $('.search-query').val();
+		if ( query && query !== '' ) {
+			var path = '/users/username/' + query;
+			$.get(path, function (data){
+				displayResults( data );
+			});
+		}
+	});
+
+	function displayResults(results) {
+		if ( results.length > 0 ) {
+			results.forEach(function (u){
+				u.name = u.name || '[No Name]';
+			});
+			$.get('/users/render', {users:results}, function (data) {
+				$('.user-search-results').html( data );
+			});
+		} else {
+			noResults();
+		}
+	}
+
+	function noResults() {
+		console.log('no results')
+	}
