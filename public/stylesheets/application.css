@@ -518,7 +518,6 @@ ul.badge-list li .badge-counts {
   box-shadow: 1px 1px 2px #666;
 }
 
-
 .clear {
   clear: both;
 }
@@ -526,12 +525,13 @@ ul.badge-list li .badge-counts {
 /* User search */
 
 .search-content {
-  margin-top:50px;
+  margin-top:150px;
   height:100px;
 }
 
 .user-search-form {
   height:200px;
+  width:500px;
 }
 
 .user-search-form p {
@@ -539,16 +539,33 @@ ul.badge-list li .badge-counts {
 }
 
 .user-search-form input {
-  height:30px; margin-left:180px;
+  height:30px; 
+  position: relative;
+  left: 50%;
+  text-align: center;
+  margin-left: -150px;
+  display:block;
+  width:300px;
+
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -o-border-radius: 15px;
 }
 
 .user-search-form .btn {
-  margin-left:10px; margin-top:1px; height:30px;
+  position: relative;
+  left: 50%;
+  top: 20px;
+  margin-left: -30px; 
+  height:30px;
 }
 
 .user-result-item {
-  width:400px; margin-left:auto; margin-right:auto;
-  cursor:pointer;
+  width:400px; 
+  margin-left:auto; 
+  margin-right:auto;
+  margin-top:60px;
 }
 
 .user-result-item .user-image {
@@ -564,7 +581,7 @@ ul.badge-list li .badge-counts {
 }
 
 .user-result-item {
-  margin-top:10px;
+  
 }
 
 .user-result-item:hover {
@@ -576,6 +593,30 @@ ul.badge-list li .badge-counts {
   margin-left:auto;
   margin-right:auto;
   width:350px;
+}
+
+.user-search-clear-results {
+  width: 80px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 40px;
+  font-size:12px;
+  display:none;
+}
+
+.no-results {
+  text-align: center;
+  width: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  display:none;
+}
+
+.input-error {
+  box-shadow: 0px 0px 15px 1px red !important;
+  -webkit-box-shadow: 0px 0px 15px 1px red !important;
+  -moz-box-shadow: 0px 0px 15px 1px red !important;
+  -o-box-shadow: 0px 0px 15px 1px red !important;
 }
 
 

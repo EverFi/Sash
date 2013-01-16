@@ -1,43 +1,72 @@
 
 div.search-content
 	form.user-search-form.form-search
-		input.input-large.search-query.user-search-typeahead(type="text", placeholder="Username Or User Email")
+		input.input-large.search-query.user-search-typeahead(type="text", placeholder="Username")
 		button#user-search-go.btn(type="button") Search
+		div.user-search-clear-results.alert.alert-info
+			a(href='#') Clear Results
 div.user-search-results
+	p.no-results No Results
 
 script
 	var usersObj = !{JSON.stringify(users)}
+	var usernamesToIds = {};
 	var usernames = $.map(usersObj, function (obj, index){
+		usernamesToIds[obj.username] = obj._id;
 		return obj.username;
 	});
-	
+
+	function results() {
+		//- $('.user-search-results .user-info').on('click', function(){
+		//- 	var username = $(this).find('.username').html();
+		//- 	var id = usernamesToIds[ username ];
+		//- 	var path = '/users/' + id;
+		//- 	console.log(path)
+		//- 	$.get(path, function(d){
+		//- 		console.log(d)
+		//- 		});
+		//- });
+	}
+		
 	$('.user-search-typeahead').typeahead({
 		source: usernames
 	});
 
-	$('#user-search-go').on('click', function(e){
+	$('.user-search-clear-results').on('click', function(){
+		$('.user-search-results').html( '' );
+		$( this ).hide();
+	});
+
+	$('#user-search-go').on('click', onSearch);
+
+	function onSearch(e) {
 		var query = $('.search-query').val();
 		if ( query && query !== '' ) {
+			$('.search-query').removeClass( 'input-error' );
 			var path = '/users/username/' + query;
-			$.get(path, function (data){
-				displayResults( data );
-			});
+			$.get(path, displayResults);
+		} else {
+			$('.search-query').addClass( 'input-error' );
 		}
-	});
+	}
 
 	function displayResults(results) {
 		if ( results.length > 0 ) {
 			results.forEach(function (u){
 				u.name = u.name || '[No Name]';
 			});
-			$.get('/users/render', {users:results}, function (data) {
-				$('.user-search-results').html( data );
-			});
+			$.get('/users/render', {users:results}, renderResults);
 		} else {
 			noResults();
 		}
 	}
 
+	function renderResults(data) {
+		$('.user-search-results').html( data );
+		results();
+		$('.user-search-clear-results').show();
+	}
+
 	function noResults() {
-		console.log('no results')
+		$('.no-results').show();
 	}

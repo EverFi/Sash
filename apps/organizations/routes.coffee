@@ -3,17 +3,13 @@ util = require 'util'
 fs = require 'fs'
 async = require 'async'
 jade = require 'jade'
+path = require 'path'
 authenticate = require '../middleware/authenticate'
-#Need to move this to external file
-userJade = 'div.user-result-item\n' +
-  ' div.pull-left.user-image\n' +
-  ' div.user-info\n' +
-  '   br\n' +
-  '   span.username #{username}\n' +
-  '   br\n' +
-  '   span.name #{name}\n'
-  '   br\n' +
-  '   span.badges-count #{badges.length} Badge(s)\n'
+userJade = ''
+userTemplateFile = path.resolve __dirname + '/views/templates/user.jade'
+
+fs.readFile userTemplateFile, (err, data) ->
+  userJade = data.toString()
 
 routes = (app) ->
   #NEW
@@ -56,7 +52,6 @@ routes = (app) ->
 
 
   app.get '/users', authenticate, (req, res, next) ->
-    # async.map req.org.users(), filterUsername, (err, results) ->
     res.render "#{__dirname}/views/users",
       org: req.org
       users: req.org.users()
@@ -87,4 +82,6 @@ routes = (app) ->
 module.exports = routes
 
 filterUsername = (user, callback) ->
+  console.log('---------------------------\n')
+  console.log(user)
   return callback(null, user.username)
