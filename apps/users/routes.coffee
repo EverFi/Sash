@@ -156,6 +156,7 @@ routes = (app) ->
         res.render "#{__dirname}/views/show",
           user: user,
           host: 'http://' + configuration.get('hostname'),
+          org: userOrg(user.organization)
           badges: user.badges
 
 
@@ -167,6 +168,13 @@ formatResponse = (req, res, data) ->
   else
     res.send JSON.stringify(data),
       'content-type': 'application/json'
+
+userOrg = (id, callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  Organization.findOne {_id:id},
+    promise.resolve.bind(promise)
+  promise
 
 allOrgs = (callback) ->
   promise = new Promise

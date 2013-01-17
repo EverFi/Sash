@@ -21,6 +21,9 @@ div.user-info-container
         td #{user.email}
       else
         td -
+    tr
+      td Organization
+      td #{org.name}
   legend Earned Badges
   div.badges-container
     each badge in badges
