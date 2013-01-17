@@ -1,3 +1,4 @@
+
 div#badge-show
   div.row
     div.span2
@@ -51,7 +52,7 @@ div#badge-show
       strong Slug:  
       = badge.slug
 
-  button.issue Issue
+  //- button.issue Issue
 
   div.row
     a(href="/badges/#{badge.id}/edit") Edit Me
@@ -60,8 +61,9 @@ div#badge-show
       input(type="submit", value="Delete", class="delete")
 
   script
+    // dev stuff
     $('.issue').click(function(){
-      $.post('/badges/issue/the-man', {username:'dyno-might'}, function(data){
+      $.post('/badges/issue/awesomeness', {username:'johnnyray'}, function(data){
           console.log(data)
         });
     });

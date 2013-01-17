@@ -70,7 +70,7 @@ routes = (app) ->
       res.render "#{__dirname}/views/show",
         org: req.org
 
-    #EDIT
+    #edit
     app.get '/:id/edit', (req, res) ->
 
     #UPDATE

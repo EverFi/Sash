@@ -45,15 +45,32 @@ attachmentsConfig = {
         fullRetina:
           resize: '250x250>'
           '$format': 'png'
+        fullRetinaGray:
+          resize: '250x250>'
+          '$format': 'png'
+          'colorspace': 'Gray'
         full:
           resize: '125x125>'
           '$format': 'png'
+        fullGray:
+          resize: '125x125>'
+          '$format': 'png'
+          'colorspace': 'Gray'          
         mini:
           resize: '27x27>'
           '$format': 'png'
+        miniGray:
+          resize: '27x27>'
+          '$format': 'png'
+          'colorspace': 'Gray'
         miniRetina:
           resize: '52x52>'
           '$format': 'png'
+        miniRetinaGray:
+          resize: '52x52>'
+          '$format': 'png'
+          'colorspace': 'Gray'
+
 }
 
 if configuration.usingS3()
@@ -74,11 +91,17 @@ else
   }
   attachmentsConfig.directory = configuration.get('upload_dir');
 
-
 BadgeSchema.plugin attachments, attachmentsConfig
 
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"
+
+BadgeSchema.virtual('unearnedImageUrl').get ->
+  if configuration.usingS3()
+    @image.fullGray.defaultUrl
+  else
+    dir = path.resolve('./') + '/public'
+    @image.fullGray.defaultUrl.replace dir, ''
 
 BadgeSchema.virtual('imageUrl').get ->
   if configuration.usingS3()
@@ -112,7 +135,6 @@ BadgeSchema.pre 'save', (next) ->
   else
     next()
 
-
 BadgeSchema.methods.issuer = (callback)->
   promise = new Promise
   promise.addBack(callback) if callback
@@ -127,6 +149,7 @@ BadgeSchema.methods.assertion = (callback)->
   assertion = {}
   assertion.name = @name
   assertion.image = @imageUrl
+  assertion.unearnedImage = @unearnedImageUrl
   assertion.description = @description if @description?
   assertion.criteria = @criteria if @criteria?
   assertion.version = @version if @version?

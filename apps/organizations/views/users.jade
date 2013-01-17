@@ -3,8 +3,6 @@ div.search-content
 	form.user-search-form.form-search
 		input.input-large.search-query.user-search-typeahead(type="text", placeholder="Username")
 		button#user-search-go.btn(type="button") Search
-		div.user-search-clear-results.alert.alert-info
-			a(href='#') Clear Results
 div.user-search-results
 	p.no-results No Results
 
@@ -15,26 +13,9 @@ script
 		usernamesToIds[obj.username] = obj._id;
 		return obj.username;
 	});
-
-	function results() {
-		//- $('.user-search-results .user-info').on('click', function(){
-		//- 	var username = $(this).find('.username').html();
-		//- 	var id = usernamesToIds[ username ];
-		//- 	var path = '/users/' + id;
-		//- 	console.log(path)
-		//- 	$.get(path, function(d){
-		//- 		console.log(d)
-		//- 		});
-		//- });
-	}
 		
 	$('.user-search-typeahead').typeahead({
 		source: usernames
-	});
-
-	$('.user-search-clear-results').on('click', function(){
-		$('.user-search-results').html( '' );
-		$( this ).hide();
 	});
 
 	$('#user-search-go').on('click', onSearch);
@@ -53,7 +34,7 @@ script
 	function displayResults(results) {
 		if ( results.length > 0 ) {
 			results.forEach(function (u){
-				u.name = u.name || '[No Name]';
+				u.name = u.name || '';
 			});
 			$.get('/users/render', {users:results}, renderResults);
 		} else {
@@ -63,8 +44,6 @@ script
 
 	function renderResults(data) {
 		$('.user-search-results').html( data );
-		results();
-		$('.user-search-clear-results').show();
 	}
 
 	function noResults() {

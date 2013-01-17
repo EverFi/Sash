@@ -1,0 +1,27 @@
+form#create-user-form.form-horizontal(action=url, method="post")
+  legend New User
+  div.control-group
+    label.control-label(for="inputUsername") Username
+    div.controls
+      input#inputUsername(class="span3", required, type="text", name="user[username]", placeholder="jdoe123")
+  div.control-group
+    label.control-label(for="inputEmail") Email
+    div.controls
+      input#inputEmail(class="span3", required, type="email", name="user[email]", placeholder="jdoe123")  
+
+  div.control-group
+      label.control-label(for="inputOrg") User Organization
+      select#inputOrg(required, name="user[organization]")
+        option(value="") Organization
+  input(type="submit")
+
+script
+  var orgs = !{JSON.stringify(orgs)}
+
+  for (var o in orgs) {
+    var obj = orgs[ o ];
+    var option = $('<option>');
+    $(option).attr('value', obj.name);
+    $(option).html( obj.name );
+    $('#inputOrg').append(option);
+  }

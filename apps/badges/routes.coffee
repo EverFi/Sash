@@ -6,7 +6,6 @@ authenticate = require '../middleware/authenticate'
 util = require 'util'
 fs = require 'fs'
 
-
 routes = (app) ->
   app.namespace '/badges', authenticate, ->
     #INDEX

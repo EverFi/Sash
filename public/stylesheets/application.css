@@ -585,7 +585,7 @@ ul.badge-list li .badge-counts {
 }
 
 .user-result-item:hover {
-  background:#E5E5E5;
+  /*background:#E5E5E5;*/
 }
 
 .user-search-header {
@@ -619,7 +619,31 @@ ul.badge-list li .badge-counts {
   -o-box-shadow: 0px 0px 15px 1px red !important;
 }
 
+#inputOrg {
+  width:150px; font-size:12px;
+}
 
+.badges-container .media {
+  height:150px;
+  float:left;
+  padding:5px;
+}
+
+.user-info-container {
+  margin-top:50px;
+}
+
+.user-info-legend {
+  width:400px;
+}
+
+.user-info-container .user-image-container {
+  float:right;
+}
+
+.user-info-container table {
+  width:400px;
+}
 
 
 

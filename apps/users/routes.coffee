@@ -1,6 +1,8 @@
 User = require '../../models/user'
 util = require 'util'
 fs = require 'fs'
+Promise = require('mongoose').Promise
+Organization = require '../../models/organization'
 authenticate = require '../middleware/authenticate'
 configuration = require '../../lib/configuration'
 _ = require 'underscore'
@@ -20,6 +22,28 @@ routes = (app) ->
           return
         if user?
           formatResponse req, res, user
+
+    # NEW
+    app.get '/new', (req, res, next) ->
+      res.render "#{__dirname}/views/new",
+        orgs: allOrgs(),
+        user: new User,
+        url: 'http://' + configuration.get('hostname') + '/users/create-user'
+
+    #CREATE
+    app.post '/create-user', (req, res, next) ->
+      Organization.findOne {name:req.body.user.organization}, (err, org) ->
+        next(err) if err
+        obj = {
+          email: req.body.user.email,
+          username: req.body.user.username,
+          organization: org._id
+        }
+        user = new User obj
+        user.save (err, doc) ->
+          next(err) if err
+          req.flash 'info', 'User created successfully!'
+          res.redirect '/users/' + doc._id
 
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
@@ -130,7 +154,8 @@ routes = (app) ->
       User.findById req.params.id, (err, user)->
         next(err) if err
         res.render "#{__dirname}/views/show",
-          user: user
+          user: user,
+          host: 'http://' + configuration.get('hostname'),
           badges: user.badges
 
 
@@ -142,5 +167,14 @@ formatResponse = (req, res, data) ->
   else
     res.send JSON.stringify(data),
       'content-type': 'application/json'
+
+allOrgs = (callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  Organization.find {},
+    promise.resolve.bind(promise)
+  promise
+
+
 
 module.exports = routes
