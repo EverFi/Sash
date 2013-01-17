@@ -26,13 +26,16 @@ div.user-info-container
       td #{org.name}
   legend Earned Badges
   div.badges-container
-    each badge in badges
-      div.media
-        a.pull-left(href="#{host}/badges/#{badge.id}")
-          img.media-object(src="#{badge.image}")
-        div.media-body
-          h3.media-heading #{badge.name}
-          h4.media-heading #{badge.criteria}
+    if badges.length > 0
+      each badge in badges
+        div.media
+          a.pull-left(href="#{host}/badges/#{badge.id}")
+            img.media-object(src="#{badge.image}")
+          div.media-body
+            h3.media-heading #{badge.name}
+            h4.media-heading #{badge.criteria}
+    else
+      h2 None (Yet)
 
 
 
