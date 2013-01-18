@@ -47,6 +47,16 @@ routes = (app) ->
           res.redirect '/badges'
 
     #SHOW
+    app.get '/:slug/assertion.:format?', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
+        if req.params.format == 'json'
+          formatBadgeAssertionResponse(req, res, badge)
+        else
+          res.render "#{__dirname}/views/show",
+            badge: badge
+            issuer: badge.issuer()
+
+    #SHOW
     app.get '/:slug.:format?', (req, res) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
         if req.params.format == 'json'
