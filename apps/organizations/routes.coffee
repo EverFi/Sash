@@ -1,12 +1,15 @@
 Organization = require '../../models/organization'
+User = require '../../models/user'
+configuration = require '../../lib/configuration'
 util = require 'util'
 fs = require 'fs'
 async = require 'async'
 jade = require 'jade'
 path = require 'path'
+Promise = require('mongoose').Promise
 authenticate = require '../middleware/authenticate'
 userJade = ''
-userTemplateFile = path.resolve __dirname + '/views/templates/user.jade'
+userTemplateFile = path.resolve __dirname + '/views/templates/user-media-item.jade'
 
 fs.readFile userTemplateFile, (err, data) ->
   userJade = data.toString()
@@ -42,18 +45,30 @@ routes = (app) ->
 
   app.get '/users/render', (req, res, next) ->
     users = req.query.users
-    html = ''
-    users.forEach (u) ->
-      fn = jade.compile( userJade, {} );
-      html += fn(u)
+    _render = () ->
+      html = ''
+      users.forEach (u) ->
+        u.image = u.image || null
+        fn = jade.compile( userJade, {} );
+        html += fn(u)
 
-    res.send html,
-      'content-type': 'text/html'
+      res.send html,
+        'content-type': 'text/html'
+
+    if !users
+      fetchUsers req, (err, result) ->
+        next(err) if err
+        users = result
+        _render()
+    else
+      console.log(_render)
+      _render()
 
 
   app.get '/users', authenticate, (req, res, next) ->
     res.render "#{__dirname}/views/users",
       org: req.org
+      newUserUrl: 'http://' + configuration.get('hostname') + '/users/new'
       users: req.org.users()
 
 
@@ -80,6 +95,13 @@ routes = (app) ->
     app.del '/:id', (req, res, next) ->
 
 module.exports = routes
+
+fetchUsers = (req, callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  User.find {},
+      promise.resolve.bind(promise)
+  promise
 
 filterUsername = (user, callback) ->
   console.log('---------------------------\n')

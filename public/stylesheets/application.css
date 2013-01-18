@@ -524,48 +524,50 @@ ul.badge-list li .badge-counts {
 
 /* User search */
 
-.search-content {
+/*.search-content {
   margin-top:150px;
   height:100px;
+  width:50%; float:left
 }
 
 .user-search-form {
-  height:200px;
   width:500px;
 }
 
 .user-search-form p {
   text-align: center;
-}
+}*/
 
-.user-search-form input {
-  height:30px; 
-  position: relative;
-  left: 50%;
-  text-align: center;
-  margin-left: -150px;
-  display:block;
-  width:300px;
-
+.user-search-form .search-query {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 15px;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
   -o-border-radius: 15px;
+  text-align: center;
 }
 
 .user-search-form .btn {
+  width: 100px;
   position: relative;
   left: 50%;
-  top: 20px;
-  margin-left: -30px; 
-  height:30px;
+  margin-left: -50px;
+  top: 10px;
+}
+
+.add-user-wrapper {
+  width:92px;
+  height:92px;
+  margin-left:auto; 
+  margin-right:auto
 }
 
 .user-result-item {
-  width:400px; 
+  width:100%; 
   margin-left:auto; 
   margin-right:auto;
-  margin-top:60px;
 }
 
 .user-result-item .user-image {
@@ -573,43 +575,29 @@ ul.badge-list li .badge-counts {
 }
 
 .user-result-item .user-info {
-  display:block; height:96px; width:400px;
+  display:block; 
+  height:96px;
 }
 
 .user-info span {
   padding:10px;
 }
 
-.user-result-item {
-  
-}
-
-.user-result-item:hover {
-  /*background:#E5E5E5;*/
-}
-
-.user-search-header {
-  margin-top:50px;
-  margin-left:auto;
-  margin-right:auto;
-  width:350px;
-}
-
-.user-search-clear-results {
-  width: 80px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 40px;
-  font-size:12px;
+.no-user-search-results {
+  text-align:center;
   display:none;
 }
 
-.no-results {
-  text-align: center;
-  width: 100px;
-  margin-left: auto;
-  margin-right: auto;
-  display:none;
+.user-search-results .media {
+  padding-right:50px;
+}
+
+.results-row {
+  border-top:solid black thin;
+}
+
+.find-content {
+  float: left;width: 50%;height: 100px;margin-top: 150px;
 }
 
 .input-error {
@@ -643,6 +631,22 @@ ul.badge-list li .badge-counts {
 
 .user-info-container table {
   width:400px;
+}
+
+.user-manage-section-label {
+  text-align:center
+}
+
+.user-manage-wrapper {
+  margin-top:20px;
+}
+
+.user-manage-section {
+  height:246px
+}
+
+.results-row .media-heading {
+  text-align: center;
 }
 
 

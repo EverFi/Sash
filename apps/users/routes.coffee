@@ -159,7 +159,6 @@ routes = (app) ->
           org: userOrg(user.organization)
           badges: user.badges
 
-
 formatResponse = (req, res, data) ->
   cb = req.query.callback
   if cb

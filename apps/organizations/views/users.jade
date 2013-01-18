@@ -1,51 +1,70 @@
-
-div.search-content
-	form.user-search-form.form-search
-		input.input-large.search-query.user-search-typeahead(type="text", placeholder="Username")
-		button#user-search-go.btn(type="button") Search
-div.user-search-results
-	p.no-results No Results
+div.user-manage-wrapper.row-fluid
+  div.span4.user-manage-section(style="border-right:solid black thin;")
+    div.user-manage-section-label
+      p Search
+    form.user-search-form.form-search
+      input.search-query.span9.user-search-typeahead(type="text", placeholder="Search Usernames")
+      button#user-search-go.btn(type="button") Search
+  div.span4.user-manage-section(style="border-right:solid black thin;")
+    div.user-manage-section-label
+      p Add New
+    div.add-user-wrapper
+      a.add-user-btn(href="#{newUserUrl}")
+        img(src="/images/add-user.png")
+  div.span4.user-manage-section
+    div.user-manage-section-label
+      p Show All
+      a.all-users-btn(href="#")
+        img(src="/images/all-users.png")
+div.row-fluid.results-row(style="margin-top:10px")
+  div.span12.user-search-results
 
 script
-	var usersObj = !{JSON.stringify(users)}
-	var usernamesToIds = {};
-	var usernames = $.map(usersObj, function (obj, index){
-		usernamesToIds[obj.username] = obj._id;
-		return obj.username;
-	});
-		
-	$('.user-search-typeahead').typeahead({
-		source: usernames
-	});
+  var usersObj = !{JSON.stringify(users)}
+  var usernamesToIds = {};
+  var usernames = $.map(usersObj, function (obj, index){
+    usernamesToIds[obj.username] = obj._id;
+    return obj.username;
+  });
+    
+  $('.user-search-typeahead').typeahead({
+    source: usernames
+  });
 
-	$('#user-search-go').on('click', onSearch);
+  $('#user-search-go').on('click', onSearch);
 
-	function onSearch(e) {
-		var query = $('.search-query').val();
-		if ( query && query !== '' ) {
-			$('.search-query').removeClass( 'input-error' );
-			var path = '/users/username/' + query;
-			$.get(path, displayResults);
-		} else {
-			$('.search-query').addClass( 'input-error' );
-		}
-	}
+  $('.all-users-btn').on('click', onAllUsers);
 
-	function displayResults(results) {
-		if ( results.length > 0 ) {
-			results.forEach(function (u){
-				u.name = u.name || '';
-			});
-			$.get('/users/render', {users:results}, renderResults);
-		} else {
-			noResults();
-		}
-	}
+  function onAllUsers(){
+    $.get('/users/render', renderResults);
+  }
 
-	function renderResults(data) {
-		$('.user-search-results').html( data );
-	}
+  function onSearch(e) {
+    var query = $('.search-query').val();
+    if ( query && query !== '' ) {
+      $('.search-query').removeClass( 'input-error' );
+      var path = '/users/username/' + query;
+      $.get(path, displayResults);
+    } else {
+      $('.search-query').addClass( 'input-error' );
+    }
+  }
 
-	function noResults() {
-		$('.no-results').show();
-	}
+  function displayResults(results) {
+    if ( results.length > 0 ) {
+      results.forEach(function (u){
+        u.name = u.name || '';
+      });
+      $.get('/users/render', {users:results}, renderResults);
+    } else {
+      noResults();
+    }
+  }
+
+  function renderResults(data) {
+    $('.user-search-results').html( data );
+  }
+
+  function noResults() {
+    $('.no-user-search-results').show();
+  }
