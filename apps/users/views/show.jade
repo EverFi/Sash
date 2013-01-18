@@ -26,13 +26,15 @@ div.user-info-container
       td #{org.name}
   legend.user-actions-legend Actions
   div.btn-group.user-actions
-    form.delete-user-form(style="display:none", method="post", action="#{host}/users/delete/#{user._id}")
+    form.delete-user-form.hide(method="post", action="#{host}/users/delete/#{user._id}")
     button.btn Actions
     button.btn.dropdown-toggle(data-toggle="dropdown")
       span.caret
     ul.dropdown-menu
       li
         a.delete-user(href="#", data-id="#{user._id}") Delete User
+      li
+        a.edit-user(href="#{host}/users/new?id=#{user._id}") Edit User
   legend.earned-badges-legend Earned Badges
   div.badges-container
     if badges.length > 0

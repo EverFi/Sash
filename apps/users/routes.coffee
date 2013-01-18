@@ -23,27 +23,61 @@ routes = (app) ->
         if user?
           formatResponse req, res, user
 
-    # NEW
-    app.get '/new', (req, res, next) ->
-      res.render "#{__dirname}/views/new",
-        orgs: allOrgs(),
-        user: new User,
-        url: 'http://' + configuration.get('hostname') + '/users/create-user'
+    # # NEW
+    # app.get '/new', (req, res, next) ->
+    #   id = req.query.id
+    #   url = 'http://' + configuration.get('hostname')
+    #   user = new User
+    #   userOrg = null
 
-    #CREATE
-    app.post '/create-user', (req, res, next) ->
-      Organization.findOne {name:req.body.user.organization}, (err, org) ->
-        next(err) if err
-        obj = {
-          email: req.body.user.email,
-          username: req.body.user.username,
-          organization: org._id
-        }
-        user = new User obj
-        user.save (err, doc) ->
-          next(err) if err
-          req.flash 'info', 'User created successfully!'
-          res.redirect '/users/' + doc._id
+    #   _render = () ->
+    #     res.render "#{__dirname}/views/new",
+    #       orgs: allOrgs(),
+    #       user: user,
+    #       userOrg: userOrg
+    #       url: url
+
+    #   if id
+    #     url += '/users/update'
+    #     User.findOne {_id:id}, (err, data) ->
+    #       next(err) if err
+    #       user = data
+    #       Organization.findOne {_id:user.organization}, (err, org) ->
+    #         next(err) if err
+    #         userOrg = org.name
+    #         _render()
+    #   else
+    #     url += '/users/create-user'
+    #     _render()
+
+    # #CREATE
+    # app.post '/create-user', (req, res, next) ->
+    #   Organization.findOne {name:req.body.user.organization}, (err, org) ->
+    #     next(err) if err
+    #     obj = {
+    #       email: req.body.user.email,
+    #       username: req.body.user.username,
+    #       organization: org._id
+    #     }
+    #     user = new User obj
+    #     user.save (err, doc) ->
+    #       next(err) if err
+    #       req.flash 'info', 'User created successfully!'
+    #       res.redirect '/users/' + doc._id
+
+    # #UPDATE
+    # app.post '/update', (req, res, next) ->
+    #   Organization.findOne {name:req.body.user.organization}, (err, org) ->
+    #     next(err) if err
+    #     User.findOne {_id:req.body.user.id}, (err, user) ->
+    #       next(err) if err
+    #       user.email = req.body.user.email
+    #       user.username = req.body.user.username
+    #       user.organization = org._id
+    #       user.save (err, doc) ->
+    #         next(err) if err
+    #         req.flash 'info', 'User ' + user.username + ' updated successfully!'
+    #         res.redirect '/users/' + user._id
 
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
@@ -157,6 +191,62 @@ routes = (app) ->
           next(err) if err
           req.flash 'info', 'User ' + username + ' deleted successfully.'
           res.redirect '/users/'
+
+    # NEW
+    app.get '/new', (req, res, next) ->
+      id = req.query.id
+      url = 'http://' + configuration.get('hostname')
+      user = new User
+      userOrg = null
+
+      _render = () ->
+        res.render "#{__dirname}/views/new",
+          orgs: allOrgs(),
+          user: user,
+          userOrg: userOrg
+          url: url
+
+      if id
+        url += '/users/update'
+        User.findOne {_id:id}, (err, data) ->
+          next(err) if err
+          user = data
+          Organization.findOne {_id:user.organization}, (err, org) ->
+            next(err) if err
+            userOrg = org.name
+            _render()
+      else
+        url += '/users/create-user'
+        _render()
+
+    #CREATE
+    app.post '/create-user', (req, res, next) ->
+      Organization.findOne {name:req.body.user.organization}, (err, org) ->
+        next(err) if err
+        obj = {
+          email: req.body.user.email,
+          username: req.body.user.username,
+          organization: org._id
+        }
+        user = new User obj
+        user.save (err, doc) ->
+          next(err) if err
+          req.flash 'info', 'User created successfully!'
+          res.redirect '/users/' + doc._id
+
+    #UPDATE
+    app.post '/update', (req, res, next) ->
+      Organization.findOne {name:req.body.user.organization}, (err, org) ->
+        next(err) if err
+        User.findOne {_id:req.body.user.id}, (err, user) ->
+          next(err) if err
+          user.email = req.body.user.email
+          user.username = req.body.user.username
+          user.organization = org._id
+          user.save (err, doc) ->
+            next(err) if err
+            req.flash 'info', 'User ' + user.username + ' updated successfully!'
+            res.redirect '/users/' + user._id
 
     #SHOW
     app.get '/:id', (req, res, next) ->
