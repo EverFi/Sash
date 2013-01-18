@@ -518,72 +518,140 @@ ul.badge-list li .badge-counts {
   box-shadow: 1px 1px 2px #666;
 }
 
-
 .clear {
   clear: both;
 }
 
-.all-users-btn {
-  margin-left:180px !important;
-  width:300px;
-  padding: 4px 10px 4px !important;
-}
 /* User search */
 
-.search-content {
-  margin-top:50px;
+/*.search-content {
+  margin-top:150px;
+  height:100px;
+  width:50%; float:left
 }
 
 .user-search-form {
-  height:200px;
+  width:500px;
 }
 
 .user-search-form p {
   text-align: center;
-}
+}*/
 
-.user-search-form input {
-  height:30px; margin-left:180px;
+.user-search-form .search-query {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -o-border-radius: 15px;
+  text-align: center;
 }
 
 .user-search-form .btn {
-  margin-left:10px; margin-top:1px; height:30px;
+  width: 100px;
+  position: relative;
+  left: 50%;
+  margin-left: -50px;
+  top: 10px;
+}
+
+.add-user-wrapper {
+  width:92px;
+  height:92px;
+  margin-left:auto; 
+  margin-right:auto
 }
 
 .user-result-item {
-  width:400px; margin-left:auto; margin-right:auto;
-  cursor:pointer;
+  width:100%; 
+  margin-left:auto; 
+  margin-right:auto;
 }
 
 .user-result-item .user-image {
-  width:96px; height:96px; background:url(/images/sups.png)
+  width:96px; height:96px; background:url(/images/user.png)
 }
 
 .user-result-item .user-info {
-  display:block; height:96px; width:400px;
+  display:block; 
+  height:96px;
 }
 
 .user-info span {
+  padding:10px;
+}
+
+.no-user-search-results {
+  text-align:center;
+  display:none;
+}
+
+.user-search-results .media {
+  padding-right:50px;
+}
+
+.results-row {
+  border-top:solid black thin;
+}
+
+.find-content {
+  float: left;width: 50%;height: 100px;margin-top: 150px;
+}
+
+.input-error {
+  box-shadow: 0px 0px 15px 1px red !important;
+  -webkit-box-shadow: 0px 0px 15px 1px red !important;
+  -moz-box-shadow: 0px 0px 15px 1px red !important;
+  -o-box-shadow: 0px 0px 15px 1px red !important;
+}
+
+#inputOrg {
+  width:150px; font-size:12px;
+}
+
+.badges-container .media {
+  height:150px;
+  float:left;
   padding:5px;
 }
 
-.user-result-item {
-  margin-top:10px;
-}
-
-.user-result-item:hover {
-  background:#E5E5E5;
-}
-
-.user-search-header {
+.user-info-container {
   margin-top:50px;
-  margin-left:auto;
-  margin-right:auto;
-  width:350px;
 }
 
+.user-info-legend, .user-actions-legend {
+  width:400px;
+}
 
+.user-info-container .user-image-container {
+  float:right;
+}
 
+.user-info-container table {
+  width:400px;
+}
+
+.user-manage-section-label {
+  text-align:center
+}
+
+.user-manage-wrapper {
+  margin-top:20px;
+}
+
+.user-manage-section {
+  height:246px
+}
+
+.results-row .media-heading {
+  text-align: center;
+}
+
+.earned-badges-legend {
+  margin-top:20px;
+}
 
 
 

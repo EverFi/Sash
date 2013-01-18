@@ -1,8 +1,18 @@
 Organization = require '../../models/organization'
+User = require '../../models/user'
+configuration = require '../../lib/configuration'
 util = require 'util'
 fs = require 'fs'
 async = require 'async'
+jade = require 'jade'
+path = require 'path'
+Promise = require('mongoose').Promise
 authenticate = require '../middleware/authenticate'
+userJade = ''
+userTemplateFile = path.resolve __dirname + '/views/templates/user-media-item.jade'
+
+fs.readFile userTemplateFile, (err, data) ->
+  userJade = data.toString()
 
 routes = (app) ->
   #NEW
@@ -33,11 +43,33 @@ routes = (app) ->
       badges: req.org.badges(10)
       badgeCount: req.org.badgeCount()
 
+  app.get '/users/render', (req, res, next) ->
+    users = req.query.users
+    _render = () ->
+      html = ''
+      users.forEach (u) ->
+        u.image = u.image || null
+        fn = jade.compile( userJade, {} );
+        html += fn(u)
+
+      res.send html,
+        'content-type': 'text/html'
+
+    if !users
+      fetchUsers req, (err, result) ->
+        next(err) if err
+        users = result
+        _render()
+    else
+      console.log(_render)
+      _render()
+
+
   app.get '/users', authenticate, (req, res, next) ->
-    async.map req.org.users(), filterUsername, (err, results) ->
-      res.render "#{__dirname}/views/users",
-        org: req.org
-        users: results
+    res.render "#{__dirname}/views/users",
+      org: req.org
+      newUserUrl: 'http://' + configuration.get('hostname') + '/users/new'
+      users: req.org.users()
 
 
   app.namespace '/organizations', authenticate, ->
@@ -53,7 +85,7 @@ routes = (app) ->
       res.render "#{__dirname}/views/show",
         org: req.org
 
-    #EDIT
+    #edit
     app.get '/:id/edit', (req, res) ->
 
     #UPDATE
@@ -64,5 +96,14 @@ routes = (app) ->
 
 module.exports = routes
 
+fetchUsers = (req, callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  User.find {},
+      promise.resolve.bind(promise)
+  promise
+
 filterUsername = (user, callback) ->
+  console.log('---------------------------\n')
+  console.log(user)
   return callback(null, user.username)
