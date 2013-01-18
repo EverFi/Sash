@@ -16,7 +16,12 @@ routes = (app) ->
     query = Badge.where('issuer_id', orgId)
     if req.query.tags?
       tags = _.flatten(Array(req.query.tags))
-      query.in('tags', tags)
+      if req.query.match_any_tags?
+        # Matching ANY of the tags
+        query.in('tags', tags)
+      else
+        # Matching ALL of the tags
+        query.where('tags', {'$all': tags})
     query.exec (err, badges)->
       if req.xhr || req.params.format == 'json'
         formatBadgeResponse(req, res, badges)
