@@ -43,8 +43,8 @@ routes = (app) ->
           res.redirect '/badges'
 
     #SHOW
-    app.get '/:id.:format?', (req, res) ->
-      Badge.findById req.params.id, (err, badge) ->
+    app.get '/:slug.:format?', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         if req.params.format == 'json'
           formatBadgeResponse(req, res, badge)
         else
@@ -53,17 +53,17 @@ routes = (app) ->
             issuer: badge.issuer()
 
     #SHOW
-    app.get '/:id/edit', (req, res) ->
-      Badge.findById req.params.id, (err, badge) ->
+    app.get '/:slug/edit', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         res.render "#{__dirname}/views/edit",
           badge: badge
           issuer: badge.issuer()
           orgId: req.org.id
 
     #UPDATE
-    app.put '/:id', (req, res, next) ->
+    app.put '/:slug', (req, res, next) ->
       if req.files.badge.image.length > 0
-        Badge.findById req.params.id, (err, badge)->
+        Badge.findOne slug: req.params.slug, (err, badge) ->
           badge.attach 'image', req.files.badge.image, (err)->
             next(err) if err
             badge.set(req.body.badge)
@@ -72,7 +72,7 @@ routes = (app) ->
               req.flash 'info', 'Badge saved successfully!'
               res.redirect '/badges'
       else
-        Badge.findById req.params.id, (err, badge)->
+        Badge.findOne slug: req.params.slug, (err, badge) ->
           badge.set(req.body.badge)
           badge.save (err, doc) ->
             next(err) if err
@@ -81,8 +81,8 @@ routes = (app) ->
 
 
     #DELETE
-    app.del '/:id', (req, res, next) ->
-      Badge.findById req.params.id, (err, doc) ->
+    app.del '/:slug', (req, res, next) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         doc.remove (err) ->
           if req.xhr
             res.send JSON.stringify(success: true),

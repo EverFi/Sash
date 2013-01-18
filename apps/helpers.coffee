@@ -19,7 +19,10 @@ helpers = (app) ->
         prefix = ''
 
       unless object.isNew
-        "/#{prefix}#{object.id}"
+        if object.slug?
+          "/#{prefix}#{object.slug}"
+        else
+          "/#{prefix}#{object.id}"
       else
         "/#{prefix}"
 
