@@ -621,7 +621,7 @@ ul.badge-list li .badge-counts {
   margin-top:50px;
 }
 
-.user-info-legend {
+.user-info-legend, .user-actions-legend {
   width:400px;
 }
 
@@ -649,6 +649,9 @@ ul.badge-list li .badge-counts {
   text-align: center;
 }
 
+.earned-badges-legend {
+  margin-top:20px;
+}
 
 
 

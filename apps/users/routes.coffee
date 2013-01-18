@@ -149,6 +149,15 @@ routes = (app) ->
     app.get '/', (req, res, next) ->
       res.render "#{__dirname}/views/users"
 
+    app.post '/delete/:id', (req, res, next) ->
+      User.findById req.params.id, (err, user) ->
+        next(err) if err
+        username = user.username
+        User.remove {_id:user._id}, (err) ->
+          next(err) if err
+          req.flash 'info', 'User ' + username + ' deleted successfully.'
+          res.redirect '/users/'
+
     #SHOW
     app.get '/:id', (req, res, next) ->
       User.findById req.params.id, (err, user)->
