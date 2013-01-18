@@ -2,27 +2,31 @@ Badge = require '../../models/badge'
 User = require '../../models/user'
 Organization = require '../../models/organization'
 authenticate = require '../middleware/authenticate'
+_ = require 'underscore'
 
 util = require 'util'
 fs = require 'fs'
 
 routes = (app) ->
+  #
+  #INDEX
+  app.get '/badges.:format?', authenticate, (req, res, next) ->
+    next() if !req.org
+    orgId = req.org.id
+    query = Badge.where('issuer_id', orgId)
+    if req.query.tags?
+      tags = _.flatten(Array(req.query.tags))
+      query.in('tags', tags)
+    query.exec (err, badges)->
+      if req.xhr || req.params.format == 'json'
+        formatBadgeResponse(req, res, badges)
+      else
+        res.render "#{__dirname}/views/index",
+          badges: badges
+          orgId: orgId
+          org: req.org
+
   app.namespace '/badges', authenticate, ->
-    #INDEX
-    app.get '/', (req, res) ->
-      next() if !req.org
-      orgId = req.org.id
-      query = Badge.where('issuer_id', orgId)
-      if req.query.tags?
-        query.in('tags', req.query.tags)
-      query.exec (err, badges)->
-        if req.xhr || req.params.format == 'json'
-          formatResponse(req, res, badges)
-        else
-          res.render "#{__dirname}/views/index",
-            badges: badges
-            orgId: orgId
-            org: req.org
 
     #NEW
     app.get '/new', (req, res) ->
@@ -122,22 +126,29 @@ routes = (app) ->
               if err?
                 response = {message: "Failed to issue Badge", error: err}
                 console.error "Badge Issue Response: #{JSON.stringify(response)}"
-                return
               else
                 console.log "Badge Issue Response: #{JSON.stringify(response)}"
-                res.send JSON.stringify(response),
-                  'content-type': 'application/json'
-                return
+
+              res.send JSON.stringify(response),
+                'content-type': 'application/json'
+
+
+formatBadgeAssertionResponse = (req, res, badge) ->
+  cb = req.query.callback
+  assertionPromise = badge.toJSON()
+  if cb
+    assertionPromise.on 'complete', (assertion)->
+      res.send "#{cb}(#{JSON.stringify(assertion)})"
+  else
+    res.send assertionPromise,
+      'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
-  assertionPromise = badge.assertion()
   if cb
-    assertionPromise.on 'complete', (assertion)->
-      res.send "#{cb}(#{JSON.stringify(assertion)})",
-        
+    res.send "#{cb}(#{JSON.stringify(badge)})"
   else
-    res.send assertionPromise,
+    res.send JSON.stringify(badge),
       'content-type': 'application/json'
 
 
