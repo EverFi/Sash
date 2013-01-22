@@ -102,7 +102,7 @@ routes = (app) ->
     #DELETE
     app.del '/:slug', (req, res, next) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
-        doc.remove (err) ->
+        badge.remove (err) ->
           if req.xhr
             res.send JSON.stringify(success: true),
               "Content-Type": "application/json"
