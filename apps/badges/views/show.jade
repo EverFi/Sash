@@ -3,6 +3,7 @@ div#badge-show
   div.row
     div.span2
       img(src=badge.imageUrl)
+      img(src=badge.grayedUrl)
     div.span8
       h1 #{badge.name}
   div.row
@@ -55,8 +56,8 @@ div#badge-show
   //- button.issue Issue
 
   div.row
-    a(href="/badges/#{badge.id}/edit") Edit Me
-    form(action="/badges/#{badge.id}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
+    a(href="/badges/#{badge.slug}/edit") Edit Me
+    form(action="/badges/#{badge.slug}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
       input(type="hidden", value="delete", name="_method")
       input(type="submit", value="Delete", class="delete")
 
