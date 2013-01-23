@@ -20,6 +20,9 @@ BadgeSchema = new Schema
   name:          String
   description:   String
   criteria:      String
+  facebook_text:      String
+  twitter_text:      String
+  link:      String
   version:       String
   issuer_id:
     type: Schema.ObjectId,

@@ -20,6 +20,26 @@ div#badge-show
           | Badge Criteria:
         br
         != badge.criteria
+  if badge.facebook_text
+    div.row
+      div.offset2.facebook_text
+        strong
+          | Facebook Share Text
+        br
+        != badge.facebook_text
+  if badge.twitter_text
+    div.row
+      div.offset2.criteria
+        strong
+          | Twitter Share Text:
+        br
+        != badge.twitter_text
+  if badge.link
+    div.row
+      div.offset2.criteria
+        strong
+          | Share Link: 
+        != badge.link
   if badge.version
     div.row
       div.offset2.version

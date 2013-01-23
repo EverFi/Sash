@@ -13,6 +13,20 @@ label
   textarea(class='span6', required, name='badge[criteria]')
     =badge.criteria
 label
+  | Facebook Share Text
+  br
+  textarea(class='span6', required, name='badge[facebook_text]')
+    =badge.facebook_text
+label
+  | Twitter Share Text
+  br
+  textarea(class='span6', required, name='badge[twitter_text]')
+    =badge.twitter_text
+label
+  | Share Link
+  br
+  input(class='span6', required, type='text', name='badge[link]', value=badge.link)
+label
   | Version
   br
   input(class='span2', required, type='text', name='badge[version]', value=badge.version)

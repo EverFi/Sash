@@ -18,6 +18,9 @@ EarnedBadgeSchema = new Schema
     type: Schema.Types.Mixed,
   description:   String
   criteria:      String
+  facebook_text:      String
+  twitter_text:      String
+  link:      String
   version:       String
   issuer_id:
     type: Schema.ObjectId,
@@ -41,6 +44,9 @@ EarnedBadgeSchema.methods.toJSON = ->
     imageObj: @imageObj,
     description: @description,
     criteria: @criteria,
+    link: @link,
+    twitter_text: @twitter_text,
+    facebook_text: @facebook_text,
     version: @version,
     slug: @slug,
     tags: @tags,
