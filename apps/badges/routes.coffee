@@ -9,6 +9,11 @@ fs = require 'fs'
 
 routes = (app) ->
   #
+  #SHOW JSON - Public - Returns JSON formatted badge
+  app.get '/badges/:slug.:format', (req, res) ->
+    Badge.findOne slug: req.params.slug, (err, badge) ->
+      formatBadgeResponse(req, res, badge)
+
   #INDEX
   app.get '/badges.:format?', authenticate, (req, res, next) ->
     next() if !req.org
@@ -62,14 +67,11 @@ routes = (app) ->
             issuer: badge.issuer()
 
     #SHOW
-    app.get '/:slug.:format?', (req, res) ->
+    app.get '/:slug', (req, res) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
-        if req.params.format == 'json'
-          formatBadgeResponse(req, res, badge)
-        else
-          res.render "#{__dirname}/views/show",
-            badge: badge
-            issuer: badge.issuer()
+        res.render "#{__dirname}/views/show",
+          badge: badge
+          issuer: badge.issuer()
 
     #SHOW
     app.get '/:slug/edit', (req, res) ->
