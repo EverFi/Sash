@@ -14,6 +14,8 @@ EarnedBadgeSchema = new Schema
   name:          String
   image:
     type: String,
+  imageObj:
+    type: Schema.Types.Mixed,
   description:   String
   criteria:      String
   version:       String
@@ -36,6 +38,7 @@ EarnedBadgeSchema.methods.toJSON = ->
   {
     name: @name,
     image: @image,
+    imageObj: @imageObj,
     description: @description,
     criteria: @criteria,
     version: @version,
@@ -102,6 +105,7 @@ UserSchema.methods.earn = (badge, callback)->
     b.issued_on = new Date()
     b.badge_id = badge.id
     b.image = badge.imageUrl
+    b.imageObj = badge.image
     b.issued_count = undefined
     @badges.push b
     @save (err, user)=>
