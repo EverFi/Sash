@@ -49,6 +49,7 @@ routes = (app) ->
     app.get '/badges.:format?', (req, res, next) ->
       username = req.query.username
       email = req.query.email
+      email = undefined if(email == '')
       unless username? || email?
         res.status(404).send("Not Found")
         return
