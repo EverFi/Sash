@@ -1,8 +1,9 @@
-div.user-result-item
-  div.pull-left.user-image
-  div.user-info
-    br
-    span.username 
+div.media.pull-left
+  a.pull-left(href="/users/#{_id}")
+    if image
+      img.media-object(src="#{image")
+    else
+      img.media-object(src="/images/user.png")
+  div.media-body
+    h3.media-heading
       a(href="/users/#{_id}") #{username}
-    br
-    span.name #{name}

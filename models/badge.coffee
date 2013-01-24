@@ -3,6 +3,10 @@ timestamps    = require 'mongoose-timestamps'
 attachments   = require 'mongoose-attachments'
 moment        = require 'moment'
 configuration = require '../lib/configuration'
+arrayUtils    = require '../lib/array'
+BadgesToUsers = require './badges_to_users'
+User          = require './user'
+async         = require 'async'
 util          = require 'util'
 fs            = require 'fs'
 path          = require 'path'
@@ -34,6 +38,50 @@ BadgeSchema = new Schema
 
 # Setup any plugins
 BadgeSchema.plugin(timestamps);
+
+BadgeSchema.pre 'remove', (next, done) ->
+  self = this
+  users = []
+  btu = null
+
+  removeBadge = (userId, callback) ->
+    User.findOne {_id: userId}, (err, user) ->
+      if err? 
+        console.error('an error occured exiting removeBadge')
+        next(err)
+      if userId?
+        console.log('no userId exiting removeBadge')
+        userBadges = user.badges
+        toDel = []
+        for i in [0...userBadges.length]
+          if userBadges[ i ]._id.toString() == self._id.toString()
+            toDel.push i
+        
+        toDel.forEach (index) ->
+          userBadges.splice index, 1
+
+        user.save (err) ->
+          if err? 
+            console.log('an error occured while saving user exiting removeBadge')
+          return callback(err)
+      else
+        return callback()
+
+  BadgesToUsers.findOne {badgeId: self._id}, (err, _btu) ->
+    if err? 
+      next(err)
+
+    if _btu?
+      btu = _btu
+      users = btu.users
+      async.forEach users, removeBadge, (err) ->
+        if err?
+          return next(err)
+        BadgesToUsers.remove {_id: btu._id}, (err) ->
+          return next(err)
+    else
+      return next()
+
 
 attachmentsConfig = {
   storage: {}

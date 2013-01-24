@@ -3,12 +3,21 @@ util = require 'util'
 fs = require 'fs'
 Promise = require('mongoose').Promise
 Organization = require '../../models/organization'
+User = require '../../models/user'
 authenticate = require '../middleware/authenticate'
 configuration = require '../../lib/configuration'
 _ = require 'underscore'
 
 routes = (app) ->
   app.namespace '/users', ->
+
+    app.get '/:organizationId/all', (req, res, next) ->
+      orgId = req.params.organizationId
+      usersForOrg orgId, (err, users) ->
+        u = users.map (user) ->
+          return {username: user.username, _id: user._id}
+        res.send u,
+           'content-type': 'application/json'
 
     app.get '/username/:username', (req, res, next) ->
       username = req.params.username
@@ -22,62 +31,6 @@ routes = (app) ->
           return
         if user?
           formatResponse req, res, user
-
-    # # NEW
-    # app.get '/new', (req, res, next) ->
-    #   id = req.query.id
-    #   url = 'http://' + configuration.get('hostname')
-    #   user = new User
-    #   userOrg = null
-
-    #   _render = () ->
-    #     res.render "#{__dirname}/views/new",
-    #       orgs: allOrgs(),
-    #       user: user,
-    #       userOrg: userOrg
-    #       url: url
-
-    #   if id
-    #     url += '/users/update'
-    #     User.findOne {_id:id}, (err, data) ->
-    #       next(err) if err
-    #       user = data
-    #       Organization.findOne {_id:user.organization}, (err, org) ->
-    #         next(err) if err
-    #         userOrg = org.name
-    #         _render()
-    #   else
-    #     url += '/users/create-user'
-    #     _render()
-
-    # #CREATE
-    # app.post '/create-user', (req, res, next) ->
-    #   Organization.findOne {name:req.body.user.organization}, (err, org) ->
-    #     next(err) if err
-    #     obj = {
-    #       email: req.body.user.email,
-    #       username: req.body.user.username,
-    #       organization: org._id
-    #     }
-    #     user = new User obj
-    #     user.save (err, doc) ->
-    #       next(err) if err
-    #       req.flash 'info', 'User created successfully!'
-    #       res.redirect '/users/' + doc._id
-
-    # #UPDATE
-    # app.post '/update', (req, res, next) ->
-    #   Organization.findOne {name:req.body.user.organization}, (err, org) ->
-    #     next(err) if err
-    #     User.findOne {_id:req.body.user.id}, (err, user) ->
-    #       next(err) if err
-    #       user.email = req.body.user.email
-    #       user.username = req.body.user.username
-    #       user.organization = org._id
-    #       user.save (err, doc) ->
-    #         next(err) if err
-    #         req.flash 'info', 'User ' + user.username + ' updated successfully!'
-    #         res.redirect '/users/' + user._id
 
     # User Badges
     app.get '/badges.:format?', (req, res, next) ->
@@ -221,6 +174,13 @@ routes = (app) ->
 
     #CREATE
     app.post '/create-user', (req, res, next) ->
+      user = null
+      _save = (u) ->
+        user.save (err, doc) ->
+          next(err) if err
+          req.flash 'info', 'User created successfully!'
+          res.redirect '/users/' + doc._id
+
       Organization.findOne {name:req.body.user.organization}, (err, org) ->
         next(err) if err
         obj = {
@@ -229,10 +189,13 @@ routes = (app) ->
           organization: org._id
         }
         user = new User obj
-        user.save (err, doc) ->
-          next(err) if err
-          req.flash 'info', 'User created successfully!'
-          res.redirect '/users/' + doc._id
+        if req.body.user.image
+          user.attatch 'image', req.body.user.image, (err) ->
+            next(err) if err
+            _save()
+        else
+          _save()
+
 
     #UPDATE
     app.post '/update', (req, res, next) ->
@@ -266,6 +229,13 @@ formatResponse = (req, res, data) ->
   else
     res.send JSON.stringify(data),
       'content-type': 'application/json'
+
+usersForOrg = (orgId, callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  User.find {organization: orgId},
+    promise.resolve.bind(promise)
+  promise
 
 userOrg = (id, callback) ->
   promise = new Promise

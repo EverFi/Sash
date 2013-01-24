@@ -9,7 +9,7 @@ path = require 'path'
 Promise = require('mongoose').Promise
 authenticate = require '../middleware/authenticate'
 userJade = ''
-userTemplateFile = path.resolve __dirname + '/views/templates/user-media-item.jade'
+userTemplateFile = path.resolve __dirname + '/views/templates/user.jade'
 
 fs.readFile userTemplateFile, (err, data) ->
   userJade = data.toString()
@@ -20,7 +20,6 @@ routes = (app) ->
     res.render "#{__dirname}/views/new",
       title: "Sign Up"
       org: new Organization
-
 
   #CREATE
   app.post '/organizations', (req, res, next) ->
@@ -45,6 +44,7 @@ routes = (app) ->
 
   app.get '/users/render', (req, res, next) ->
     users = req.query.users
+    org = req.query.org
     _render = () ->
       html = ''
       users.forEach (u) ->
@@ -56,12 +56,11 @@ routes = (app) ->
         'content-type': 'text/html'
 
     if !users
-      fetchUsers req, (err, result) ->
+      fetchUsers org, (err, result) ->
         next(err) if err
         users = result
         _render()
     else
-      console.log(_render)
       _render()
 
 
@@ -69,8 +68,6 @@ routes = (app) ->
     res.render "#{__dirname}/views/users",
       org: req.org
       newUserUrl: 'http://' + configuration.get('hostname') + '/users/new'
-      users: req.org.users()
-
 
   app.namespace '/organizations', authenticate, ->
 
@@ -96,14 +93,9 @@ routes = (app) ->
 
 module.exports = routes
 
-fetchUsers = (req, callback) ->
+fetchUsers = (org, callback) ->
   promise = new Promise
   promise.addBack(callback) if callback
-  User.find {},
+  User.find {organization: org},
       promise.resolve.bind(promise)
   promise
-
-filterUsername = (user, callback) ->
-  console.log('---------------------------\n')
-  console.log(user)
-  return callback(null, user.username)

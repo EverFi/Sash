@@ -52,7 +52,13 @@ div#badge-show
       strong Slug:  
       = badge.slug
 
-  //- button.issue Issue
+  div.row
+    div.url.offset2
+      select.select-user(disabled="disabled")
+        option(value="") Loading Users...
+      br
+      button.btn.issue Issue Badge
+      button.btn.revoke Revoke Badge
 
   div.row
     a(href="/badges/#{badge.id}/edit") Edit Me
@@ -61,11 +67,55 @@ div#badge-show
       input(type="submit", value="Delete", class="delete")
 
   script
-    // dev stuff
+    $.get('/users/#{badge.issuer_id}/all', function(users){
+      $('.select-user').find('option').html('Users');
+      $.each(users, function (index, user){
+        var opt = $('<option></option>');
+        $(opt)
+          .html( user.username )
+          .attr( 'value', user.username );
+        $('.select-user')
+          .append( opt )
+          .removeAttr( 'disabled' );
+      });
+    });
+
     $('.issue').click(function(){
-      $.post('/badges/issue/awesomeness', {username:'johnnyray'}, function(data){
-          console.log(data)
+      var username = $('.select-user').val();
+      if ( username ) {
+        $.ajax({
+          type: "POST",
+          url: '/badges/issue/#{badge.slug}',
+          data: {username:username},
+          success: function(data){
+            var msg;
+            if ( data.earned === true ) {
+              msg = "'#{badge.name}' has been issued to " + username
+            } else {
+              msg = data.message;
+            }
+            alertify.alert( msg );
+          },
         });
+      }
+    });
+
+    $('.revoke').click(function(){
+      var username = $('.select-user').val();
+      if ( username ) {
+        $.ajax({
+          type: "POST",
+          url: '/badges/revoke/#{badge._id}',
+          data: {username:username},
+          success: function(data){
+            if ( data.revoked ) {
+              alertify.alert( "Revoked '#{badge.name}' from user " + username );
+            } else {
+              alertify.error( "Could not revoke '#{badge.name}' from " + username );
+            }
+          }
+        });
+      }
     });
 
 

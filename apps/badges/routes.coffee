@@ -1,7 +1,11 @@
 Badge = require '../../models/badge'
 User = require '../../models/user'
 Organization = require '../../models/organization'
+BadgesToUsers = require '../../models/badges_to_users'
 authenticate = require '../middleware/authenticate'
+arrayUtils = require '../../lib/array'
+Promise = require('mongoose').Promise
+util = require 'util'
 
 util = require 'util'
 fs = require 'fs'
@@ -39,8 +43,13 @@ routes = (app) ->
         next(err) if err
         badge.save (err, doc) ->
           next(err) if err
-          req.flash 'info', 'Badge saved successfully!'
-          res.redirect '/badges'
+          btu = new BadgesToUsers
+          btu.badgeId = doc._id
+          btu.users = []
+          btu.save (err, btu_doc) ->
+            next(err) if err
+            req.flash 'info', 'Badge saved successfully!'
+            res.redirect '/badges'
 
     #SHOW
     app.get '/:id.:format?', (req, res) ->
@@ -91,6 +100,46 @@ routes = (app) ->
             req.flash 'info', 'Badge Destroyed!'
             res.redirect '/badges'
 
+    #REVOKE
+    app.post '/revoke/:badgeId', (req, res, next) ->
+      username = req.body.username
+      console.log("revoking badge #{req.params.badgeId} from #{username}")
+
+      User.findOne {username:username}, (err, user) ->
+        badgeIndex = null
+        userBadges = user.badges
+        for i in [0...userBadges.length]
+          if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
+            badgeIndex = i
+            break
+        if badgeIndex?
+          bid = userBadges[ badgeIndex ]._id.toString()
+          console.log("bid=#{bid}")
+          user.badges.splice badgeIndex, 1
+          user.save (err) ->
+            if err?
+              res.send JSON.stringify({revoked:false, message:err}),
+                'content-type': 'application/json'
+            else
+              BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
+                if err?
+                  res.send JSON.stringify({error: err})
+                else
+                  uindex = null
+                  for i in [0...btu.users]
+                    if btu.users[ i ].toString() == user._id.toString()
+                      uindex = i
+                      break
+                  btu.users.splice uindex, 1
+                  btu.save (err) ->
+                    next(err) if err
+                    res.send JSON.stringify({revoked:true}),
+                      'content-type': 'application/json'
+
+        else
+          res.send JSON.stringify({revoked:false, message:'User has not earned this badge'}),
+            'content-type': 'application/json'
+
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
       email = req.body.email
@@ -124,10 +173,28 @@ routes = (app) ->
                 console.error "Badge Issue Response: #{JSON.stringify(response)}"
                 return
               else
-                console.log "Badge Issue Response: #{JSON.stringify(response)}"
-                res.send JSON.stringify(response),
-                  'content-type': 'application/json'
-                return
+                BadgesToUsers.findOne { badgeId: badge._id }, (err, btu) ->
+                  if err?
+                    console.error(err)
+
+                  onComplete = () ->
+                    console.log "Badge Issue Response: #{JSON.stringify(response)}"
+                    res.send JSON.stringify(response),
+                      'content-type': 'application/json'
+                    return
+
+                  if btu?
+                    location = arrayUtils.containsString btu.users, user._id
+                    if location == -1
+                      btu.users.push( user._id )
+                      btu.save (err) ->
+                        if err?
+                          console.error(err)
+                        return onComplete()
+                    else 
+                      return onComplete()
+                  else
+                    return onComplete()
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback

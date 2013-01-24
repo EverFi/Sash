@@ -24,6 +24,10 @@ form#create-user-form.form-horizontal(action=url, method="post")
           option(value="#{userOrg}") #{userOrg}
         else
           option(value="") Organization
+  div.control-group
+    label.control-label(for"inputImage") User Image
+    div.controls
+      input(style="font-size:12px; width:200px", type="file", name="user[image]")
   input(type="submit")
 
 script

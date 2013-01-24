@@ -18,25 +18,31 @@ div.user-manage-wrapper.row-fluid
         img(src="/images/all-users.png")
 div.row-fluid.results-row(style="margin-top:10px")
   div.span12.user-search-results
+    div.ajax-notification
+      div.spinner
+      p Woah! That's a tall order. Just a sec...
 
 script
-  var usersObj = !{JSON.stringify(users)}
   var usernamesToIds = {};
-  var usernames = $.map(usersObj, function (obj, index){
-    usernamesToIds[obj.username] = obj._id;
-    return obj.username;
-  });
-    
-  $('.user-search-typeahead').typeahead({
-    source: usernames
-  });
+  
+  $.get('/users/#{org._id}/all', function(users){
+      var usernames = $.map(users, function (obj, index){
+        usernamesToIds[obj.username] = obj._id;
+        return obj.username;
+      });
+
+      $('.user-search-typeahead').typeahead({
+        source: usernames
+      });
+    })
 
   $('#user-search-go').on('click', onSearch);
 
   $('.all-users-btn').on('click', onAllUsers);
 
   function onAllUsers(){
-    $.get('/users/render', renderResults);
+    $('.ajax-notification').show();
+    $.get('/users/render', {org: "#{org._id}"}, renderResults);
   }
 
   function onSearch(e) {
@@ -62,6 +68,7 @@ script
   }
 
   function renderResults(data) {
+    $('.ajax-notification').hide();
     $('.user-search-results').html( data );
   }
 
