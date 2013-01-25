@@ -23,26 +23,55 @@ div.row-fluid.results-row(style="margin-top:10px")
       p Woah! That's a tall order. Just a sec...
 
 script
+  var store = GoodLife.store;
   var usernamesToIds = {};
-  
-  $.get('/users/#{org._id}/all', function(users){
-      var usernames = $.map(users, function (obj, index){
-        usernamesToIds[obj.username] = obj._id;
-        return obj.username;
-      });
+  var usernames = [];
+  var usersKey = 'sash.#{org._id}.users';
+  var allUsersKey = 'sash.#{org._id}.users.viewAll';
+  var _users = store.get( usersKey );
 
-      $('.user-search-typeahead').typeahead({
-        source: usernames
-      });
-    })
+  if ( !_users ) {
+    $.get('/users/#{org._id}/all', function(data){
+      store.save(usersKey, data);
+      mapNamesToIds(data);
+      initTypeahead();
+    });
+  } else {
+    mapNamesToIds( _users );
+    initTypeahead();
+  }
+
+
 
   $('#user-search-go').on('click', onSearch);
 
   $('.all-users-btn').on('click', onAllUsers);
 
+  function mapNamesToIds(users) {
+    usernames = $.map(users, function (obj, index){
+      usernamesToIds[obj.username] = obj._id;
+      return obj.username;
+    });
+  }
+
+  function initTypeahead() {
+    $('.user-search-typeahead').typeahead({
+        source: usernames
+    });
+  }
+
   function onAllUsers(){
+    var cachedUsers = store.get( allUsersKey );
+
+    if ( !cachedUsers ) {
     $('.ajax-notification').show();
-    $.get('/users/render', {org: "#{org._id}"}, renderResults);
+      $.get('/users/render', {org: "#{org._id}"}, function (data){
+        store.save( allUsersKey, data);
+        renderResults(data);
+      });
+    } else {
+      renderResults( cachedUsers );
+    }
   }
 
   function onSearch(e) {
@@ -75,3 +104,12 @@ script
   function noResults() {
     alertify.alert('No results! Try another query.');
   }
+
+
+
+
+
+
+
+
+
