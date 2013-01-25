@@ -3,6 +3,7 @@ div#badge-show
   div.row
     div.span2
       img(src=badge.imageUrl)
+      img(src=badge.grayedUrl)
     div.span8
       h1 #{badge.name}
   div.row
@@ -19,6 +20,26 @@ div#badge-show
           | Badge Criteria:
         br
         != badge.criteria
+  if badge.facebook_text
+    div.row
+      div.offset2.facebook_text
+        strong
+          | Facebook Share Text
+        br
+        != badge.facebook_text
+  if badge.twitter_text
+    div.row
+      div.offset2.criteria
+        strong
+          | Twitter Share Text:
+        br
+        != badge.twitter_text
+  if badge.link
+    div.row
+      div.offset2.criteria
+        strong
+          | Share Link: 
+        != badge.link
   if badge.version
     div.row
       div.offset2.version
@@ -61,8 +82,8 @@ div#badge-show
       button.btn.revoke Revoke Badge
 
   div.row
-    a(href="/badges/#{badge.id}/edit") Edit Me
-    form(action="/badges/#{badge.id}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
+    a(href="/badges/#{badge.slug}/edit") Edit Me
+    form(action="/badges/#{badge.slug}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
       input(type="hidden", value="delete", name="_method")
       input(type="submit", value="Delete", class="delete")
 

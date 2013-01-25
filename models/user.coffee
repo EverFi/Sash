@@ -14,8 +14,13 @@ EarnedBadgeSchema = new Schema
   name:          String
   image:
     type: String,
+  imageObj:
+    type: Schema.Types.Mixed,
   description:   String
   criteria:      String
+  facebook_text:      String
+  twitter_text:      String
+  link:      String
   version:       String
   issuer_id:
     type: Schema.ObjectId,
@@ -36,8 +41,12 @@ EarnedBadgeSchema.methods.toJSON = ->
   {
     name: @name,
     image: @image,
+    imageObj: @imageObj,
     description: @description,
     criteria: @criteria,
+    link: @link,
+    twitter_text: @twitter_text,
+    facebook_text: @facebook_text,
     version: @version,
     slug: @slug,
     tags: @tags,
@@ -102,6 +111,7 @@ UserSchema.methods.earn = (badge, callback)->
     b.issued_on = new Date()
     b.badge_id = badge.id
     b.image = badge.imageUrl
+    b.imageObj = badge.image
     b.issued_count = undefined
     @badges.push b
     @save (err, user)=>

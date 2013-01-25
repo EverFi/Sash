@@ -36,6 +36,7 @@ routes = (app) ->
     app.get '/badges.:format?', (req, res, next) ->
       username = req.query.username
       email = req.query.email
+      email = undefined if(email == '')
       unless username? || email?
         res.status(404).send("Not Found")
         return
@@ -76,7 +77,6 @@ routes = (app) ->
 
       User.findByUsernameOrEmail username, email, (err, user) ->
         badges = _.select user.badges, (badge) -> !badge.seen
-
         if req.xhr || req.params.format == 'json'
           formatResponse(req, res, badges)
         else
@@ -94,6 +94,10 @@ routes = (app) ->
         return
 
       User.findByUsernameOrEmail username, email, (err, user) ->
+        unless user?
+          res.status(404).send("Not Found")
+          return
+
         badge = _.detect user.badges, (b) -> b._id.toString() == badgeId
         badge.seen = true
         user.save ->

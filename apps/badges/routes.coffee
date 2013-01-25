@@ -6,27 +6,39 @@ authenticate = require '../middleware/authenticate'
 arrayUtils = require '../../lib/array'
 Promise = require('mongoose').Promise
 util = require 'util'
-
-util = require 'util'
+_ = require 'underscore'
 fs = require 'fs'
 
 routes = (app) ->
+  #
+  #SHOW JSON - Public - Returns JSON formatted badge
+  app.get '/badges/:slug.:format', (req, res) ->
+    Badge.findOne slug: req.params.slug, (err, badge) ->
+      formatBadgeResponse(req, res, badge)
+
+  #INDEX
+  app.get '/badges.:format?', authenticate, (req, res, next) ->
+    next() if !req.org
+    orgId = req.org.id
+    query = Badge.where('issuer_id', orgId)
+    if req.query.tags?
+      tags = _.flatten(Array(req.query.tags))
+      if req.query.match_any_tags?
+        # Matching ANY of the tags
+        query.in('tags', tags)
+      else
+        # Matching ALL of the tags
+        query.where('tags', {'$all': tags})
+    query.exec (err, badges)->
+      if req.xhr || req.params.format == 'json'
+        formatBadgeResponse(req, res, badges)
+      else
+        res.render "#{__dirname}/views/index",
+          badges: badges
+          orgId: orgId
+          org: req.org
+
   app.namespace '/badges', authenticate, ->
-    #INDEX
-    app.get '/', (req, res) ->
-      next() if !req.org
-      orgId = req.org.id
-      query = Badge.where('issuer_id', orgId)
-      if req.query.tags?
-        query.in('tags', req.query.tags)
-      query.exec (err, badges)->
-        if req.xhr || req.params.format == 'json'
-          formatResponse(req, res, badges)
-        else
-          res.render "#{__dirname}/views/index",
-            badges: badges
-            orgId: orgId
-            org: req.org
 
     #NEW
     app.get '/new', (req, res) ->
@@ -52,27 +64,34 @@ routes = (app) ->
             res.redirect '/badges'
 
     #SHOW
-    app.get '/:id.:format?', (req, res) ->
-      Badge.findById req.params.id, (err, badge) ->
+    app.get '/:slug/assertion.:format?', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         if req.params.format == 'json'
-          formatBadgeResponse(req, res, badge)
+          formatBadgeAssertionResponse(req, res, badge)
         else
           res.render "#{__dirname}/views/show",
             badge: badge
             issuer: badge.issuer()
 
     #SHOW
-    app.get '/:id/edit', (req, res) ->
-      Badge.findById req.params.id, (err, badge) ->
+    app.get '/:slug', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
+        res.render "#{__dirname}/views/show",
+          badge: badge
+          issuer: badge.issuer()
+
+    #SHOW
+    app.get '/:slug/edit', (req, res) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
         res.render "#{__dirname}/views/edit",
           badge: badge
           issuer: badge.issuer()
           orgId: req.org.id
 
     #UPDATE
-    app.put '/:id', (req, res, next) ->
+    app.put '/:slug', (req, res, next) ->
       if req.files.badge.image.length > 0
-        Badge.findById req.params.id, (err, badge)->
+        Badge.findOne slug: req.params.slug, (err, badge) ->
           badge.attach 'image', req.files.badge.image, (err)->
             next(err) if err
             badge.set(req.body.badge)
@@ -81,7 +100,7 @@ routes = (app) ->
               req.flash 'info', 'Badge saved successfully!'
               res.redirect '/badges'
       else
-        Badge.findById req.params.id, (err, badge)->
+        Badge.findOne slug: req.params.slug, (err, badge) ->
           badge.set(req.body.badge)
           badge.save (err, doc) ->
             next(err) if err
@@ -90,9 +109,9 @@ routes = (app) ->
 
 
     #DELETE
-    app.del '/:id', (req, res, next) ->
-      Badge.findById req.params.id, (err, doc) ->
-        doc.remove (err) ->
+    app.del '/:slug', (req, res, next) ->
+      Badge.findOne slug: req.params.slug, (err, badge) ->
+        badge.remove (err) ->
           if req.xhr
             res.send JSON.stringify(success: true),
               "Content-Type": "application/json"
@@ -171,7 +190,6 @@ routes = (app) ->
               if err?
                 response = {message: "Failed to issue Badge", error: err}
                 console.error "Badge Issue Response: #{JSON.stringify(response)}"
-                return
               else
                 BadgesToUsers.findOne { badgeId: badge._id }, (err, btu) ->
                   if err?
@@ -194,17 +212,25 @@ routes = (app) ->
                     else 
                       return onComplete()
                   else
-                    return onComplete()
+                    onComplete()
+
+
+formatBadgeAssertionResponse = (req, res, badge) ->
+  cb = req.query.callback
+  assertionPromise = badge.toJSON()
+  if cb
+    assertionPromise.on 'complete', (assertion)->
+      res.send "#{cb}(#{JSON.stringify(assertion)})"
+  else
+    res.send assertionPromise,
+      'content-type': 'application/json'
 
 formatBadgeResponse = (req, res, badge) ->
   cb = req.query.callback
-  assertionPromise = badge.assertion()
   if cb
-    assertionPromise.on 'complete', (assertion)->
-      res.send "#{cb}(#{JSON.stringify(assertion)})",
-        
+    res.send "#{cb}(#{JSON.stringify(badge)})"
   else
-    res.send assertionPromise,
+    res.send JSON.stringify(badge),
       'content-type': 'application/json'
 
 

@@ -24,6 +24,9 @@ BadgeSchema = new Schema
   name:          String
   description:   String
   criteria:      String
+  facebook_text:      String
+  twitter_text:      String
+  link:      String
   version:       String
   issuer_id:
     type: Schema.ObjectId,
@@ -90,6 +93,9 @@ attachmentsConfig = {
       styles:
         original:
           '$format': 'png' # OBI wants PNGs
+        originalGray:
+          '$format': 'png'
+          'colorspace': 'Gray'
         fullRetina:
           resize: '250x250>'
           '$format': 'png'
@@ -103,7 +109,7 @@ attachmentsConfig = {
         fullGray:
           resize: '125x125>'
           '$format': 'png'
-          'colorspace': 'Gray'          
+          'colorspace': 'Gray'
         mini:
           resize: '27x27>'
           '$format': 'png'
@@ -118,7 +124,6 @@ attachmentsConfig = {
           resize: '52x52>'
           '$format': 'png'
           'colorspace': 'Gray'
-
 }
 
 if configuration.usingS3()
