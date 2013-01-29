@@ -56,8 +56,8 @@ div#badge-show
       select.select-user(disabled="disabled")
         option(value="") Loading Users...
       br
-      button.btn.issue.btn-success Issue Badge
-      button.btn.revoke.btn-warning(style="margin-left:15px;") Revoke Badge
+      button(disabled="disabled").user-action-btn.btn.issue.btn-success Issue Badge
+      button(disabled="disabled").user-action-btn.btn.revoke.btn-warning(style="margin-left:15px;") Revoke Badge
 
   div.row
     button.btn.btn-link
@@ -99,6 +99,15 @@ div#badge-show
             
           },
         });
+      }
+    });
+
+    $('.select-user').on('change', function(){
+      var username = $(this).val();
+      if ( username ) {
+        $('.user-action-btn').removeAttr('disabled');
+      } else {
+        $('.user-action-btn').attr('disabled', 'disabled');
       }
     });
 
