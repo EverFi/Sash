@@ -706,8 +706,8 @@ ul.badge-list li .badge-counts {
   padding-right:10px;
 }
 
-.badge-media h2, .badge-media p {
-
+.sash-badge-info {
+  font-size:12px;
 }
 
 
