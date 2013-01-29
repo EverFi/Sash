@@ -54,7 +54,6 @@ div#badge-show
           td #{badge.slug}
     div.span3
       select.select-user(disabled="disabled")
-        option(value="") Loading Users...
       br
       button(disabled="disabled").user-action-btn.btn.issue.btn-success Issue Badge
       button(disabled="disabled").user-action-btn.btn.revoke.btn-warning(style="margin-left:15px;") Revoke Badge
@@ -65,81 +64,95 @@ div#badge-show
     form.delete-form(action="/badges/#{badge.slug}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
       input(type="hidden", value="delete", name="_method")
       button.btn.btn-danger.delete-badge(style="margin-left:15px; margin-top:5px;") Delete
-
+  
   script
-    $.get('/users/#{badge.issuer_id}/all', function(users){
-      $('.select-user').find('option').html('Choose A User');
-      $.each(users, function (index, user){
+    $(document).ready(init);
+
+    function init() {
+      $.get('/users/#{badge.issuer_id}/all', function(users){
+        appendOpt("Choose A User", "");
+        $.each(users, function (index, user){
+          appendOpt(user.username)
+        });
+        $('.select-user').select2({
+          placeholder: "Select a user"
+        });
+        $('.select-user').on("change", onUserChange);
+      });
+
+      $('.issue').click(function(){
+        var username = $('.select-user').val();
+        if ( username ) {
+          $.ajax({
+            type: "POST",
+            url: '/badges/issue/#{badge.slug}',
+            data: {username:username},
+            success: function(data){
+              var msg;
+              if ( data.earned === true ) {
+                msg = "'#{badge.name}' has been issued to " + username;
+                alertify.alert( msg );
+              } else {
+                msg = data.message;
+                alertify.log( msg, 'error' );
+              }
+              
+            },
+          });
+        }
+      });
+
+      $('.revoke').click(function(){
+        var username = $('.select-user').val();
+        if ( username ) {
+          $.ajax({
+            type: "POST",
+            url: '/badges/revoke/#{badge._id}',
+            data: {username:username},
+            success: function(data){
+              if ( data.revoked ) {
+                alertify.alert( "Revoked '#{badge.name}' from user " + username );
+              } else {
+                alertify.error( "Could not revoke '#{badge.name}' from " + username );
+              }
+            }
+          });
+        }
+      });
+
+      $('.delete-badge').click(function(e){
+        e.preventDefault();
+        var msg = $('.delete-form').data('confirm');
+        alertify.confirm(msg, function(e){
+          if (e) {
+            $('.delete-form').submit();
+          } else {
+            alertify.log("Bade deletion canceled.")
+          }
+        });
+      });
+
+      function appendOpt(val, content) {
         var opt = $('<option></option>');
+        content = content || val;
         $(opt)
-          .html( user.username )
-          .attr( 'value', user.username );
+          .html( content )
+          .attr( 'value', val );
         $('.select-user')
           .append( opt )
           .removeAttr( 'disabled' );
-      });
-    });
-
-    $('.issue').click(function(){
-      var username = $('.select-user').val();
-      if ( username ) {
-        $.ajax({
-          type: "POST",
-          url: '/badges/issue/#{badge.slug}',
-          data: {username:username},
-          success: function(data){
-            var msg;
-            if ( data.earned === true ) {
-              msg = "'#{badge.name}' has been issued to " + username;
-              alertify.alert( msg );
-            } else {
-              msg = data.message;
-              alertify.log( msg, 'error' );
-            }
-            
-          },
-        });
       }
-    });
 
-    $('.select-user').on('change', function(){
-      var username = $(this).val();
-      if ( username ) {
-        $('.user-action-btn').removeAttr('disabled');
-      } else {
-        $('.user-action-btn').attr('disabled', 'disabled');
-      }
-    });
+      function onUserChange(e) {
+        var username = $('.select-user').val();
 
-    $('.revoke').click(function(){
-      var username = $('.select-user').val();
-      if ( username ) {
-        $.ajax({
-          type: "POST",
-          url: '/badges/revoke/#{badge._id}',
-          data: {username:username},
-          success: function(data){
-            if ( data.revoked ) {
-              alertify.alert( "Revoked '#{badge.name}' from user " + username );
-            } else {
-              alertify.error( "Could not revoke '#{badge.name}' from " + username );
-            }
-          }
-        });
-      }
-    });
-
-    $('.delete-badge').click(function(e){
-      e.preventDefault();
-      var msg = $('.delete-form').data('confirm');
-      alertify.confirm(msg, function(e){
-        if (e) {
-          $('.delete-form').submit();
+        if ( username !== 'Choose A User' ) {
+          $('.user-action-btn').removeAttr('disabled');
         } else {
-          alertify.log("Bade deletion canceled.")
+          $('.user-action-btn').attr('disabled', 'disabled');
         }
-      });
-    });
+      }
+    }
 
 
 

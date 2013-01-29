@@ -40,7 +40,7 @@ div.user-info-container
     if badges.length > 0
       each badge in badges
         div.media
-          a.pull-left(href="#{host}/badges/#{badge.id}")
+          a.pull-left(href=urlFor(badge, 'badges'))
             img.media-object(src="#{badge.image}")
           div.media-body
             h3.media-heading #{badge.name}

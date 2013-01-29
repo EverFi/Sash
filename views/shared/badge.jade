@@ -1,18 +1,12 @@
-div.badge-image
-  img(src=badge.imageUrl)
-
-div.badge-data
-  div.badge-name
-    h2
+div.media.badge-media
+  a.pull-left(href=urlFor(badge, 'badges'))
+    img.media-object.badge-media-image(src="#{badge.imageUrl}")
+  div.media-body
+    h2.media-heading 
       a(href=urlFor(badge, 'badges')) #{badge.name}
-  div.badge-description
-    != badge.description
-  div.badge-counts
-    if(typeof badge.issued_on != 'undefined')
-      strong issued on #{formatDate(badge.issued_on)}
-      br
-    else if(typeof badge.issued_count != 'undefined')
-      strong #{badge.issued_count} issued
-      br
-      | Created On
-      strong  #{formatDate(badge.created_at)}
+    if badge.issued_count
+      span #{badge.issued_count} issued
+    else
+      span 0 issued
+    br
+    span Created on #{formatDate(badge.create_at)}

@@ -177,6 +177,7 @@ routes = (app) ->
           res.send JSON.stringify({issued: false}),
             'content-type': 'application/json'
           return
+
         User.findOrCreate username, email,
           {issuer_id: badge.issuer_id, tags: req.query.tags},
           (err, user) ->
@@ -191,28 +192,33 @@ routes = (app) ->
                 response = {message: "Failed to issue Badge", error: err}
                 console.error "Badge Issue Response: #{JSON.stringify(response)}"
               else
-                BadgesToUsers.findOne { badgeId: badge._id }, (err, btu) ->
-                  if err?
-                    console.error(err)
+                count = parseInt badge.issued_count
+                count += 1
+                badge.issued_count = count.toString()
+                badge.save (err) ->
+                  next(err) if err
+                  BadgesToUsers.findOne { badgeId: badge._id }, (err, btu) ->
+                    if err?
+                      console.error(err)
 
-                  onComplete = () ->
-                    console.log "Badge Issue Response: #{JSON.stringify(response)}"
-                    res.send JSON.stringify(response),
-                      'content-type': 'application/json'
-                    return
+                    onComplete = () ->
+                      console.log "Badge Issue Response: #{JSON.stringify(response)}"
+                      res.send JSON.stringify(response),
+                        'content-type': 'application/json'
+                      return
 
-                  if btu?
-                    location = arrayUtils.containsString btu.users, user._id
-                    if location == -1
-                      btu.users.push( user._id )
-                      btu.save (err) ->
-                        if err?
-                          console.error(err)
+                    if btu?
+                      location = arrayUtils.containsString btu.users, user._id
+                      if location == -1
+                        btu.users.push( user._id )
+                        btu.save (err) ->
+                          if err?
+                            console.error(err)
+                          return onComplete()
+                      else 
                         return onComplete()
-                    else 
-                      return onComplete()
-                  else
-                    onComplete()
+                    else
+                      onComplete()
 
 
 formatBadgeAssertionResponse = (req, res, badge) ->

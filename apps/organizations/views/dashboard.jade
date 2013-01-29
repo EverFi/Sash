@@ -17,14 +17,11 @@ div.row
       li
         a(href="/organizations/#{org.id}", class="new-badge")
           | View Organization Info
-
-
 div.row
   div#badge-listing.span9
     h2.list Badges
-    ul.badge-list
-      each badge in badges
-        li
-          include ../../../views/shared/badge
     div.badge-count Showing #{badges.length} of #{badgeCount} &#8211; 
       a(href="/badges") View All
+    ul.badge-list
+      each badge in badges
+          include ../../../views/shared/badge

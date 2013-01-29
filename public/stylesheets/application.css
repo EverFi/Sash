@@ -501,6 +501,12 @@ ul.badge-list li .badge-counts {
   text-align: right;
 }
 
+.badge-count {
+  width: 300px;
+  height: 50px;
+  padding-bottom:20px;
+}
+
 #badge-show {
   margin-top: 20px
 }
@@ -686,7 +692,23 @@ ul.badge-list li .badge-counts {
   font-size:12px;
 }
 
+.user-action-btn {
+  margin-top:10px;
+}
 
+.badge-media {
+  width: 350px;
+  height: 200px;
+  float: left;
+}
+
+.badge-media-image {
+  padding-right:10px;
+}
+
+.badge-media h2, .badge-media p {
+
+}
 
 
 
