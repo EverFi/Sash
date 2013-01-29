@@ -13,7 +13,7 @@ path          = require 'path'
 _             = require 'underscore'
 _.str         = require 'underscore.string'
 _.mixin(_.str.exports())
-require 'mongoose-attachments/lib/providers/localfs'
+#require 'mongoose-attachments/lib/providers/localfs'
 
 Promise = mongoose.Promise
 Schema  = mongoose.Schema
@@ -149,7 +149,7 @@ BadgeSchema.plugin attachments, attachmentsConfig
 BadgeSchema.virtual('slugUrl').get ->
   "http://#{process.env.HOST}/badges/issue/#{@slug}"
 
-BadgeSchema.virtual('unearnedImageUrl').get ->
+BadgeSchema.virtual('grayImageUrl').get ->
   if configuration.usingS3()
     @image.fullGray.defaultUrl
   else
@@ -162,6 +162,20 @@ BadgeSchema.virtual('imageUrl').get ->
   else
     dir = path.resolve('./') + '/public'
     @image.full.defaultUrl.replace dir, ''
+
+BadgeSchema.virtual('miniImageUrl').get ->
+  if configuration.usingS3()
+    @image.mini.defaultUrl
+  else
+    dir = path.resolve('./') + '/public'
+    @image.mini.defaultUrl.replace dir, ''
+
+BadgeSchema.virtual('miniGrayImageUrl').get ->
+  if configuration.usingS3()
+    @image.miniGray.defaultUrl
+  else
+    dir = path.resolve('./') + '/public'
+    @image.miniGray.defaultUrl.replace dir, ''
 
 BadgeSchema.virtual('criteriaUrl').get ->
   "http://#{configuration.get('hostname')}/badges/#{@slug}/criteria"

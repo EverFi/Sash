@@ -1,95 +1,74 @@
 
 div#badge-show
   div.row
-    div.span2
-      img(src=badge.imageUrl)
-      img(src=badge.grayedUrl)
-    div.span8
-      h1 #{badge.name}
+    div.span3
+      img(src=badge.imageUrl).display-badge-image
+      img(src=badge.grayImageUrl).display-badge-image
+    div.span6
+      h1(style="margin-top:30px;") #{badge.name}
+      img(src=badge.miniImageUrl).display-badge-image
+      img(src=badge.miniGrayImageUrl).display-badge-image
   div.row
-    div.offset2
-      div.description
-        strong
-          | Badge Description:
-        br
-        != badge.description
-  if badge.criteria
-    div.row
-      div.offset2.criteria
-        strong
-          | Badge Criteria:
-        br
-        != badge.criteria
-  if badge.facebook_text
-    div.row
-      div.offset2.facebook_text
-        strong
-          | Facebook Share Text
-        br
-        != badge.facebook_text
-  if badge.twitter_text
-    div.row
-      div.offset2.criteria
-        strong
-          | Twitter Share Text:
-        br
-        != badge.twitter_text
-  if badge.link
-    div.row
-      div.offset2.criteria
-        strong
-          | Share Link: 
-        != badge.link
-  if badge.version
-    div.row
-      div.offset2.version
-        strong
-          | Version:  
-        = badge.version
-  div.row
-    div.offset2.issuer 
-      strong
-        | Issuer:  
-      | #{issuer.name} 
-      - if(issuer.origin)
-        | (
-        a(href=issuer.origin, target='_blank')= issuer.origin
-        | )
-  if badge.tags.length > 0
-    div.row
-      div.tags.offset2
-        strong
-          | Tags: 
-        each tag in badge.tags
-          span.tag
-            = tag
-  div.row
-    div.url.offset2
-      strong Issue URL:  
-      = badge.slugUrl
-
-  div.row
-    div.url.offset2
-      strong Slug:  
-      = badge.slug
-
-  div.row
-    div.url.offset2
+    div.span5
+      table.table.table.striped.table-hover.table-condensed.badge-details
+        if badge.description
+          tr
+            td Description
+            td #{badge.description}
+        tr
+          td Criteria
+          td #{badge.criteria}
+        tr
+          td Facebook Share Text
+          td #{badge.facebook_text}
+        tr
+          td Twitter Share Text
+          td #{badge.twitter_text}
+        if badge.link
+          tr
+            td Share Link
+            td #{badge.link}
+        if badge.version
+          tr
+            td Version
+            td #{badge.version}
+        tr
+          td Issuer
+          if issuer.origin
+            td #{issuer.name} - 
+              a(href="#{issuer.origin}") (#{issuer.origin})
+          else
+            td #{issuer.name}
+        if badge.tags.length > 0
+          tr
+            td Tags
+            td
+              each tag in badge.tags
+                span.tag
+                  = tag
+        tr
+          td Issue URL
+          td #{badge.slugUrl}
+        tr
+          td Slug
+          td #{badge.slug}
+    div.span3
       select.select-user(disabled="disabled")
         option(value="") Loading Users...
       br
-      button.btn.issue Issue Badge
-      button.btn.revoke Revoke Badge
+      button.btn.issue.btn-success Issue Badge
+      button.btn.revoke.btn-warning(style="margin-left:15px;") Revoke Badge
 
   div.row
-    a(href="/badges/#{badge.slug}/edit") Edit Me
-    form(action="/badges/#{badge.slug}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
+    button.btn.btn-link
+      a(href="/badges/#{badge.slug}/edit") Edit Badge
+    form.delete-form(action="/badges/#{badge.slug}", method='post', class="delete", data-confirm='Are you sure you want to delete this badge?')
       input(type="hidden", value="delete", name="_method")
-      input(type="submit", value="Delete", class="delete")
+      button.btn.btn-danger.delete-badge(style="margin-left:15px; margin-top:5px;") Delete
 
   script
     $.get('/users/#{badge.issuer_id}/all', function(users){
-      $('.select-user').find('option').html('Users');
+      $('.select-user').find('option').html('Choose A User');
       $.each(users, function (index, user){
         var opt = $('<option></option>');
         $(opt)
@@ -111,11 +90,13 @@ div#badge-show
           success: function(data){
             var msg;
             if ( data.earned === true ) {
-              msg = "'#{badge.name}' has been issued to " + username
+              msg = "'#{badge.name}' has been issued to " + username;
+              alertify.alert( msg );
             } else {
               msg = data.message;
+              alertify.log( msg, 'error' );
             }
-            alertify.alert( msg );
+            
           },
         });
       }
@@ -137,6 +118,18 @@ div#badge-show
           }
         });
       }
+    });
+
+    $('.delete-badge').click(function(e){
+      e.preventDefault();
+      var msg = $('.delete-form').data('confirm');
+      alertify.confirm(msg, function(e){
+        if (e) {
+          $('.delete-form').submit();
+        } else {
+          alertify.log("Bade deletion canceled.")
+        }
+      });
     });
 
 

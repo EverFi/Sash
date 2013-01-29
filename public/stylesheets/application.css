@@ -678,6 +678,13 @@ ul.badge-list li .badge-counts {
   display:none;
 }
 
+#badge-show img.display-badge-image {
+  padding-right:10px;
+}
+
+#badge-show table.badge-details {
+  font-size:12px;
+}
 
 
 

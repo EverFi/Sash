@@ -31,21 +31,22 @@ script
   var _users = store.get( usersKey );
 
   if ( !_users ) {
-    $.get('/users/#{org._id}/all', function(data){
-      store.save(usersKey, data);
-      mapNamesToIds(data);
-      initTypeahead();
-    });
+    $.get('/users/#{org._id}/all', initUsers);
   } else {
-    mapNamesToIds( _users );
-    initTypeahead();
+    initUsers( _users );
   }
-
-
 
   $('#user-search-go').on('click', onSearch);
 
   $('.all-users-btn').on('click', onAllUsers);
+
+  function initUsers(data) {
+    if ( !_users ) {
+      store.save(usersKey, data);
+    }
+    mapNamesToIds(data);
+    initTypeahead();
+  }
 
   function mapNamesToIds(users) {
     usernames = $.map(users, function (obj, index){

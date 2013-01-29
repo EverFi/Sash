@@ -14,11 +14,11 @@ if(typeof process.env.NODE_ENV === 'undefined')
 
 if (process.env.NODE_ENV === 'development')
   process.env.PORT = 3000
-  process.env.HOST = 'localhost'+process.env.PORT
+  process.env.HOST = 'localhost:'+process.env.PORT
 
 if (process.env.NODE_ENV === 'test')
   process.env.PORT = 3001
-  process.env.HOST = 'localhost'+process.env.PORT
+  process.env.HOST = 'localhost:'+process.env.PORT
 
 var express = require('express'),
     mongodb = require('mongoose'),
