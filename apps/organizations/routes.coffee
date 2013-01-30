@@ -15,6 +15,11 @@ fs.readFile userTemplateFile, (err, data) ->
   userJade = data.toString()
 
 routes = (app) ->
+
+  #404
+  app.get '/404', (req, res) ->
+    res.render "#{__dirname}/../../views/shared/404"
+
   #NEW
   app.get '/organizations/new', (req, res) ->
     res.render "#{__dirname}/views/new",

@@ -219,6 +219,9 @@ routes = (app) ->
     app.get '/:id', (req, res, next) ->
       User.findById req.params.id, (err, user)->
         next(err) if err
+        unless user?
+          res.redirect '/404'
+          return
         res.render "#{__dirname}/views/show",
           user: user,
           host: 'http://' + configuration.get('hostname'),

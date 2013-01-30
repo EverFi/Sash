@@ -1,9 +1,9 @@
 div.media.pull-left
-  a.pull-left(href="/users/#{_id}")
+  a.pull-left(href="/users/username/#{username}")
     if image
       img.media-object(src="#{image")
     else
       img.media-object(src="/images/user.png")
   div.media-body
     h3.media-heading
-      a(href="/users/#{_id}") #{username}
+      a(href="/users/username/#{username}") #{username}

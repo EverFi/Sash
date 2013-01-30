@@ -76,6 +76,8 @@ routes = (app) ->
     #SHOW
     app.get '/:slug', (req, res) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
+        unless badge?
+          res.redirect '/404'
         res.render "#{__dirname}/views/show",
           badge: badge
           issuer: badge.issuer()
