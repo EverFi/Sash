@@ -710,6 +710,20 @@ ul.badge-list li .badge-counts {
   font-size:12px;
 }
 
+.metrics-box {
+  background:#d9edf7;
+  color:#3a87ad;
+}
+
+.metrics-box h3 {
+  font-weight:bold;
+  margin-top:10%;
+}
+
+.metrics-box h3, p {
+  text-align:center;
+}
+
 
 
 

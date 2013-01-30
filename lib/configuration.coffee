@@ -1,6 +1,7 @@
 fs = require 'fs'
 
 config = {}
+
 exports.usingS3 = ->
   process.env.S3_KEY? && process.env.S3_SECRET? &&  process.env.S3_BUCKET?
 

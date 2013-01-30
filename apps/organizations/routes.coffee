@@ -14,7 +14,7 @@ userTemplateFile = path.resolve __dirname + '/views/templates/user.jade'
 fs.readFile userTemplateFile, (err, data) ->
   userJade = data.toString()
 
-routes = (app) ->
+routes = (app, metricsReport) ->
 
   #404
   app.get '/404', (req, res) ->

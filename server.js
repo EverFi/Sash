@@ -6,6 +6,10 @@
 // require('nodetime').profile()
 
 require('coffee-script');
+// var metrics = require('metrics');
+
+// consider a different way of doing this
+// metricsReport = new metrics.Report();
 
 if(typeof process.env.NODE_ENV === 'undefined')
   process.env.NODE_ENV = 'development'
@@ -69,10 +73,14 @@ app.configure('test', function(){
 require('./apps/helpers')(app);
 
 // Routes
-require('./apps/badges/routes')(app);
+require('./apps/authentication/routes').routes(app)
+var metricsReport = require('./apps/authentication/routes').metricsReport
+var trackedMetrics = require('./apps/authentication/routes').trackedMetrics
+require('./apps/metrics/routes')(app, metricsReport);
 require('./apps/organizations/routes')(app);
-require('./apps/users/routes')(app);
-require('./apps/authentication/routes')(app);
+require('./apps/badges/routes')(app, trackedMetrics);
+require('./apps/users/routes')(app, trackedMetrics.usersMetrics);
+
 require('./apps/static/routes')(app);
 
 

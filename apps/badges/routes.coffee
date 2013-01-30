@@ -9,7 +9,7 @@ util = require 'util'
 _ = require 'underscore'
 fs = require 'fs'
 
-routes = (app) ->
+routes = (app, metrics) ->
   #
   #SHOW JSON - Public - Returns JSON formatted badge
   app.get '/badges/:slug.:format', (req, res) ->
@@ -78,6 +78,7 @@ routes = (app) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
         unless badge?
           res.redirect '/404'
+        metrics.badges.viewed.mark( badge.name );
         res.render "#{__dirname}/views/show",
           badge: badge
           issuer: badge.issuer()
@@ -135,27 +136,34 @@ routes = (app) ->
             break
         if badgeIndex?
           bid = userBadges[ badgeIndex ]._id.toString()
-          console.log("bid=#{bid}")
           user.badges.splice badgeIndex, 1
-          user.save (err) ->
-            if err?
-              res.send JSON.stringify({revoked:false, message:err}),
-                'content-type': 'application/json'
-            else
-              BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
+          Badge.findOne {_id:bid}, (err, badge) ->
+            count = parseInt badge.issued_count
+            count -= 1
+            badge.issued_count = count.toString()
+            badge.save (err) ->
+              if err?
+                res.send JSON.stringify({revoked:false, message:err}),
+                  'content-type': 'application/json'
+              user.save (err) ->
                 if err?
-                  res.send JSON.stringify({error: err})
+                  res.send JSON.stringify({revoked:false, message:err}),
+                    'content-type': 'application/json'
                 else
-                  uindex = null
-                  for i in [0...btu.users]
-                    if btu.users[ i ].toString() == user._id.toString()
-                      uindex = i
-                      break
-                  btu.users.splice uindex, 1
-                  btu.save (err) ->
-                    next(err) if err
-                    res.send JSON.stringify({revoked:true}),
-                      'content-type': 'application/json'
+                  BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
+                    if err?
+                      res.send JSON.stringify({error: err})
+                    else
+                      uindex = null
+                      for i in [0...btu.users]
+                        if btu.users[ i ].toString() == user._id.toString()
+                          uindex = i
+                          break
+                      btu.users.splice uindex, 1
+                      btu.save (err) ->
+                        next(err) if err
+                        res.send JSON.stringify({revoked:true}),
+                          'content-type': 'application/json'
 
         else
           res.send JSON.stringify({revoked:false, message:'User has not earned this badge'}),
@@ -205,6 +213,8 @@ routes = (app) ->
 
                     onComplete = () ->
                       console.log "Badge Issue Response: #{JSON.stringify(response)}"
+                      if response.earned == true
+                        metrics.badges.earned.mark( badge.name );
                       res.send JSON.stringify(response),
                         'content-type': 'application/json'
                       return
