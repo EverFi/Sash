@@ -5,82 +5,48 @@ script(src="/javascripts/lib/xdate.js")
 script(src="/javascripts/reportUtils.js")
 
 div.row-fluid(style="margin-top:100px;")
-  div.span3.badges-earned-metrics.metrics-box
+  div.span3.badges-earned-count.metrics-box
     h3 Badges Earned
     p
       img(src="/images/spinner.gif")
-  div.span3.badge-views-metrics.metrics-box
-    h3 Badge Views
+  div.span3.badges-created-count.metrics-box
+    h3 Badges Created
+    p
+      img(src="/images/spinner.gif")
+  div.span3.users-created-count.metrics-box
+    h3 Users Created
     p
       img(src="/images/spinner.gif")
 div.row-fluid
   div.span12.badges-earned-chart-row(style="margin-top:50px;")
-    legend Earned Badges Report
+    legend Earned Badges Overview
     figure#badges-earned-chart(style="width:100%; height:300px;")
+div.row-fluid
+  div.span12.badges-created-chart-row(style="margin-top:50px;")
+    legend Badges Created Overview
+    figure#badges-created-chart(style="width:100%; height:300px;")
+div.row-fluid
+  div.span12.users-created-chart-row(style="margin-top:50px;")
+    legend Users Created Overview
+    figure#users-created-chart(style="width:100%; height:300px;")
 
 script
   var utils = ReportUtils;
 
-  $.getJSON('http://127.0.0.1:3000/metrics', function(data){
-    $( '.badges-earned-metrics p' ).html( data["sash.#{org}.badges"].earned.count )
-    $( '.badge-views-metrics p' ).html( data["sash.#{org}.badges"].viewed.count )
-    drawBadgesEarned( data["sash.#{org}.badges"].earned.badges );
+  $.getJSON("/metrics/report.json", function(data){
+    for (var i in data) {
+      var obj = data[ i ];
+      var dom = obj.domId;
+      var chartSelector = "#" + dom + "-chart";
+      var countSelector = "." + dom + "-count";
+      var chart = new xChart('bar', obj.chartData, chartSelector, obj.opts);
+      var countEl = $( countSelector );
+      if ( countEl && countEl.length > 0 ) {
+        console.log( data[ i ] )
+        $( countSelector ).find( "p" ).html( data[ i ].count ); 
+      }
+    }
   });
-
-  function drawBadgesEarned( earnedBadges ) {
-    var base = utils.chart.baseDataObject( 'bar' );
-
-    // earned today
-    var earnedTodayData = getEarnedData('today', earnedBadges);
-    base.main.push( earnedTodayData );
-
-    // earned this week
-    var earnedThisWeekData = getEarnedData('This-Week', earnedBadges);
-    earnedThisWeekData.type = "bar";
-    base.comp.push( earnedThisWeekData );
-
-    // earned this year
-    var earnedThisYearData = getEarnedData('This-Year', earnedBadges);
-    earnedThisYearData.type = "bar";
-    base.comp.push( earnedThisYearData );
-
-    // earned this month
-    var earnedThisMonthData = getEarnedData('This-Month', earnedBadges);
-    earnedThisMonthData.type = "bar";
-    base.comp.push( earnedThisMonthData );
-
-    var opts = {};
-
-    var myChart = new xChart('bar', base, '#badges-earned-chart', opts);
-  }
-
-  function getEarnedData(period, earnedBadges) {
-    var label;
-    if ( period.indexOf( '-' ) > -1 ) {
-      label = period.replace('-', ' ');
-      period = period.replace( '-', '' );
-    } else {
-      label = period.charAt(0).toUpperCase() + period.slice(1);
-    }
-    
-    period = period.charAt(0).toUpperCase() + period.slice(1);
-    var obj = {};
-    obj.className = '.' + period.toLowerCase();
-    obj.data = [];
-    var x = label;
-    var y = 0;
-
-    for (i in earnedBadges) {
-      var earnedTodayDates = utils.badges.earned_.apply(null, [ period, earnedBadges[i] ] );
-      y += earnedTodayDates.length;
-    }
-    obj.data.push({
-      x:x,
-      y:y
-    });
-    return obj;
-  }
-
 
 
 

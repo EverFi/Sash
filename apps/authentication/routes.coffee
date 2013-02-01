@@ -1,9 +1,6 @@
 Organization = require '../../models/organization'
 configuration = require '../../lib/configuration'
 hexDigest = require('../../lib/hex_digest')
-metrics = require('metrics')
-metricsReport = new metrics.Report();
-trackedMetrics = {}
 
 checkOrgs = (req,res,next)->
   Organization.find {}, (err, orgs) ->
@@ -27,7 +24,6 @@ routes = (app, metricsReport) ->
         if org?.hashed_password == hexDigest(req.body.password)
           req.session.org_id = org.id
           req.flash 'info', "You are logged in as #{org.name}"
-          initMetrics org.id
           res.redirect '/dashboard'
         else
           req.flash 'error', errMsg
@@ -45,19 +41,5 @@ routes = (app, metricsReport) ->
       req.flash 'info', 'You have been logged out.'
       res.redirect '/login'
 
-initMetrics = (orgId) ->
-  trackedMetrics.badges = {}
-  console.log(metrics)
-
-  # init badge metrics
-  trackedMetrics.badges.earned = new metrics.EarnedBadgeTracker();
-  trackedMetrics.badges.viewed = new metrics.ViewedBadgeTracker();
-
-  #add badge metrics
-  metricsReport.addMetric("sash.#{orgId}.badges.earned", trackedMetrics.badges.earned);
-  metricsReport.addMetric("sash.#{orgId}.badges.viewed", trackedMetrics.badges.viewed);
-
-exports.trackedMetrics = trackedMetrics
-exports.metricsReport = metricsReport
-exports.routes = routes
+module.exports = routes
 

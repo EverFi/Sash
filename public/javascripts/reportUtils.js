@@ -1,6 +1,8 @@
 
 var ReportUtils = {
 
+  
+
   time: {
 
     isThisYear: function(date) {
@@ -27,63 +29,26 @@ var ReportUtils = {
       var thisMonth = new XDate( new Date() ).getMonth();
       var thisYear = new XDate( new Date() ).getYear();
       return ( date.getMonth() === thisMonth ) && ( date.getYear() === thisYear );
-    }
+    },
 
-
-  },
-
-  badges: {
-
-    earned_: function(period, earnedTimes) {
+    happened_: function(period, times) {
+      var self = this;
       var dates = [];
       var func = 'is' + period;
-      earnedTimes.forEach(function(time){
+      if ( typeof times === 'string') {
+        var tmp = [];
+        tmp.push(times);
+        times = tmp;
+      }
+
+      times.forEach(function(time){
         if ( ReportUtils.time[ func ].apply(null, [ time ] ) ) {
           dates.push( time );
         }
       });
       return dates;
-    },
-
-    earnedThisMonth: function(earnedTimes) {
-      var dates = [];
-      earnedTimes.forEach(function(time){
-        if ( ReportUtils.time.isThisMonth( time ) ) {
-          dates.push( time );
-        }
-      });
-      return dates;
-    },
-
-    earnedThisYear: function(earnedTimes) {
-      var dates = [];
-      earnedTimes.forEach(function(time){
-        if ( ReportUtils.time.isThisYear( time ) ) {
-          dates.push( time );
-        }
-      });
-      return dates;
-    },
-
-    earnedThisWeek: function(earnedTimes) {
-      var dates = [];
-      earnedTimes.forEach(function(time){
-        if ( ReportUtils.time.isThisWeek( time ) ) {
-          dates.push( time );
-        }
-      });
-      return dates;
-    },
-
-    earnedToday: function(earnedTimes) {
-      var dates = [];
-      earnedTimes.forEach(function(time){
-        if ( ReportUtils.time.isToday( time ) ) {
-          dates.push( time );
-        }
-      });
-      return dates;
     }
+
 
   },
 

@@ -2,6 +2,7 @@ Badge = require '../../models/badge'
 User = require '../../models/user'
 Organization = require '../../models/organization'
 BadgesToUsers = require '../../models/badges_to_users'
+BadgeMetric = require '../../models/badge_metric'
 authenticate = require '../middleware/authenticate'
 arrayUtils = require '../../lib/array'
 Promise = require('mongoose').Promise
@@ -9,7 +10,7 @@ util = require 'util'
 _ = require 'underscore'
 fs = require 'fs'
 
-routes = (app, metrics) ->
+routes = (app) ->
   #
   #SHOW JSON - Public - Returns JSON formatted badge
   app.get '/badges/:slug.:format', (req, res) ->
@@ -60,8 +61,20 @@ routes = (app, metrics) ->
           btu.users = []
           btu.save (err, btu_doc) ->
             next(err) if err
-            req.flash 'info', 'Badge saved successfully!'
-            res.redirect '/badges'
+            criteria = {moment:'created', organization:badge.issuer_id};
+            BadgeMetric.findOne criteria, (err, doc) ->
+              next(err) if err
+              if doc
+                doc.mark badge._id
+              else
+                doc = new BadgeMetric()
+                doc.moment = 'created'
+                doc.organization = badge.issuer_id
+                doc.mark badge._id
+              doc.save (err) ->
+                next(err) if err
+                req.flash 'info', 'Badge saved successfully!'
+                res.redirect '/badges'
 
     #SHOW
     app.get '/:slug/assertion.:format?', (req, res) ->
@@ -78,7 +91,6 @@ routes = (app, metrics) ->
       Badge.findOne slug: req.params.slug, (err, badge) ->
         unless badge?
           res.redirect '/404'
-        metrics.badges.viewed.mark( badge.name );
         res.render "#{__dirname}/views/show",
           badge: badge
           issuer: badge.issuer()
@@ -201,6 +213,9 @@ routes = (app, metrics) ->
               if err?
                 response = {message: "Failed to issue Badge", error: err}
                 console.error "Badge Issue Response: #{JSON.stringify(response)}"
+                res.send JSON.stringify(response),
+                  'content-type': 'application/json'
+                return
               else
                 count = parseInt badge.issued_count
                 count += 1
@@ -214,10 +229,25 @@ routes = (app, metrics) ->
                     onComplete = () ->
                       console.log "Badge Issue Response: #{JSON.stringify(response)}"
                       if response.earned == true
-                        metrics.badges.earned.mark( badge.name );
-                      res.send JSON.stringify(response),
-                        'content-type': 'application/json'
-                      return
+                        criteria = {moment:'issued', organization:badge.issuer_id};
+                        BadgeMetric.findOne criteria, (err, doc) ->
+                          next(err) if err
+                          if doc
+                            doc.mark badge._id
+                          else
+                            doc = new BadgeMetric()
+                            doc.moment = 'issued'
+                            doc.organization = badge.issuer_id
+                            doc.mark badge._id
+                          doc.save (err) ->
+                            next(err) if err
+                            console.log(doc.toJSON())
+                            res.send JSON.stringify(response),
+                              'content-type': 'application/json'
+                            return
+                      else
+                        res.send JSON.stringify( response ),
+                          'content-type': 'application/json'
 
                     if btu?
                       location = arrayUtils.containsString btu.users, user._id

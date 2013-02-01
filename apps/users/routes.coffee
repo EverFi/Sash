@@ -3,6 +3,7 @@ util = require 'util'
 fs = require 'fs'
 Promise = require('mongoose').Promise
 Organization = require '../../models/organization'
+UserMetric = require '../../models/user_metric'
 User = require '../../models/user'
 authenticate = require '../middleware/authenticate'
 configuration = require '../../lib/configuration'
@@ -182,8 +183,20 @@ routes = (app) ->
       _save = (u) ->
         user.save (err, doc) ->
           next(err) if err
-          req.flash 'info', 'User created successfully!'
-          res.redirect '/users/' + doc._id
+          criteria = {organization:user.organization, moment:'created'}
+          UserMetric.findOne criteria, (err, metric) ->
+            next(err) if err
+            if metric
+              metric.mark doc._id
+            else
+              metric = new UserMetric()
+              metric.moment = 'created'
+              metric.organization = doc.organization
+              metric.mark doc._id
+            metric.save (err) ->
+              next(err) if err
+            req.flash 'info', 'User created successfully!'
+            res.redirect '/users/' + doc._id
 
       Organization.findOne {name:req.body.user.organization}, (err, org) ->
         next(err) if err
