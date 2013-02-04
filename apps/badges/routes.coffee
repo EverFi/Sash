@@ -4,6 +4,8 @@ Organization = require '../../models/organization'
 BadgesToUsers = require '../../models/badges_to_users'
 BadgeMetric = require '../../models/badge_metric'
 authenticate = require '../middleware/authenticate'
+badgeUtils = require '../../lib/badge_utils'
+async = require 'async'
 arrayUtils = require '../../lib/array'
 Promise = require('mongoose').Promise
 util = require 'util'
@@ -138,129 +140,81 @@ routes = (app) ->
     app.post '/revoke/:badgeId', (req, res, next) ->
       username = req.body.username
       console.log("revoking badge #{req.params.badgeId} from #{username}")
+      user = null
+      bid = null
 
-      User.findOne {username:username}, (err, user) ->
-        badgeIndex = null
-        userBadges = user.badges
-        for i in [0...userBadges.length]
-          if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
-            badgeIndex = i
-            break
-        if badgeIndex?
-          bid = userBadges[ badgeIndex ]._id.toString()
-          user.badges.splice badgeIndex, 1
-          Badge.findOne {_id:bid}, (err, badge) ->
-            count = parseInt badge.issued_count
-            count -= 1
-            badge.issued_count = count.toString()
-            badge.save (err) ->
-              if err?
-                res.send JSON.stringify({revoked:false, message:err}),
-                  'content-type': 'application/json'
-              user.save (err) ->
-                if err?
-                  res.send JSON.stringify({revoked:false, message:err}),
-                    'content-type': 'application/json'
-                else
-                  BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
-                    if err?
-                      res.send JSON.stringify({error: err})
-                    else
-                      uindex = null
-                      for i in [0...btu.users]
-                        if btu.users[ i ].toString() == user._id.toString()
-                          uindex = i
-                          break
-                      btu.users.splice uindex, 1
-                      btu.save (err) ->
-                        next(err) if err
-                        res.send JSON.stringify({revoked:true}),
-                          'content-type': 'application/json'
+      removeBadgeFromUser = (callback) ->
+        User.findOne {username:username}, (err, userDoc) ->
+          user = userDoc
+          badgeIndex = null
+          userBadges = user.badges
+          for i in [0...userBadges.length]
+            if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
+              badgeIndex = i
+              break
+          if badgeIndex?
+            bid = userBadges[ badgeIndex ]._id.toString()
+            user.badges.splice badgeIndex, 1
+            Badge.findOne {_id:bid}, (err, badge) ->
+              callback err, badge, bid
+          else
+            callback new Error "No badeIndex"
 
-        else
-          res.send JSON.stringify({revoked:false, message:'User has not earned this badge'}),
+      decrementBadgeCount = (badge, err, callback) ->
+        count = parseInt badge.issued_count
+        count -= 1
+        badge.issued_count = count.toString()
+        badge.save (err) ->
+          if err?
+            callback err
+          user.save (err) ->
+            callback err
+
+      saveBadgeToUserMapping = (err, callback) ->
+        BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
+          if err?
+            res.send JSON.stringify({error: err})
+          else
+            uindex = null
+            for i in [0...btu.users]
+              if btu.users[ i ].toString() == user._id.toString()
+                uindex = i
+                break
+            btu.users.splice uindex, 1
+            btu.save (err) ->
+              callback(err) if err
+              res.send JSON.stringify({revoked:true}),
+                'content-type': 'application/json'
+
+      onComplete = (err, results) ->
+        if err?
+          res.send JSON.stringify({revoked:false, message: err}),
             'content-type': 'application/json'
+
+      async.waterfall [ 
+        removeBadgeFromUser, 
+        decrementBadgeCount, 
+        saveBadgeToUserMapping
+      ], onComplete
+
 
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
       email = req.body.email
       email = undefined if(email == '')
+      tags = req.query.tags
+      slug = req.params.slug
       console.log("Trying to issue badge: #{req.params.slug}")
       console.log("params: {username: #{username}, email: #{email}, slug: #{req.params.slug}")
-      Badge.findOne slug: req.params.slug, (err, badge) ->
+
+      badgeUtils.issue slug, tags, username, email, (err, results) ->
         if err?
-          console.log("Error Finding Badge: #{JSON.stringify(err)}")
-          res.send JSON.stringify({issued: false}),
+          console.error(err)
+          res.send JSON.stringify( {earned:false, message: err} ),
             'content-type': 'application/json'
-          return
-
-        unless badge? & username?
-          console.error("Can't issue badge #{req.params.slug}, doesn't exist")
-          res.send JSON.stringify({issued: false}),
+        else
+          res.send JSON.stringify( {earned:true} ),
             'content-type': 'application/json'
-          return
-
-        User.findOrCreate username, email,
-          {issuer_id: badge.issuer_id, tags: req.query.tags},
-          (err, user) ->
-            if err?
-              console.error("Can't issue badge #{req.params.slug}, #{JSON.stringify(err)}")
-              res.send JSON.stringify({message: "error issuing badge", error: err}),
-                'content-type': 'application/json'
-              return
-            console.log("user: #{user.username}/#{user.email}, id: #{user.id}")
-            user.earn badge, (err, response) ->
-              if err?
-                response = {message: "Failed to issue Badge", error: err}
-                console.error "Badge Issue Response: #{JSON.stringify(response)}"
-                res.send JSON.stringify(response),
-                  'content-type': 'application/json'
-                return
-              else
-                count = parseInt badge.issued_count
-                count += 1
-                badge.issued_count = count.toString()
-                badge.save (err) ->
-                  next(err) if err
-                  BadgesToUsers.findOne { badgeId: badge._id }, (err, btu) ->
-                    if err?
-                      console.error(err)
-
-                    onComplete = () ->
-                      console.log "Badge Issue Response: #{JSON.stringify(response)}"
-                      if response.earned == true
-                        criteria = {moment:'issued', organization:badge.issuer_id};
-                        BadgeMetric.findOne criteria, (err, doc) ->
-                          next(err) if err
-                          if doc
-                            doc.mark badge._id
-                          else
-                            doc = new BadgeMetric()
-                            doc.moment = 'issued'
-                            doc.organization = badge.issuer_id
-                            doc.mark badge._id
-                          doc.save (err) ->
-                            next(err) if err
-                            console.log(doc.toJSON())
-                            res.send JSON.stringify(response),
-                              'content-type': 'application/json'
-                            return
-                      else
-                        res.send JSON.stringify( response ),
-                          'content-type': 'application/json'
-
-                    if btu?
-                      location = arrayUtils.containsString btu.users, user._id
-                      if location == -1
-                        btu.users.push( user._id )
-                        btu.save (err) ->
-                          if err?
-                            console.error(err)
-                          return onComplete()
-                      else 
-                        return onComplete()
-                    else
-                      onComplete()
 
 
 formatBadgeAssertionResponse = (req, res, badge) ->
