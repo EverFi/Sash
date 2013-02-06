@@ -4,7 +4,7 @@ Organization = require '../../models/organization'
 BadgesToUsers = require '../../models/badges_to_users'
 BadgeMetric = require '../../models/badge_metric'
 authenticate = require '../middleware/authenticate'
-badgeUtils = require '../../lib/badge_utils'
+badgeUtils = require './lib/badge_utils'
 async = require 'async'
 arrayUtils = require '../../lib/array'
 Promise = require('mongoose').Promise
@@ -54,29 +54,11 @@ routes = (app) ->
     #CREATE
     app.post '/', (req, res, next) ->
       badge = new Badge req.body.badge
-      badge.attach 'image', req.files.badge.image, (err)->
-        next(err) if err
-        badge.save (err, doc) ->
-          next(err) if err
-          btu = new BadgesToUsers
-          btu.badgeId = doc._id
-          btu.users = []
-          btu.save (err, btu_doc) ->
-            next(err) if err
-            criteria = {moment:'created', organization:badge.issuer_id};
-            BadgeMetric.findOne criteria, (err, doc) ->
-              next(err) if err
-              if doc
-                doc.mark badge._id
-              else
-                doc = new BadgeMetric()
-                doc.moment = 'created'
-                doc.organization = badge.issuer_id
-                doc.mark badge._id
-              doc.save (err) ->
-                next(err) if err
-                req.flash 'info', 'Badge saved successfully!'
-                res.redirect '/badges'
+      image = req.files.badge.image
+      badgeUtils.create badge, image, (err) ->
+        next err if err
+        req.flash 'info', 'Badge saved successfully!'
+        res.redirect '/badges'
 
     #SHOW
     app.get '/:slug/assertion.:format?', (req, res) ->
@@ -139,65 +121,21 @@ routes = (app) ->
     #REVOKE
     app.post '/revoke/:badgeId', (req, res, next) ->
       username = req.body.username
+      badgeId = req.params.badgeId.toString()
       console.log("revoking badge #{req.params.badgeId} from #{username}")
       user = null
       bid = null
 
-      removeBadgeFromUser = (callback) ->
-        User.findOne {username:username}, (err, userDoc) ->
-          user = userDoc
-          badgeIndex = null
-          userBadges = user.badges
-          for i in [0...userBadges.length]
-            if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
-              badgeIndex = i
-              break
-          if badgeIndex?
-            bid = userBadges[ badgeIndex ]._id.toString()
-            user.badges.splice badgeIndex, 1
-            Badge.findOne {_id:bid}, (err, badge) ->
-              callback err, badge, bid
-          else
-            callback new Error "No badeIndex"
-
-      decrementBadgeCount = (badge, err, callback) ->
-        count = parseInt badge.issued_count
-        count -= 1
-        badge.issued_count = count.toString()
-        badge.save (err) ->
-          if err?
-            callback err
-          user.save (err) ->
-            callback err
-
-      saveBadgeToUserMapping = (err, callback) ->
-        BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
-          if err?
-            res.send JSON.stringify({error: err})
-          else
-            uindex = null
-            for i in [0...btu.users]
-              if btu.users[ i ].toString() == user._id.toString()
-                uindex = i
-                break
-            btu.users.splice uindex, 1
-            btu.save (err) ->
-              callback(err) if err
-              res.send JSON.stringify({revoked:true}),
-                'content-type': 'application/json'
-
-      onComplete = (err, results) ->
+      badgeUtils.revoke username, badgeId, (err, results) ->
         if err?
+          err = err.message || err
           res.send JSON.stringify({revoked:false, message: err}),
             'content-type': 'application/json'
+        else
+          res.send JSON.stringify( { revoked: true } ),
+            'content-type': 'application/json'
 
-      async.waterfall [ 
-        removeBadgeFromUser, 
-        decrementBadgeCount, 
-        saveBadgeToUserMapping
-      ], onComplete
-
-
+    #ISSUE
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
       email = req.body.email

@@ -114,7 +114,8 @@ div#badge-show
               if ( data.revoked ) {
                 alertify.alert( "Revoked '#{badge.name}' from user " + username );
               } else {
-                alertify.error( "Could not revoke '#{badge.name}' from " + username );
+                var msg = data.message || "Could not revoke '#{badge.name}' from " + username;
+                alertify.error( msg );
               }
             }
           });
