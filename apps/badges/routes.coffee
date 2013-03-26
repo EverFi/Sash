@@ -92,7 +92,7 @@ routes = (app) ->
 
     #UPDATE
     app.put '/:slug', (req, res, next) ->
-      if req.files.badge.image.length > 0
+      if req.files.badge.image.size > 0
         Badge.findOne slug: req.params.slug, (err, badge) ->
           badge.attach 'image', req.files.badge.image, (err)->
             next(err) if err

@@ -19,12 +19,12 @@
     "underscore.string": "2.3.0",
     "mongoose-attachments": "git://github.com/firebaseco/mongoose-attachments.git#v0.0.4",
     "libxmljs": "~0.6.0",
+    "formidable": "1.0.13",
     "async": "~0.1.22"
   },
   "devDependencies": {
     "node-dev": "~0.2.3",
     "request": "~2.9.202",
-    "libxmljs": "~0.5.4",
     "mocha": "1.1.0"
   },
   "engines": {
