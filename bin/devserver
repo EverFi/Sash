@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 
 # Put any environment configuration into .env
-if [ -f "/.env" ]; then
+if [ -f ".env" ]; then
+  echo 'butt'
   source .env
 fi
 ./node_modules/node-dev/node-dev server.js
