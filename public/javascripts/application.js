@@ -12,7 +12,7 @@ window.Utils = {
       return stat;
     }
   }
-}
+};
 
 $(document).ready(function(){
 
@@ -36,7 +36,7 @@ $(document).ready(function(){
     });
 
     e.preventDefault();
-  })
+  });
 
   // On the delete form, remove the parent LI on success
   $('form.delete').on('ajax:success', function(e, response, stat, xhr){
@@ -44,9 +44,9 @@ $(document).ready(function(){
   });
 
   // Validate create form
-  $('form.new-badge input, textarea').on('change', function(e) {
-    if ( Utils.form.basicValidation( $('form.new-badge') ) ) {
-      $('input:submit').removeAttr('disabled')
+  $('form input, textarea').on('change', function(e) {
+    if ( Utils.form.basicValidation( $(this).parents('form') ) ) {
+      $('input:submit').removeAttr('disabled');
     }
   });
 });
