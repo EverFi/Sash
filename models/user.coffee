@@ -113,12 +113,12 @@ UserSchema.methods.earn = (badge, callback)->
     b.badge_id = badge.id
     b.image = badge.imageUrl
     b.imageObj = badge.image
-    b.issued_count = undefined
+    delete b.issued_count
     @badges.push b
     @save (err, user)=>
       if err
         callback(err, null)
-      @model("Badge").findByIdAndUpdate badge.id, {$inc:{issued_count: 1}},->
+      else
         callback null, {
           message: 'successfully added badge'
           earned: true
