@@ -71,7 +71,7 @@ OrganizationSchema.methods.badgeCount = (callback)->
 
   if callback
     promise.addBack callback
-  query = @model('Badge').count('issuer_id', @id)
+  query = @model('Badge').count({'issuer_id': @id})
   query.exec (err, result)->
     promise.resolve(err, result)
 
