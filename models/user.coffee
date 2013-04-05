@@ -75,7 +75,7 @@ UserSchema = new Schema
 
 UserSchema.index({ email: 1, username: 1 })
 UserSchema.index({ email_hash: 1})
-UserSchema.index({ "badge.slug": 1 }) # Index the badge slug for issued counts
+UserSchema.index({ "badges.slug": 1 }) # Index the badge slug for issued counts
 UserSchema.plugin(timestamps)
 
 UserSchema.pre 'save', (next)->
