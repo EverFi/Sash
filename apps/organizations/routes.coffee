@@ -14,6 +14,14 @@ userTemplateFile = path.resolve __dirname + '/views/templates/user.jade'
 fs.readFile userTemplateFile, (err, data) ->
   userJade = data.toString()
 
+getIssuedCount = (badge, callback)->
+  badge.issuedCount (err,count)->
+    badge.issued_count = count
+    callback(null, badge)
+
+getBadgeIssuedCounts = (badges, callback)->
+  async.map(badges, getIssuedCount, callback)
+
 routes = (app) ->
 
   #404
@@ -42,10 +50,12 @@ routes = (app) ->
       res.redirect '/login'
 
   app.get '/dashboard', authenticate, (req, res, next) ->
-    res.render "#{__dirname}/views/dashboard",
-      org: req.org
-      badges: req.org.badges(10)
-      badgeCount: req.org.badgeCount()
+    req.org.badges 10, (err, badges)->
+      getBadgeIssuedCounts badges, (err, badges)->
+        res.render "#{__dirname}/views/dashboard",
+          org: req.org
+          badges: badges
+          badgeCount: req.org.badgeCount()
 
   app.get '/users/render', (req, res, next) ->
     users = req.query.users

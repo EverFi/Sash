@@ -4,9 +4,6 @@ div.media.badge-media
   div.media-body
     h2.media-heading 
       a(href=urlFor(badge, 'badges')) #{badge.name}
-    if badge.issued_count
       span.sash-badge-info #{badge.issued_count} issued
-    else
-      span.sash-badge-info 0 issued
     br
     span.sash-badge-info Created on #{formatDate(badge.create_at)}

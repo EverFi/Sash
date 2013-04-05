@@ -8,6 +8,15 @@ Promise = require('mongoose').Promise
 util = require 'util'
 _ = require 'underscore'
 fs = require 'fs'
+async = require 'async'
+
+getIssuedCount = (badge, callback)->
+  badge.issuedCount (err,count)->
+    badge.issued_count = count
+    callback(null, badge)
+
+getBadgeIssuedCounts = (badges, callback)->
+  async.map(badges, getIssuedCount, callback)
 
 routes = (app) ->
   #
@@ -30,13 +39,14 @@ routes = (app) ->
         # Matching ALL of the tags
         query.where('tags', {'$all': tags})
     query.exec (err, badges)->
-      if req.xhr || req.params.format == 'json'
-        formatBadgeResponse(req, res, badges)
-      else
-        res.render "#{__dirname}/views/index",
-          badges: badges
-          orgId: orgId
-          org: req.org
+      getBadgeIssuedCounts badges, (err, badges)->
+        if req.xhr || req.params.format == 'json'
+          formatBadgeResponse(req, res, badges)
+        else
+          res.render "#{__dirname}/views/index",
+            badges: badges
+            orgId: orgId
+            org: req.org
 
   app.namespace '/badges', authenticate, ->
 

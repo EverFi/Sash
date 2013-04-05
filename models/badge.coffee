@@ -227,6 +227,13 @@ BadgeSchema.methods.assertion = (callback)->
 
   return promise
 
+BadgeSchema.methods.issuedCount = (callback) ->
+  promise = new Promise
+  promise.addBack(callback) if callback
+  User.count {'badges.slug': @slug}, (err, count) =>
+    promise.resolve(err, count)
+  return promise
+
 
 Badge = db.model("Badge", BadgeSchema)
 
