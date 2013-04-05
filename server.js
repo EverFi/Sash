@@ -5,7 +5,16 @@
 
 // require('nodetime').profile()
 
+
 require('coffee-script');
+
+// var memwatch = require('memwatch');
+// memwatch.on('leak', function(info) {
+//   console.log("Memory Leak Info: ", info);
+// });
+// memwatch.on('stats', function(stats) {
+//   console.log("Memory Leak Stats: ", stats);
+// });
 
 if(typeof process.env.NODE_ENV === 'undefined')
   process.env.NODE_ENV = 'development'
@@ -49,9 +58,26 @@ app.configure(function(){
     secret: configuration.get('cookie_secret'),
     store: new RedisStore(redisConfig)
   }));
+
+  // app.use(startHeapSnapshot);
   app.use(app.router);
+  // app.use(endHeapSnapshot);
   app.use(express.static(__dirname + '/public'));
 });
+
+// var hd;
+// function startHeapSnapshot(req, res, next){
+//   if(req.url.match(/stylesheets|javascripts|fonts|images|favicon/)) return next();
+//   hd = new memwatch.HeapDiff();
+//   next();
+// }
+
+// function endHeapSnapshot(req, res, next){
+//   if(req.url.match(/stylesheets|javascripts|fonts|images|favicon/)) return next();
+//   var diff = hd.end();
+//   console.log("Heap Diff: URL: ("+req.url+") ", diff);
+//   next();
+// }
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));

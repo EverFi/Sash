@@ -25,7 +25,8 @@
   "devDependencies": {
     "node-dev": "~0.2.3",
     "request": "~2.9.202",
-    "mocha": "1.1.0"
+    "mocha": "1.1.0",
+    "memwatch": "*"
   },
   "engines": {
     "node": "0.8.x",
