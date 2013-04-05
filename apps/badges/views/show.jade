@@ -70,16 +70,16 @@ div#badge-show
     $(document).ready(init);
 
     function init() {
-      $.get('/users/#{badge.issuer_id}/all', function(users){
-        appendOpt("Choose A User", "");
-        $.each(users, function (index, user){
-          appendOpt(user.username)
-        });
-        $('.select-user').select2({
-          placeholder: "Select a user"
-        });
-        $('.select-user').on("change", onUserChange);
-      });
+      // $.get('/users/#{badge.issuer_id}/all', function(users){
+      //   appendOpt("Choose A User", "");
+      //   $.each(users, function (index, user){
+      //     appendOpt(user.username)
+      //   });
+      //   $('.select-user').select2({
+      //     placeholder: "Select a user"
+      //   });
+      //   $('.select-user').on("change", onUserChange);
+      // });
 
       $('.issue').click(function(){
         var username = $('.select-user').val();

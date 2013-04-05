@@ -31,7 +31,7 @@ script
   var _users = store.get( usersKey );
 
   if ( !_users ) {
-    $.get('/users/#{org._id}/all', initUsers);
+    // $.get('/users/#{org._id}/all', initUsers);
   } else {
     initUsers( _users );
   }
