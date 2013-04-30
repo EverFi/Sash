@@ -137,39 +137,44 @@ routes = (app) ->
       console.log("revoking badge #{req.params.badgeId} from #{username}")
 
       User.findOne {username:username}, (err, user) ->
-        badgeIndex = null
-        userBadges = user.badges
-        for i in [0...userBadges.length]
-          if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
-            badgeIndex = i
-            break
-        if badgeIndex?
-          bid = userBadges[ badgeIndex ]._id.toString()
-          console.log("bid=#{bid}")
-          user.badges.splice badgeIndex, 1
-          user.save (err) ->
-            if err?
-              res.send JSON.stringify({revoked:false, message:err}),
-                'content-type': 'application/json'
-            else
-              BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
-                if err?
-                  res.send JSON.stringify({error: err})
-                else
-                  uindex = null
-                  for i in [0...btu.users]
-                    if btu.users[ i ].toString() == user._id.toString()
-                      uindex = i
-                      break
-                  btu.users.splice uindex, 1
-                  btu.save (err) ->
-                    next(err) if err
-                    res.send JSON.stringify({revoked:true}),
-                      'content-type': 'application/json'
-
-        else
-          res.send JSON.stringify({revoked:false, message:'User has not earned this badge'}),
+        if err? || user?
+          res.send JSON.stringify({revoked: false, message: "error revoking badge"}),
             'content-type': 'application/json'
+          return
+        else
+          badgeIndex = null
+          userBadges = user.badges
+          for i in [0...userBadges.length]
+            if userBadges[ i ]._id.toString() == req.params.badgeId.toString()
+              badgeIndex = i
+              break
+          if badgeIndex?
+            bid = userBadges[ badgeIndex ]._id.toString()
+            console.log("bid=#{bid}")
+            user.badges.splice badgeIndex, 1
+            user.save (err) ->
+              if err?
+                res.send JSON.stringify({revoked:false, message:err}),
+                  'content-type': 'application/json'
+              else
+                BadgesToUsers.findOne {badgeId: bid}, (err, btu) ->
+                  if err?
+                    res.send JSON.stringify({error: err})
+                  else
+                    uindex = null
+                    for i in [0...btu.users]
+                      if btu.users[ i ].toString() == user._id.toString()
+                        uindex = i
+                        break
+                    btu.users.splice uindex, 1
+                    btu.save (err) ->
+                      next(err) if err
+                      res.send JSON.stringify({revoked:true}),
+                        'content-type': 'application/json'
+
+          else
+            res.send JSON.stringify({revoked:false, message:'User has not earned this badge'}),
+              'content-type': 'application/json'
 
     app.post '/issue/:slug', (req, res, next) ->
       username = req.body.username
