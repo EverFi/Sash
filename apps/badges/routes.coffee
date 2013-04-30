@@ -137,7 +137,7 @@ routes = (app) ->
       console.log("revoking badge #{req.params.badgeId} from #{username}")
 
       User.findOne {username:username}, (err, user) ->
-        if err? || user?
+        if err? || !user?
           res.send JSON.stringify({revoked: false, message: "error revoking badge"}),
             'content-type': 'application/json'
           return

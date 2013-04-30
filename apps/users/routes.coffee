@@ -113,6 +113,9 @@ routes = (app) ->
         return
 
       User.findByUsernameOrEmail username, email, (err, user) ->
+        if !user?
+          formatResponse(req, res, {success: false})
+          return;
         badge = _.detect user.badges, (b) -> b.slug == badgeSlug
         if badge? && user?
           badge.remove()
