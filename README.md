@@ -115,13 +115,15 @@ RESPONSE:
   Sash uses MongoDB for the database.
 
 ## Ok COOL. How do I get started??
-  Install node.js 0.8.X
+  1. Install the following:
+    - node.js 0.10.X
+    - Mongo
+    - Redis
+    - ImageMagick (Note: if you are developing on Mac OS X, you will need to install ImageMagick using brew from the source `brew install imagemagick --build-from-source`)
 
-  Install MongoDB & Redis
+  2. `npm install` to install package dependencies
 
-  `npm install` to install package dependencies
-
-   run the server with `bin/devserver`
+  3. run the server with `bin/devserver`
 
 ## Status
 

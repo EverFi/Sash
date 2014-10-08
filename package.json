@@ -5,25 +5,26 @@
   "dependencies": {
     "express": "2.5.8",
     "jade": "~0.26.1",
-    "hogan.js": "~1.0.5",
+    "hogan.js": "^3.0.2",
     "coffee-script": "~1.3.3",
     "redis": "~0.7.2",
     "connect-redis": "~1.3.0",
     "hiredis": "~0.1.14",
     "express-namespace": "~0.1.0",
-    "mongoose": "~3.1.2",
+    "mongoose": "https://github.com/LearnBoost/mongoose/archive/3.1.2.tar.gz",
     "mongoose-timestamps": "0.0.1",
     "underscore": "~1.3.3",
     "express-mongoose": "0.0.5",
     "moment": "~1.6.2",
     "underscore.string": "2.3.0",
-    "mongoose-attachments": "git://github.com/firebaseco/mongoose-attachments.git#v0.0.4",
-    "libxmljs": "~0.6.0",
+    "mongoose-attachments": "https://github.com/heapsource/mongoose-attachments/archive/v0.0.4.tar.gz",
+    "libxmljs": "~0.12.0",
     "formidable": "1.0.13",
-    "async": "~0.1.22"
+    "async": "~0.1.22",
+    "mongoose-attachments-localfs": "^0.1.1"
   },
   "devDependencies": {
-    "node-dev": "~0.2.3",
+    "node-dev": "^2.4.1",
     "request": "~2.9.202",
     "mocha": "1.1.0",
     "memwatch": "*"
