@@ -189,7 +189,10 @@ routes = (app) ->
             'content-type': 'application/json'
           return
 
-        unless badge? & username?
+        unless username?
+          username = email
+
+        unless badge? & (username? || email?)
           console.error("Can't issue badge #{req.params.slug}, doesn't exist")
           res.send JSON.stringify({issued: false}),
             'content-type': 'application/json'
