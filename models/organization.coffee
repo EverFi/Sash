@@ -4,7 +4,6 @@ configuration = require '../lib/configuration'
 hexDigest = require('../lib/hex_digest')
 Promise = require('mongoose').Promise
 Schema = mongoose.Schema
-db = mongoose.createConnection configuration.get('mongodb')
 
 
 
@@ -79,6 +78,6 @@ OrganizationSchema.methods.badgeCount = (callback)->
 
 
 
-Organization = db.model 'Organization', OrganizationSchema
+Organization = mongoose.model 'Organization', OrganizationSchema
 
 module.exports = Organization
