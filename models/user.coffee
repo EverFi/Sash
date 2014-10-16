@@ -7,7 +7,6 @@ Organization = require './organization'
 configuration = require '../lib/configuration'
 hexDigest = require('../lib/hex_digest')
 moment = require 'moment'
-db = mongoose.createConnection configuration.get('mongodb')
 
 # This is a duplicate of the Bdge schema. Dirty I know.
 EarnedBadgeSchema = new Schema
@@ -172,7 +171,7 @@ UserSchema.methods.assertion = (slug, callback) ->
 
 
 
-User = db.model 'User', UserSchema
+User = mongoose.model 'User', UserSchema
 
 User.findByUsernameOrEmail = (username, email, callback)->
   promise = new Promise

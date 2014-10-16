@@ -34,6 +34,7 @@ var express = require('express'),
     expressMongoose = require('express-mongoose'),
     RedisStore = require('connect-redis')(express),
     configuration = require('./lib/configuration');
+mongodb.connect(configuration.get('mongodb'));
 
 require('express-namespace');
 

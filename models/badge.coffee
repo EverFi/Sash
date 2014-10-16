@@ -17,7 +17,6 @@ _.mixin(_.str.exports())
 
 Promise = mongoose.Promise
 Schema  = mongoose.Schema
-db      = mongoose.createConnection configuration.get('mongodb')
 
 # Setup the Schema
 BadgeSchema = new Schema
@@ -234,8 +233,7 @@ BadgeSchema.methods.issuedCount = (callback) ->
     promise.resolve(err, count)
   return promise
 
-
-Badge = db.model("Badge", BadgeSchema)
+Badge = mongoose.model('Badge', BadgeSchema)
 
 module.exports = Badge
 
